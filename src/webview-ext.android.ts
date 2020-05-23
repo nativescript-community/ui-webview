@@ -457,11 +457,15 @@ function initializeWebViewClient(): void {
             }
 
             try {
-                await this.owner.get()._onRequestPermissions(wantedPermissions);
-                permissionRequest.grant(requestedPermissions);
+                if (await this.owner.get()._onRequestPermissions(wantedPermissions)) {
+                    permissionRequest.grant(requestedPermissions);
+
+                    return;
+                }
             } catch {
-                permissionRequest.deny();
+                // ignore
             }
+            permissionRequest.deny();
         }
 
         public onPermissionRequest(permissionRequest: android.webkit.PermissionRequest) {

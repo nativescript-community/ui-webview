@@ -732,23 +732,19 @@ export class WebViewExtBase extends ContainerView {
         return true;
     }
 
-    public async _onRequestPermissions(permissions: RequestPermissionsString[]) {
+    public async _onRequestPermissions(permissions: RequestPermissionsString[]): Promise<boolean> {
         if (!this.hasListeners(EventNames.RequestPermissions)) {
             return false;
         }
 
-        return new Promise<string>((resolve, reject) => {
+        return new Promise<boolean>((resolve) => {
             const args = {
                 eventName: WebViewExtBase.requestPermissionsEvent,
                 object: this,
                 url: this.src,
                 permissions,
                 callback(allow: boolean) {
-                    if (allow) {
-                        resolve();
-                    } else {
-                        reject();
-                    }
+                    resolve(allow);
                 },
             } as RequestPermissionsEventData;
 
