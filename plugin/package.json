@@ -1,6 +1,6 @@
 {
     "name": "nativescript-webview-plus",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "main": "./webview",
     "sideEffects": false,
     "typings": "./webview.d.ts",
