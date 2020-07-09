@@ -1,5 +1,5 @@
 {
-    "name": "nativescript-advanced-webview",
+    "name": "nativescript-webview-plus",
     "version": "0.0.0",
     "scripts": {
         "tsc": "cp src/webview.d.ts plugin && tsc -skipLibCheck -d",
@@ -40,7 +40,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/farfromrefug/nativescript-advanced-webview.git"
+        "url": "git+https://github.com/farfromrefug/nativescript-webview-plus.git"
     },
     "author": {
         "name": "Martin Guillon",
@@ -48,9 +48,9 @@
     },
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/farfromrefug/nativescript-advanced-webview/issues"
+        "url": "https://github.com/farfromrefug/nativescript-webview-plus/issues"
     },
-    "homepage": "https://github.com/farfromrefug/nativescript-advanced-webview#readme",
+    "homepage": "https://github.com/farfromrefug/nativescript-webview-plus#readme",
     "commitlint": {
         "extends": [
             "@commitlint/config-conventional"

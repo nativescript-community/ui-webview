@@ -1,7 +1,7 @@
-# nativescript-advanced-webview
+# nativescript-webview-plus
 
 Extended WebView for NativeScript which adds many options.
-The code is originally based on [nativescript-advanced-webview](https://github.com/Notalib/nativescript-advanced-webview)
+The code is originally based on [nativescript-webview-plus](https://github.com/Notalib/nativescript-webview-plus)
 
 ## Features
 * Adds a custom-scheme handler for x-local:// to the webview for loading of resources inside the webview.
@@ -36,13 +36,13 @@ tns plugin add @nota/nativescript-advanced-werbview
 
 ### Angular support
 
-Import `AWebViewModule` from `nativescript-advanced-webview/angular` and add it to your `NgModule`.
+Import `AWebViewModule` from `nativescript-webview-plus/angular` and add it to your `NgModule`.
 
 This registers the element `AWebView`. Replace the <WebView> tag with <AWebView>
 
 ### Vue support
 
-Import `nativescript-advanced-webview/vue` in your app entry file (likely app.js or main.js).
+Import `nativescript-webview-plus/vue` in your app entry file (likely app.js or main.js).
 
 This registers the element `AWebView`. Replace the <WebView> tag with <AWebView>
 
@@ -143,7 +143,7 @@ Inside the WebView we have the `nsWebViewBridge` for sending events between the 
 To run the demo-project, the plugin must be build locally and a http-server must be running.
 
 The easiest way to run the demo is to follow these steps:
-- Clone the git repository from https://github.com/Notalib/nativescript-advanced-webview.git
+- Clone the git repository from https://github.com/Notalib/nativescript-webview-plus.git
 - Go into the `src`-folder
 - Use the npm-scripts:
   - npm run demo.ios
@@ -151,7 +151,7 @@ The easiest way to run the demo is to follow these steps:
 
 ### Running the unit-tests
 
-- Clone the git repository from https://github.com/Notalib/nativescript-advanced-webview.git
+- Clone the git repository from https://github.com/Notalib/nativescript-webview-plus.git
 - Go into the `src`-folder
 - Use the npm-scripts:
   - npm run test.ios

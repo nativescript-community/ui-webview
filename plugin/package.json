@@ -1,12 +1,12 @@
 {
-    "name": "nativescript-advanced-webview",
+    "name": "nativescript-webview-plus",
     "version": "1.0.10",
     "main": "./webview-ext",
     "sideEffects": false,
     "typings": "./webview.d.ts",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/farfromrefug/nativescript-advanced-webview.git"
+        "url": "git+https://github.com/farfromrefug/nativescript-webview-plus.git"
     },
     "nativescript": {
         "platforms": {
@@ -26,7 +26,8 @@
     },
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/farfromrefug/nativescript-advanced-webview/issues"
+        "url": "https://github.com/farfromrefug/nativescript-webview-plus/issues"
     },
-    "homepage": "https://github.com/farfromrefug/nativescript-advanced-webview#readme"
+    "homepage": "https://github.com/farfromrefug/nativescript-webview-plus#readme",
+    "gitHead": "afa99a5f27006ed7545af88d2f8544fc1721e41c"
 }
