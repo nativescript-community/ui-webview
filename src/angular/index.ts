@@ -1,11 +1,11 @@
-import { NgModule } from "@angular/core";
-import { isKnownView, registerElement } from "nativescript-angular/element-registry";
+import { NgModule } from '@angular/core';
+import { isKnownView, registerElement } from '@nativescript/angular/element-registry';
 
-const webviewElementName = "WebViewExt";
+const webviewElementName = 'AWebView';
 
 if (!isKnownView(webviewElementName)) {
-    registerElement(webviewElementName, () => require("../webview-ext").WebViewExt);
+    registerElement(webviewElementName, () => require('../webview').AWebView);
 }
 
 @NgModule()
-export class WebViewExtModule {}
+export default class WebViewModule {}

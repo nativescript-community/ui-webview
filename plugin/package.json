@@ -1,0 +1,34 @@
+{
+    "name": "nativescript-advanced-webview",
+    "version": "1.0.9",
+    "main": "./webview-ext",
+    "sideEffects": false,
+    "typings": "./webview.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/farfromrefug/nativescript-advanced-webview.git"
+    },
+    "nativescript": {
+        "platforms": {
+            "android": "6.1.0",
+            "ios": "6.1.0"
+        }
+    },
+    "keywords": [
+        "NativeScript",
+        "JavaScript",
+        "Android",
+        "iOS"
+    ],
+    "author": {
+        "name": "Martin Guillon",
+        "email": "martin@akylas.fr"
+    },
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/farfromrefug/nativescript-advanced-webview/issues"
+    },
+    "homepage": "https://github.com/farfromrefug/nativescript-advanced-webview#readme",
+    "dependencies": {
+    }
+}
