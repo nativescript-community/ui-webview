@@ -1,7 +1,7 @@
-# @nota/nativescript-webview-ext
+# nativescript-advanced-webview
 
-Extended WebView for NativeScript which adds "x-local"-custom-scheme for loading local-files, handle events between WebView and NativeScript, JavaScript execution, injecting CSS and JS-files.
-Supports Android 19+ and iOS9+.
+Extended WebView for NativeScript which adds many options.
+The code is originally based on [nativescript-advanced-webview](https://github.com/Notalib/nativescript-advanced-webview)
 
 ## Features
 * Adds a custom-scheme handler for x-local:// to the webview for loading of resources inside the webview.
@@ -31,20 +31,20 @@ Supports Android 19+ and iOS9+.
 Describe your plugin installation steps. Ideally it would be something like:
 
 ```bash
-tns plugin add @nota/nativescript-webview-ext
+tns plugin add @nota/nativescript-advanced-werbview
 ```
 
 ### Angular support
 
-Import `WebViewExtModule` from `@nota/nativescript-webview-ext/angular` and add it to your `NgModule`.
+Import `AWebViewModule` from `nativescript-advanced-webview/angular` and add it to your `NgModule`.
 
-This registers the element `WebViewExt`. Replace the <WebView> tag with <WebViewExt>
+This registers the element `AWebView`. Replace the <WebView> tag with <AWebView>
 
 ### Vue support
 
-Import `@nota/nativescript-webview-ext/vue` in your app entry file (likely app.js or main.js).
+Import `nativescript-advanced-webview/vue` in your app entry file (likely app.js or main.js).
 
-This registers the element `WebViewExt`. Replace the <WebView> tag with <WebViewExt>
+This registers the element `AWebView`. Replace the <WebView> tag with <AWebView>
 
 ## Usage
 
@@ -56,7 +56,7 @@ iOS 11 added support for setting a `WKURLSchemeHandler` on the `WKWebView`.
 Prior to iOS 11 there isn't support for intercepting the URL with `WKWebView`, so we use a custom `NSURLProtocol` + `UIWebView`.
 
 ### Important:
-The custom `NSURLProtocol` used with UIWebView is shared with all instances of the WebViewExt, so mapping `x-local://local-filename.js` => `file://app/full/path/local-filename.js` is shared between them.
+The custom `NSURLProtocol` used with UIWebView is shared with all instances of the AWebView, so mapping `x-local://local-filename.js` => `file://app/full/path/local-filename.js` is shared between them.
 
 ## API
 
@@ -120,7 +120,7 @@ Inside the WebView we have the `nsWebViewBridge` for sending events between the 
 | --- | --- |
 | window.nsWebViewBridge.on(eventName: string, cb: (data: any) => void) | Registers handlers for events from the native layer. |
 | window.nsWebViewBridge.off(eventName: string, cb?: (data: any) => void) | Unregister handlers for events from the native layer. |
-| window.nsWebViewBridge.emit(eventName: string, data: any) | Emits event to NativeScript layer. Will be emitted on the WebViewExt as any other event, data will be a part of the WebViewEventData-object |
+| window.nsWebViewBridge.emit(eventName: string, data: any) | Emits event to NativeScript layer. Will be emitted on the AWebView as any other event, data will be a part of the WebViewEventData-object |
 
 ## Possible features to come:
 
@@ -143,7 +143,7 @@ Inside the WebView we have the `nsWebViewBridge` for sending events between the 
 To run the demo-project, the plugin must be build locally and a http-server must be running.
 
 The easiest way to run the demo is to follow these steps:
-- Clone the git repository from https://github.com/Notalib/nativescript-webview-ext.git
+- Clone the git repository from https://github.com/Notalib/nativescript-advanced-webview.git
 - Go into the `src`-folder
 - Use the npm-scripts:
   - npm run demo.ios
@@ -151,7 +151,7 @@ The easiest way to run the demo is to follow these steps:
 
 ### Running the unit-tests
 
-- Clone the git repository from https://github.com/Notalib/nativescript-webview-ext.git
+- Clone the git repository from https://github.com/Notalib/nativescript-advanced-webview.git
 - Go into the `src`-folder
 - Use the npm-scripts:
   - npm run test.ios
