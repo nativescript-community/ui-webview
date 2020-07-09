@@ -1,6 +1,6 @@
 {
     "name": "nativescript-advanced-webview",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "main": "./webview-ext",
     "sideEffects": false,
     "typings": "./webview.d.ts",
@@ -28,7 +28,5 @@
     "bugs": {
         "url": "https://github.com/farfromrefug/nativescript-advanced-webview/issues"
     },
-    "homepage": "https://github.com/farfromrefug/nativescript-advanced-webview#readme",
-    "dependencies": {
-    }
+    "homepage": "https://github.com/farfromrefug/nativescript-advanced-webview#readme"
 }
