@@ -1,13 +1,13 @@
 devDependencies:
   '@angular/animations': 10.1.0_@angular+core@10.1.0
-  '@angular/common': 10.1.0_@angular+core@10.1.0
+  '@angular/common': 10.1.0_@angular+core@10.1.0+rxjs@6.6.2
   '@angular/compiler': 10.1.0
   '@angular/compiler-cli': 10.1.0_bf62daf728e46d6fbb74f4ce7c6ab5c0
-  '@angular/core': 10.1.0
-  '@angular/forms': 10.1.0_5ea152239f8bcbc422c6b446f5178ef8
+  '@angular/core': 10.1.0_rxjs@6.6.2
+  '@angular/forms': 10.1.0_56bc193a67358dd474b4800b242ff940
   '@angular/platform-browser': 10.1.0_454b4c7fad2ac0807b9fe2a7257d94a9
   '@angular/platform-browser-dynamic': 10.1.0_a97a9d02c1c99330bbd30888f3254c60
-  '@angular/router': 10.1.0_5ea152239f8bcbc422c6b446f5178ef8
+  '@angular/router': 10.1.0_56bc193a67358dd474b4800b242ff940
   '@commitlint/cli': 9.1.2
   '@commitlint/config-conventional': 9.1.2
   '@nativescript/angular': 10.1.0_b6a4a73554f179da72121bbbed7a71f5
@@ -26,6 +26,7 @@ devDependencies:
   npm-watch: 0.7.0
   prompt: 1.0.0
   rimraf: 3.0.2
+  rxjs: 6.6.2
   ts-patch: 1.3.0_typescript@3.9.7
   typescript: 3.9.7
 lockfileVersion: 5.1
@@ -46,16 +47,17 @@ packages:
       integrity: sha512-d9S8VQuqaYg0c/Y2kl/MtICtZ+UKlH5bLm8y2fb2WfSL4A5XIqMGdEVxzFSiR0b1Bnt4NAoQMcBec1blHAqMSQ==
   /@angular/animations/10.1.0_@angular+core@10.1.0:
     dependencies:
-      '@angular/core': 10.1.0
+      '@angular/core': 10.1.0_rxjs@6.6.2
       tslib: 2.0.0
     dev: true
     peerDependencies:
       '@angular/core': 10.1.0
     resolution:
       integrity: sha512-0S2UKHDwIw/ZEISDrzhDhn4eVTNwjJW+msOYSaIm6ASRArtSVrwBz1ckD92HhurnnkHVwgTQsnU7yDYKfheaow==
-  /@angular/common/10.1.0_@angular+core@10.1.0:
+  /@angular/common/10.1.0_@angular+core@10.1.0+rxjs@6.6.2:
     dependencies:
-      '@angular/core': 10.1.0
+      '@angular/core': 10.1.0_rxjs@6.6.2
+      rxjs: 6.6.2
       tslib: 2.0.0
     dev: true
     peerDependencies:
@@ -95,8 +97,9 @@ packages:
     dev: true
     resolution:
       integrity: sha512-PBHH59B2yTT/h2HxrlGGm8W5taHkcEk39FXiycSBrbt3T5QiExUXMJoUERviPQCUeHCWWsi1Fpu9wK2fgnP/Qw==
-  /@angular/core/10.1.0:
+  /@angular/core/10.1.0_rxjs@6.6.2:
     dependencies:
+      rxjs: 6.6.2
       tslib: 2.0.0
     dev: true
     peerDependencies:
@@ -104,11 +107,12 @@ packages:
       zone.js: ~0.10.3
     resolution:
       integrity: sha512-lENt8Wk1vVsIiHeZVzXCZoHY13BxkqmulEw/AdUOh4VQxoU5K3z1o7fC1cvPHBvBEUnhbD2pDC1UHcY1G9yLRw==
-  /@angular/forms/10.1.0_5ea152239f8bcbc422c6b446f5178ef8:
+  /@angular/forms/10.1.0_56bc193a67358dd474b4800b242ff940:
     dependencies:
-      '@angular/common': 10.1.0_@angular+core@10.1.0
-      '@angular/core': 10.1.0
+      '@angular/common': 10.1.0_@angular+core@10.1.0+rxjs@6.6.2
+      '@angular/core': 10.1.0_rxjs@6.6.2
       '@angular/platform-browser': 10.1.0_454b4c7fad2ac0807b9fe2a7257d94a9
+      rxjs: 6.6.2
       tslib: 2.0.0
     dev: true
     peerDependencies:
@@ -120,9 +124,9 @@ packages:
       integrity: sha512-1onL5To+QAaI1v642WcjfchwwJrUqIPrJ40a4l5yvcd/iZydOBHS/bbw1nYjQDiKeGL2+gzpP04qrh4nHeG7OA==
   /@angular/platform-browser-dynamic/10.1.0_a97a9d02c1c99330bbd30888f3254c60:
     dependencies:
-      '@angular/common': 10.1.0_@angular+core@10.1.0
+      '@angular/common': 10.1.0_@angular+core@10.1.0+rxjs@6.6.2
       '@angular/compiler': 10.1.0
-      '@angular/core': 10.1.0
+      '@angular/core': 10.1.0_rxjs@6.6.2
       '@angular/platform-browser': 10.1.0_454b4c7fad2ac0807b9fe2a7257d94a9
       tslib: 2.0.0
     dev: true
@@ -136,8 +140,8 @@ packages:
   /@angular/platform-browser/10.1.0_454b4c7fad2ac0807b9fe2a7257d94a9:
     dependencies:
       '@angular/animations': 10.1.0_@angular+core@10.1.0
-      '@angular/common': 10.1.0_@angular+core@10.1.0
-      '@angular/core': 10.1.0
+      '@angular/common': 10.1.0_@angular+core@10.1.0+rxjs@6.6.2
+      '@angular/core': 10.1.0_rxjs@6.6.2
       tslib: 2.0.0
     dev: true
     peerDependencies:
@@ -149,11 +153,12 @@ packages:
         optional: true
     resolution:
       integrity: sha512-bYG02qt36lzCBIV6mbAuYPDKU18x9Xd3S3jwJddvoHjRupxwZtTPGWKQ/4qhv1QrLwZnvXbCavIZlrHe68XJbw==
-  /@angular/router/10.1.0_5ea152239f8bcbc422c6b446f5178ef8:
+  /@angular/router/10.1.0_56bc193a67358dd474b4800b242ff940:
     dependencies:
-      '@angular/common': 10.1.0_@angular+core@10.1.0
-      '@angular/core': 10.1.0
+      '@angular/common': 10.1.0_@angular+core@10.1.0+rxjs@6.6.2
+      '@angular/core': 10.1.0_rxjs@6.6.2
       '@angular/platform-browser': 10.1.0_454b4c7fad2ac0807b9fe2a7257d94a9
+      rxjs: 6.6.2
       tslib: 2.0.0
     dev: true
     peerDependencies:
@@ -1178,13 +1183,13 @@ packages:
       integrity: sha512-bPHp6Ji8b41szTOcaP63VlnbbO5Ny6dwAATtY6JTjh5N2OLrb5Qk/Th5cRkRQhkWCt+EJsYrNB0MiL+Gpn6e3g==
   /@nativescript/angular/10.1.0_b6a4a73554f179da72121bbbed7a71f5:
     dependencies:
-      '@angular/common': 10.1.0_@angular+core@10.1.0
+      '@angular/common': 10.1.0_@angular+core@10.1.0+rxjs@6.6.2
       '@angular/compiler': 10.1.0
-      '@angular/core': 10.1.0
-      '@angular/forms': 10.1.0_5ea152239f8bcbc422c6b446f5178ef8
+      '@angular/core': 10.1.0_rxjs@6.6.2
+      '@angular/forms': 10.1.0_56bc193a67358dd474b4800b242ff940
       '@angular/platform-browser': 10.1.0_454b4c7fad2ac0807b9fe2a7257d94a9
       '@angular/platform-browser-dynamic': 10.1.0_a97a9d02c1c99330bbd30888f3254c60
-      '@angular/router': 10.1.0_5ea152239f8bcbc422c6b446f5178ef8
+      '@angular/router': 10.1.0_56bc193a67358dd474b4800b242ff940
       '@nativescript/zone-js': 1.0.1
       nativescript-intl: 4.0.2
       tslib: 2.0.0
@@ -8841,6 +8846,14 @@ packages:
       npm: '>=2.0.0'
     resolution:
       integrity: sha512-3HMA8z/Oz61DUHe+SdOiQyzIf4tOx5oQHmMir7IZEu6TMqCLHT4LRcmNaUS0NwOz8VLvmmBduMsoaUvMaIiqzg==
+  /rxjs/6.6.2:
+    dependencies:
+      tslib: 1.13.0
+    dev: true
+    engines:
+      npm: '>=2.0.0'
+    resolution:
+      integrity: sha512-BHdBMVoWC2sL26w//BCu3YzKT4s2jip/WhwsGEDmeKYBhKDZeYezVUnHatYB7L85v5xs0BAQmg6BEYJEKxBabg==
   /safe-buffer/5.1.2:
     dev: true
     resolution:
@@ -10738,5 +10751,6 @@ specifiers:
   npm-watch: ^0.7.0
   prompt: ^1.0.0
   rimraf: ^3.0.2
+  rxjs: 6.6.2
   ts-patch: 1.3.0
   typescript: ~3.9.7
