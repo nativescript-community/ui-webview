@@ -1,4 +1,4 @@
-﻿import { LoadEventData, LoadFinishedEventData, LoadStartedEventData, WebViewEventData, AWebViewBase } from './webview-common';
+﻿import { AWebViewBase, LoadEventData, LoadFinishedEventData, LoadStartedEventData, WebViewEventData } from './webview-common';
 
 export * from './webview-common';
 

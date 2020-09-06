@@ -9,7 +9,7 @@ To help the rest of the community review your change, please follow the instruct
 
 ## PR Checklist
 
-- [ ] The PR title follows our guidelines: https://github.com/Notalib/nativescript-webview-plus/blob/master/CONTRIBUTING.md#commit-messages.
+- [ ] The PR title follows our guidelines: https://github.com/nativescript-community/ui-webview/blob/master/CONTRIBUTING.md#commit-messages.
 - [ ] There is an issue for the bug/feature this PR is for. To avoid wasting your time, it's best to open a suggestion issue first and wait for approval before working on it.
 - [ ] All existing tests are passing.
   - [ ] On Android

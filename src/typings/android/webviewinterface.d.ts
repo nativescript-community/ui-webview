@@ -1,7 +1,6 @@
-/// <reference path="../../node_modules/tns-platform-declarations/android-28.d.ts" />
 
-declare namespace dk {
-    export namespace nota {
+declare namespace com {
+    export namespace nativescriptcommunity {
         export namespace webviewinterface {
             export class WebViewBridgeInterface {
                 public emitEvent(param0: string, param1: string): void;

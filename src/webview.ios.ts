@@ -1,7 +1,14 @@
 import { profile } from '@nativescript/core/profiling';
-import { traceMessageType } from '@nativescript/core/ui/core/view';
+import { Trace } from '@nativescript/core/trace';
 import { alert, confirm, prompt } from '@nativescript/core/ui/dialogs';
-import { AWebViewBase, IOSWebViewWrapper, autoInjectJSBridgeProperty, isScrollEnabledProperty, scalesPageToFitProperty, scrollBounceProperty } from './webview-common';
+import {
+    AWebViewBase,
+    IOSWebViewWrapper,
+    autoInjectJSBridgeProperty,
+    isScrollEnabledProperty,
+    scalesPageToFitProperty,
+    scrollBounceProperty,
+} from './webview-common';
 import { UIWebViewWrapper } from './webview.uiwebview.ios';
 import { WKWebViewWrapper } from './webview.wkwebview.ios';
 
@@ -187,7 +194,7 @@ export class AWebView extends AWebViewBase {
 
         const filepath = this.resolveLocalResourceFilePath(path);
         if (!filepath) {
-            this.writeTrace(() => `${cls} -> file doesn't exist`, traceMessageType.error);
+            this.writeTrace(() => `${cls} -> file doesn't exist`, Trace.messageType.error);
             return;
         }
 
@@ -218,23 +225,25 @@ export class AWebView extends AWebViewBase {
     public async onUIWebViewEvent(url: string) {
         const cls = `AWebView<${this}.ios>.onUIWebViewEvent("${url}")`;
         if (!this.isUIWebView) {
-            this.writeTrace(() => `${cls} - only works for UIWebView`, traceMessageType.error);
+            this.writeTrace(() => `${cls} - only works for UIWebView`, Trace.messageType.error);
             return;
         }
 
         if (!url.startsWith('js2ios')) {
-            this.writeTrace(() => `${cls} - only supports js2ios-scheme`, traceMessageType.error);
+            this.writeTrace(() => `${cls} - only supports js2ios-scheme`, Trace.messageType.error);
             return;
         }
 
         try {
             const message = decodeURIComponent(url.replace(/^js2ios:/, ''));
             const { eventName, resId } = JSON.parse(message);
-            const data = await this.executeJavaScript<any>(`window.nsWebViewBridge.getUIWebViewResponse(${JSON.stringify(resId)})`);
+            const data = await this.executeJavaScript<any>(
+                `window.nsWebViewBridge.getUIWebViewResponse(${JSON.stringify(resId)})`
+            );
 
             this.onWebViewEvent(eventName, data);
         } catch (err) {
-            this.writeTrace(() => `${cls} - "${err}"`, traceMessageType.error);
+            this.writeTrace(() => `${cls} - "${err}"`, Trace.messageType.error);
         }
     }
 

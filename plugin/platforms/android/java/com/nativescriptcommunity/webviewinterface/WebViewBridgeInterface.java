@@ -1,4 +1,4 @@
-package dk.nota.webviewinterface;
+package com.nativescriptcommunity.webviewinterface;
 
 import android.webkit.JavascriptInterface;
 

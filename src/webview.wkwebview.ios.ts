@@ -1,8 +1,10 @@
+import { Trace } from '@nativescript/core';
 import * as fs from '@nativescript/core/file-system';
 // import { webViewBridge } from './nativescript-webview-bridge-loader';
 import { AWebView } from './webview';
-import { AWebViewBase, IOSWebViewWrapper, NavigationType, traceMessageType } from './webview-common';
+import { AWebViewBase, IOSWebViewWrapper, NavigationType } from './webview-common';
 
+@NativeClass
 export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigationDelegate {
     public static ObjCProtocols = [WKNavigationDelegate];
     public static initWithOwner(owner: WeakRef<AWebView>): WKNavigationDelegateNotaImpl {
@@ -13,7 +15,11 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
 
     private owner: WeakRef<AWebView>;
 
-    public webViewDecidePolicyForNavigationActionDecisionHandler(webView: WKWebView, navigationAction: WKNavigationAction, decisionHandler: any): void {
+    public webViewDecidePolicyForNavigationActionDecisionHandler(
+        webView: WKWebView,
+        navigationAction: WKNavigationAction,
+        decisionHandler: any
+    ): void {
         const owner = this.owner.get();
         if (!owner) {
             decisionHandler(WKNavigationActionPolicy.Cancel);
@@ -61,14 +67,18 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
         const shouldOverrideUrlLoading = owner._onShouldOverrideUrlLoading(url, httpMethod, navType);
         if (shouldOverrideUrlLoading === true) {
             owner.writeTrace(
-                () => `WKNavigationDelegateClass.webViewDecidePolicyForNavigationActionDecisionHandler("${url}", "${navigationAction.navigationType}") -> method:${httpMethod} "${navType}" -> cancel`
+                () =>
+                    `WKNavigationDelegateClass.webViewDecidePolicyForNavigationActionDecisionHandler("${url}", "${navigationAction.navigationType}") -> method:${httpMethod} "${navType}" -> cancel`
             );
             decisionHandler(WKNavigationActionPolicy.Cancel);
             return;
         }
         decisionHandler(WKNavigationActionPolicy.Allow);
 
-        owner.writeTrace(() => `WKNavigationDelegateClass.webViewDecidePolicyForNavigationActionDecisionHandler("${url}", "${navigationAction.navigationType}") -> method:${httpMethod} "${navType}"`);
+        owner.writeTrace(
+            () =>
+                `WKNavigationDelegateClass.webViewDecidePolicyForNavigationActionDecisionHandler("${url}", "${navigationAction.navigationType}") -> method:${httpMethod} "${navType}"`
+        );
         owner._onLoadStarted(url, navType);
     }
 
@@ -120,11 +130,14 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
             src = webView.URL.absoluteString;
         }
 
-        owner.writeTrace(() => `WKNavigationDelegateClass.webViewDidFailProvisionalNavigationWithError(${error.localizedDescription}`);
+        owner.writeTrace(
+            () => `WKNavigationDelegateClass.webViewDidFailProvisionalNavigationWithError(${error.localizedDescription}`
+        );
         owner._onLoadFinished(src, error.localizedDescription);
     }
 }
 
+@NativeClass
 export class WKScriptMessageHandlerNotaImpl extends NSObject implements WKScriptMessageHandler {
     public static ObjCProtocols = [WKScriptMessageHandler];
 
@@ -136,7 +149,10 @@ export class WKScriptMessageHandlerNotaImpl extends NSObject implements WKScript
         return delegate;
     }
 
-    public userContentControllerDidReceiveScriptMessage(userContentController: WKUserContentController, webViewMessage: WKScriptMessage) {
+    public userContentControllerDidReceiveScriptMessage(
+        userContentController: WKUserContentController,
+        webViewMessage: WKScriptMessage
+    ) {
         const owner = this.owner.get();
         if (!owner) {
             return;
@@ -146,11 +162,16 @@ export class WKScriptMessageHandlerNotaImpl extends NSObject implements WKScript
             const message = JSON.parse(webViewMessage.body as string);
             owner.onWebViewEvent(message.eventName, message.data);
         } catch (err) {
-            owner.writeTrace(() => `userContentControllerDidReceiveScriptMessage(${userContentController}, ${webViewMessage}) - bad message: ${webViewMessage.body}`, traceMessageType.error);
+            owner.writeTrace(
+                () =>
+                    `userContentControllerDidReceiveScriptMessage(${userContentController}, ${webViewMessage}) - bad message: ${webViewMessage.body}`,
+                Trace.messageType.error
+            );
         }
     }
 }
 
+@NativeClass
 export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
     public static ObjCProtocols = [WKUIDelegate];
     public owner: WeakRef<AWebView>;
@@ -165,7 +186,12 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
     /**
      * Handle alerts from the webview
      */
-    public webViewRunJavaScriptAlertPanelWithMessageInitiatedByFrameCompletionHandler(webView: WKWebView, message: string, frame: WKFrameInfo, completionHandler: () => void): void {
+    public webViewRunJavaScriptAlertPanelWithMessageInitiatedByFrameCompletionHandler(
+        webView: WKWebView,
+        message: string,
+        frame: WKFrameInfo,
+        completionHandler: () => void
+    ): void {
         const owner = this.owner.get();
         if (!owner) {
             return;
@@ -239,10 +265,7 @@ export class WKWebViewWrapper implements IOSWebViewWrapper {
     protected wkUserContentController: WKUserContentController;
     protected wkUserScriptInjectWebViewBridge?: WKUserScript;
     protected wkUserScriptViewPortCode: Promise<WKUserScript>;
-    protected wkNamedUserScripts = [] as {
-        resourceName: string;
-        wkUserScript: WKUserScript;
-    }[];
+    protected wkNamedUserScripts = [];
 
     public owner: WeakRef<AWebView>;
     public get ios(): WKWebView | void {
@@ -330,7 +353,10 @@ export class WKWebViewWrapper implements IOSWebViewWrapper {
         if (src.startsWith('file:///')) {
             const cachePath = src.substring(0, src.lastIndexOf('/'));
             const nsReadAccessUrl = NSURL.URLWithString(cachePath);
-            owner.writeTrace(() => `WKWebViewWrapper.loadUrl("${src}") -> ios.loadFileURLAllowingReadAccessToURL("${nsURL}", "${nsReadAccessUrl}"`);
+            owner.writeTrace(
+                () =>
+                    `WKWebViewWrapper.loadUrl("${src}") -> ios.loadFileURLAllowingReadAccessToURL("${nsURL}", "${nsReadAccessUrl}"`
+            );
             ios.loadFileURLAllowingReadAccessToURL(nsURL, nsReadAccessUrl);
         } else {
             const nsRequestWithUrl = NSURLRequest.requestWithURL(nsURL);
@@ -470,7 +496,9 @@ export class WKWebViewWrapper implements IOSWebViewWrapper {
 
         const filepath = owner.resolveLocalResourceFilePath(path);
         if (!filepath) {
-            owner.writeTrace(() => `WKWebViewWrapper.autoLoadJavaScriptFile("${resourceName}", "${path}") - couldn't resolve filepath`);
+            owner.writeTrace(
+                () => `WKWebViewWrapper.autoLoadJavaScriptFile("${resourceName}", "${path}") - couldn't resolve filepath`
+            );
             return;
         }
         owner.registerLocalResource(resourceName, path);
@@ -612,7 +640,11 @@ export class WKWebViewWrapper implements IOSWebViewWrapper {
      * Factory function for creating a WKUserScript instance.
      */
     protected createWkUserScript(source: string) {
-        return WKUserScript.alloc().initWithSourceInjectionTimeForMainFrameOnly(source, WKUserScriptInjectionTime.AtDocumentEnd, true);
+        return WKUserScript.alloc().initWithSourceInjectionTimeForMainFrameOnly(
+            source,
+            WKUserScriptInjectionTime.AtDocumentEnd,
+            true
+        );
     }
 
     public enableAutoInject(enable: boolean) {

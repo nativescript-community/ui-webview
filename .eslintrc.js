@@ -10,7 +10,7 @@ module.exports = {
     },
     plugins: ['@typescript-eslint'],
     rules: {
-        '@typescript-eslint/adjacent-overload-signatures': 'off',
+        '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/array-type': 'error',
         '@typescript-eslint/await-thenable': 'error',
         '@typescript-eslint/ban-types': 'off',
@@ -66,7 +66,7 @@ module.exports = {
         '@typescript-eslint/space-within-parens': ['off', 'never'],
         '@typescript-eslint/triple-slash-reference': 'off',
         '@typescript-eslint/type-annotation-spacing': 'error',
-        '@typescript-eslint/unified-signatures': 'off',
+        '@typescript-eslint/unified-signatures': 'error',
         'arrow-body-style': 'error',
         'arrow-parens': ['off', 'as-needed'],
         camelcase: 'off',
@@ -78,7 +78,7 @@ module.exports = {
         'eol-last': 'error',
         eqeqeq: ['error', 'smart'],
         'guard-for-in': 'off',
-        'id-blacklist': 'off',
+        'id-blacklist': ['error', 'any', 'string', 'boolean', 'Undefined'],
         'id-match': 'error',
         'sort-imports': [
             'error',
@@ -92,10 +92,12 @@ module.exports = {
         'linebreak-style': 'off',
         'max-classes-per-file': 'off',
         'max-len': [
-            'off',
+            1,
             {
-                ignorePattern: '^import |^export {(.*?)}',
-                code: 200
+                // ignorePattern: '^import |^export {(.*?)}',
+                code: 130,
+                'ignoreRegExpLiterals': true,
+                'ignoreComments': true
             }
         ],
         'new-parens': 'off',
@@ -143,7 +145,7 @@ module.exports = {
         'no-irregular-whitespace': 'off',
         'no-multiple-empty-lines': 'off',
         'no-new-wrappers': 'error',
-        'no-redeclare': 'off',
+        'no-redeclare': 'error',
         'no-regex-spaces': 'error',
         'no-return-await': 'error',
         'no-shadow': [
@@ -173,7 +175,6 @@ module.exports = {
         'quote-props': 'off',
         radix: 'error',
         'space-before-function-paren': 'off',
-        'spaced-comment': 'error',
         'use-isnan': 'error',
         'valid-typeof': 'off'
     }
