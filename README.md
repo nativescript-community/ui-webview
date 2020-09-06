@@ -1,7 +1,7 @@
 # @nativescript-community/ui-webview
 
 Extended WebView for NativeScript which adds many options.
-The code is originally based on [@nativescript-community/ui-webview](https://github.com/nativescript-community/ui-webview)
+The code is originally based on [nativescript-webview-ext](https://github.com/m-abs/nativescript-webview-ext)
 
 ## Features
 * Adds a custom-scheme handler for x-local:// to the webview for loading of resources inside the webview.
