@@ -1,12 +1,12 @@
 {
-    "name": "nativescript-webview-plus",
+    "name": "@nativescript-community/ui-webview",
     "version": "1.0.13",
     "main": "./webview",
     "sideEffects": false,
     "typings": "./webview.d.ts",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/farfromrefug/nativescript-webview-plus.git"
+        "url": "git+https://github.com/nativescript-community/ui-webview.git"
     },
     "nativescript": {
         "platforms": {
@@ -26,8 +26,8 @@
     },
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/farfromrefug/nativescript-webview-plus/issues"
+        "url": "https://github.com/nativescript-community/ui-webview/issues"
     },
-    "homepage": "https://github.com/farfromrefug/nativescript-webview-plus#readme",
+    "homepage": "https://github.com/nativescript-community/ui-webview#readme",
     "gitHead": "afa99a5f27006ed7545af88d2f8544fc1721e41c"
 }

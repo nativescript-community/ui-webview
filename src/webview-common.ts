@@ -1,9 +1,12 @@
-import * as fs from '@nativescript/core/file-system';
-import { CSSType, ContainerView, EventData, Property, booleanConverter, traceEnabled, traceMessageType, traceWrite } from '@nativescript/core/ui/core/view';
+/* eslint-disable @typescript-eslint/adjacent-overload-signatures */
+import { File, knownFolders, path } from '@nativescript/core/file-system';
+import { CSSType, ContainerView } from '@nativescript/core/ui/core/view';
+import { booleanConverter } from '@nativescript/core/ui/core/view-base';
+import { EventData } from '@nativescript/core/data/observable';
+import { Property } from '@nativescript/core/ui/core/properties';
+import { Trace } from '@nativescript/core';
 import * as URL from 'url';
-// import { fetchPolyfill, metadataViewPort, promisePolyfill, webViewBridge } from './nativescript-webview-bridge-loader';
 
-export * from '@nativescript/core/ui/core/view';
 export interface ViewPortProperties {
     width?: number | 'device-width';
     height?: number | 'device-height';
@@ -173,7 +176,14 @@ export const viewPortProperty = new Property<AWebViewBase, ViewPortValue>({
             }
         }
 
-        const { initialScale = defaultViewPort.initialScale, width, height, userScalable, minimumScale, maximumScale } = viewPortInputValues;
+        const {
+            initialScale = defaultViewPort.initialScale,
+            width,
+            height,
+            userScalable,
+            minimumScale,
+            maximumScale,
+        } = viewPortInputValues;
         return {
             initialScale,
             width,
@@ -213,6 +223,7 @@ export interface InjectExecuteJavaScript {
     name: string;
 }
 
+export const AWebViewTraceCategory = 'AWebView';
 /**
  * Event data containing information for the loading events of a WebView.
  */
@@ -470,17 +481,17 @@ export class AWebViewBase extends ContainerView {
     /**
      * List of js-files to be auto injected on load finished
      */
-    protected autoInjectScriptFiles = [] as LoadJavaScriptResource[];
+    protected autoInjectScriptFiles = [];
 
     /**
      * List of css-files to be auto injected on load finished
      */
-    protected autoInjectStyleSheetFiles = [] as LoadStyleSheetResource[];
+    protected autoInjectStyleSheetFiles = [];
 
     /**
      * List of code blocks to be executed after JS-files and CSS-files have been loaded.
      */
-    protected autoInjectJavaScriptBlocks = [] as InjectExecuteJavaScript[];
+    protected autoInjectJavaScriptBlocks = [];
 
     /**
      * Prevent this.src loading changes from the webview's onLoadFinished-event
@@ -520,7 +531,7 @@ export class AWebViewBase extends ContainerView {
             return Promise.reject(args);
         }
 
-        this.writeTrace(() => `AWebView._onLoadFinished("${url}", ${error || void 0}) - > Injecting webview-bridge JS code`);
+        this.writeTrace(() => `_onLoadFinished("${url}", ${error || void 0}) - > Injecting webview-bridge JS code`);
 
         if (!this.autoInjectJSBridge) {
             return Promise.resolve(args);
@@ -582,7 +593,9 @@ export class AWebViewBase extends ContainerView {
 
         const eventNameWithSpellingError = 'shouldOverideUrlLoading';
         if (this.hasListeners(eventNameWithSpellingError)) {
-            console.error(`eventName '${eventNameWithSpellingError}' is deprecated due to spelling error:\nPlease use: ${AWebViewBase.shouldOverrideUrlLoadingEvent}`);
+            console.error(
+                `eventName '${eventNameWithSpellingError}' is deprecated due to spelling error:\nPlease use: ${AWebViewBase.shouldOverrideUrlLoadingEvent}`
+            );
             const argsWithSpellingError = {
                 ...args,
                 eventName: eventNameWithSpellingError,
@@ -762,11 +775,11 @@ export class AWebViewBase extends ContainerView {
         // Add file:/// prefix for local files.
         // They should be loaded with _loadUrl() method as it handles query params.
         if (src.startsWith('~/')) {
-            src = `file://${fs.knownFolders.currentApp().path}/${src.substr(2)}`;
-            this.writeTrace(() => `AWebView.src = "${originSrc}" startsWith ~/ resolved to "${src}"`);
+            src = `file://${knownFolders.currentApp().path}/${src.substr(2)}`;
+            this.writeTrace(() => `src = "${originSrc}" startsWith ~/ resolved to "${src}"`);
         } else if (src.startsWith('/')) {
             src = `file://${src}`;
-            this.writeTrace(() => `AWebView.src = "${originSrc}" startsWith "/" resolved to ${src}`);
+            this.writeTrace(() => `src = "${originSrc}" startsWith "/" resolved to ${src}`);
         }
 
         const lcSrc = src.toLowerCase();
@@ -775,11 +788,16 @@ export class AWebViewBase extends ContainerView {
         if (lcSrc.startsWith('file:///')) {
             src = encodeURI(src);
             if (lcSrc !== src) {
-                this.writeTrace(() => `AWebView.src = "${originSrc}" escaped to "${src}"`);
+                this.writeTrace(() => `src = "${originSrc}" escaped to "${src}"`);
             }
         }
 
-        if (lcSrc.startsWith(this.interceptScheme) || lcSrc.startsWith('http://') || lcSrc.startsWith('https://') || lcSrc.startsWith('file:///')) {
+        if (
+            lcSrc.startsWith(this.interceptScheme) ||
+            lcSrc.startsWith('http://') ||
+            lcSrc.startsWith('https://') ||
+            lcSrc.startsWith('file:///')
+        ) {
             src = this.normalizeURL(src);
             console.log(src, originSrc);
 
@@ -797,10 +815,10 @@ export class AWebViewBase extends ContainerView {
 
             this._loadUrl(src, this.headers);
 
-            this.writeTrace(() => `AWebView.src = "${originSrc}" - LoadUrl("${src}")`);
+            this.writeTrace(() => `src = "${originSrc}" - LoadUrl("${src}")`);
         } else {
             this._loadData(src);
-            this.writeTrace(() => `AWebView.src = "${originSrc}" - LoadData("${src}")`);
+            this.writeTrace(() => `src = "${originSrc}" - LoadData("${src}")`);
         }
     }
 
@@ -812,20 +830,20 @@ export class AWebViewBase extends ContainerView {
 
     public resolveLocalResourceFilePath(filepath: string): string | void {
         if (!filepath) {
-            this.writeTrace(() => 'AWebView.resolveLocalResourceFilePath() no filepath', traceMessageType.error);
+            this.writeTrace(() => 'AWebView.resolveLocalResourceFilePath() no filepath', Trace.messageType.error);
             return;
         }
 
         if (filepath.startsWith('~')) {
-            filepath = fs.path.normalize(fs.knownFolders.currentApp().path + filepath.substr(1));
+            filepath = path.normalize(knownFolders.currentApp().path + filepath.substr(1));
         }
 
         if (filepath.startsWith('file://')) {
             filepath = filepath.replace(/^file:\/\//, '');
         }
 
-        if (!fs.File.exists(filepath)) {
-            this.writeTrace(() => `AWebView.resolveLocalResourceFilePath("${filepath}") - no such file`, traceMessageType.error);
+        if (!File.exists(filepath)) {
+            this.writeTrace(() => `resolveLocalResourceFilePath("${filepath}") - no such file`, Trace.messageType.error);
             return;
         }
 
@@ -911,15 +929,19 @@ export class AWebViewBase extends ContainerView {
             const href = `${this.interceptScheme}://${fixedResourceName}`;
             const scriptCode = this.generateLoadJavaScriptFileScriptCode(href);
             promiseScriptCodes.push(scriptCode);
-            this.writeTrace(() => `AWebView.loadJavaScriptFiles() - > Loading javascript file: "${href}"`);
+            this.writeTrace(() => `loadJavaScriptFiles: Loading javascript file: "${href}"`);
         }
 
         if (promiseScriptCodes.length !== files.length) {
-            this.writeTrace(() => `AWebView.loadJavaScriptFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`, traceMessageType.error);
+            this.writeTrace(
+                () =>
+                    `loadJavaScriptFiles: Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
+                Trace.messageType.error
+            );
         }
 
         if (!promiseScriptCodes.length) {
-            this.writeTrace(() => 'AWebView.loadJavaScriptFiles() - > No files');
+            this.writeTrace(() => 'AWebView.loadJavaScriptFiles: No files');
             return;
         }
 
@@ -951,7 +973,7 @@ export class AWebViewBase extends ContainerView {
             return;
         }
 
-        const promiseScriptCodes = [] as string[];
+        const promiseScriptCodes = [];
 
         for (const { resourceName, filepath, insertBefore } of files) {
             const fixedResourceName = this.fixLocalResourceName(resourceName);
@@ -963,15 +985,19 @@ export class AWebViewBase extends ContainerView {
 
             promiseScriptCodes.push(scriptCode);
 
-            this.writeTrace(() => `AWebView.loadStyleSheetFiles() - > Loading stylesheet file: ${href}`);
+            this.writeTrace(() => `loadStyleSheetFiles: Loading stylesheet file: ${href}`);
         }
 
         if (promiseScriptCodes.length !== files.length) {
-            this.writeTrace(() => `AWebView.loadStyleSheetFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`, traceMessageType.error);
+            this.writeTrace(
+                () =>
+                    `loadStyleSheetFiles: Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
+                Trace.messageType.error
+            );
         }
 
         if (!promiseScriptCodes.length) {
-            this.writeTrace(() => 'AWebView.loadStyleSheetFiles() - > No files');
+            this.writeTrace(() => 'AWebView.loadStyleSheetFiles: No files');
             return;
         }
 
@@ -1136,7 +1162,7 @@ export class AWebViewBase extends ContainerView {
             var p = Promise.resolve();
         `.trim();
 
-        const scriptBody = [] as string[];
+        const scriptBody = [];
 
         // Execute the promises in order, one at a time.
         for (const scriptCode of scriptCodes) {
@@ -1280,9 +1306,9 @@ export class AWebViewBase extends ContainerView {
         }
     }
 
-    public writeTrace(message: () => string, type = traceMessageType.info) {
-        if (traceEnabled()) {
-            traceWrite(message(), 'NOTA', type);
+    public writeTrace(message: () => string, type = Trace.messageType.info) {
+        if (Trace.isEnabled()) {
+            Trace.write(message(), AWebViewTraceCategory, type);
         }
     }
 

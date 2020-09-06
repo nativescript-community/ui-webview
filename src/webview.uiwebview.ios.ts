@@ -1,6 +1,7 @@
 import * as fs from '@nativescript/core/file-system';
 import { AWebViewBase, IOSWebViewWrapper, NavigationType } from './webview-common';
 
+@NativeClass
 export class UIScrollViewDelegateImpl extends NSObject implements UIScrollViewDelegate {
     public static ObjCProtocols = [UIScrollViewDelegate];
     private owner: WeakRef<AWebViewBase>;
@@ -20,6 +21,7 @@ export class UIScrollViewDelegateImpl extends NSObject implements UIScrollViewDe
         }
     }
 }
+@NativeClass
 export class UIWebViewDelegateImpl extends NSObject implements UIWebViewDelegate {
     public static ObjCProtocols = [UIWebViewDelegate];
 
@@ -73,16 +75,24 @@ export class UIWebViewDelegateImpl extends NSObject implements UIWebViewDelegate
         }
 
         const url = request.URL.absoluteString;
-        owner.writeTrace(() => `UIWebViewDelegateClass.webViewShouldStartLoadWithRequestNavigationType("${url}", "${navigationType}")`);
+        owner.writeTrace(
+            () => `UIWebViewDelegateClass.webViewShouldStartLoadWithRequestNavigationType("${url}", "${navigationType}")`
+        );
         if (url.startsWith('js2ios:')) {
-            owner.writeTrace(() => `UIWebViewDelegateClass.webViewShouldStartLoadWithRequestNavigationType("${url}", "${navigationType}") -> onUIWebViewEvent`);
+            owner.writeTrace(
+                () =>
+                    `UIWebViewDelegateClass.webViewShouldStartLoadWithRequestNavigationType("${url}", "${navigationType}") -> onUIWebViewEvent`
+            );
             owner.onUIWebViewEvent(url);
             return false;
         }
 
         const shouldOverrideUrlLoading = owner._onShouldOverrideUrlLoading(url, httpMethod, navType);
         if (shouldOverrideUrlLoading === true) {
-            owner.writeTrace(() => `UIWebViewDelegateClass.webViewShouldStartLoadWithRequestNavigationType("${url}", "${navigationType}") - cancel`);
+            owner.writeTrace(
+                () =>
+                    `UIWebViewDelegateClass.webViewShouldStartLoadWithRequestNavigationType("${url}", "${navigationType}") - cancel`
+            );
             return false;
         }
 
@@ -127,7 +137,9 @@ export class UIWebViewDelegateImpl extends NSObject implements UIWebViewDelegate
             src = webView.request.URL.absoluteString;
         }
 
-        owner.writeTrace(() => `UIWebViewDelegateClass.webViewDidFailLoadWithError("${error.localizedDescription}") url: "${src}"`);
+        owner.writeTrace(
+            () => `UIWebViewDelegateClass.webViewDidFailLoadWithError("${error.localizedDescription}") url: "${src}"`
+        );
         owner._onLoadFinished(src, error.localizedDescription).catch(() => void 0);
     }
 }

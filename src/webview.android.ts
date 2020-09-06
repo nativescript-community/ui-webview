@@ -1,4 +1,4 @@
-import * as fs from '@nativescript/core/file-system';
+import { File, knownFolders } from '@nativescript/core/file-system';
 import {
     AWebViewBase,
     CacheMode,
@@ -11,9 +11,9 @@ import {
     domStorageProperty,
     isScrollEnabledProperty,
     supportZoomProperty,
-    traceMessageType,
 } from './webview-common';
 import * as utils from '@nativescript/core/utils/utils';
+import { Trace } from '@nativescript/core';
 
 export * from './webview-common';
 
@@ -53,7 +53,7 @@ export interface AndroidWebViewClient extends android.webkit.WebViewClient {}
 export interface AndroidWebView extends android.webkit.WebView {
     client: AndroidWebViewClient | null;
     chromeClient: android.webkit.WebChromeClient | null;
-    bridgeInterface?: dk.nota.webviewinterface.WebViewBridgeInterface;
+    bridgeInterface?: com.nativescriptcommunity.webviewinterface.WebViewBridgeInterface;
     scrollListener: android.view.View.OnScrollChangeListener;
     isScrollEnabled: boolean;
 }
@@ -61,7 +61,7 @@ export interface AndroidWebView extends android.webkit.WebView {
 let WebView: new (context) => AndroidWebView;
 let AWebViewClient: new () => AndroidWebViewClient;
 let WebChromeViewExtClient: new () => android.webkit.WebChromeClient;
-let WebViewBridgeInterface: new () => dk.nota.webviewinterface.WebViewBridgeInterface;
+let WebViewBridgeInterface: new () => com.nativescriptcommunity.webviewinterface.WebViewBridgeInterface;
 
 function initializeWebViewClient(): void {
     if (AWebViewClient) {
@@ -76,27 +76,41 @@ function initializeWebViewClient(): void {
         ['normal', android.webkit.WebSettings.LOAD_NORMAL],
     ]);
 
-    WebView = (android.webkit.WebView as any).extend({
-        isScrollEnabled: true,
-        overScrollBy(param0: number, param1: number, param2: number, param3: number, param4: number, param5: number, param6: number, param7: number, param8: boolean): boolean {
+    @NativeClass
+    class WebViewImpl extends android.webkit.WebView {
+        isScrollEnabled = true;
+        overScrollBy(
+            param0: number,
+            param1: number,
+            param2: number,
+            param3: number,
+            param4: number,
+            param5: number,
+            param6: number,
+            param7: number,
+            param8: boolean
+        ): boolean {
             if (this.isScrollEnabled) {
-                return this.super.overScrollBy(param0, param1, param2, param3, param4, param5, param6, param7, param8);
+                return super.overScrollBy(param0, param1, param2, param3, param4, param5, param6, param7, param8);
             }
             return false;
-        },
+        }
         computeScroll() {
             if (this.isScrollEnabled) {
-                this.super.computeScroll();
+                super.computeScroll();
             }
-        },
+        }
         scrollTo(param0: number, param1: number) {
             if (this.isScrollEnabled) {
-                this.super.scrollTo(param0, param1);
+                super.scrollTo(param0, param1);
             }
-        },
-    });
-    AWebViewClient = (android.webkit.WebViewClient as any).extend({
-        //  owner: WeakRef<AWebView>,
+        }
+    }
+    WebView = WebViewImpl as any;
+
+    @NativeClass
+    class AWebViewClientImpl extends android.webkit.WebViewClient {
+        owner: WeakRef<AWebView>;
         // constructor(owner: AWebView) {
         //     super();
 
@@ -136,7 +150,9 @@ function initializeWebViewClient(): void {
             );
 
             if (url.startsWith(owner.interceptScheme)) {
-                owner.writeTrace(() => `WebViewClientClass.shouldOverrideUrlLoading("${url}") - "${owner.interceptScheme}" - cancel`);
+                owner.writeTrace(
+                    () => `WebViewClientClass.shouldOverrideUrlLoading("${url}") - "${owner.interceptScheme}" - cancel`
+                );
                 return true;
             }
 
@@ -147,13 +163,13 @@ function initializeWebViewClient(): void {
             }
 
             return false;
-        },
+        }
 
         shouldInterceptRequest(view: android.webkit.WebView, request: string | android.webkit.WebResourceRequest) {
             const owner = this.owner.get();
             if (!owner) {
                 console.warn('AWebViewClientImpl.shouldInterceptRequest(...) - no owner');
-                return this.super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
+                return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
             }
 
             let url: string;
@@ -165,25 +181,27 @@ function initializeWebViewClient(): void {
 
             if (typeof url !== 'string') {
                 owner.writeTrace(() => `WebViewClientClass.shouldInterceptRequest("${url}") - is not a string`);
-                return this.super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
+                return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
             }
 
             if (!url.startsWith(owner.interceptScheme)) {
-                return this.super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
+                return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
             }
 
             const filepath = owner.getRegisteredLocalResource(url);
             if (!filepath) {
                 owner.writeTrace(() => `WebViewClientClass.shouldInterceptRequest("${url}") - no matching file`);
-                return this.super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
+                return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
             }
 
-            if (!fs.File.exists(filepath)) {
-                owner.writeTrace(() => `WebViewClientClass.shouldInterceptRequest("${url}") - file: "${filepath}" doesn't exists`);
-                return this.super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
+            if (!File.exists(filepath)) {
+                owner.writeTrace(
+                    () => `WebViewClientClass.shouldInterceptRequest("${url}") - file: "${filepath}" doesn't exists`
+                );
+                return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
             }
 
-            const tnsFile = fs.File.fromPath(filepath);
+            const tnsFile = File.fromPath(filepath);
 
             const javaFile = new java.io.File(tnsFile.path);
             const stream = new java.io.FileInputStream(javaFile);
@@ -191,7 +209,10 @@ function initializeWebViewClient(): void {
             const mimeType = extToMimeType.get(ext) || 'application/octet-stream';
             const encoding = extToBinaryEncoding.has(ext) || mimeType === 'application/octet-stream' ? 'binary' : 'UTF-8';
 
-            owner.writeTrace(() => `WebViewClientClass.shouldInterceptRequest("${url}") - file: "${filepath}" mimeType:${mimeType} encoding:${encoding}`);
+            owner.writeTrace(
+                () =>
+                    `WebViewClientClass.shouldInterceptRequest("${url}") - file: "${filepath}" mimeType:${mimeType} encoding:${encoding}`
+            );
 
             const response = new android.webkit.WebResourceResponse(mimeType, encoding, stream);
             if (android.os.Build.VERSION.SDK_INT < 21 || !response.getResponseHeaders) {
@@ -207,9 +228,9 @@ function initializeWebViewClient(): void {
             response.setResponseHeaders(responseHeaders);
 
             return response;
-        },
+        }
         onPageStarted(view: android.webkit.WebView, url: string, favicon: android.graphics.Bitmap) {
-            this.super.onPageStarted(view, url, favicon);
+            super.onPageStarted(view, url, favicon);
             const owner = this.owner.get();
             if (!owner) {
                 console.warn(`AWebViewClientImpl.onPageStarted("${view}", "${url}", "${favicon}") - no owner`);
@@ -218,9 +239,9 @@ function initializeWebViewClient(): void {
 
             owner.writeTrace(() => `WebViewClientClass.onPageStarted("${view}", "${url}", "${favicon}")`);
             owner._onLoadStarted(url);
-        },
+        }
         onPageFinished(view: android.webkit.WebView, url: string) {
-            this.super.onPageFinished(view, url);
+            super.onPageFinished(view, url);
 
             const owner = this.owner.get();
             if (!owner) {
@@ -230,7 +251,7 @@ function initializeWebViewClient(): void {
 
             owner.writeTrace(() => `WebViewClientClass.onPageFinished("${view}", ${url}")`);
             owner._onLoadFinished(url).catch(() => void 0);
-        },
+        }
         onReceivedError(...args: any[]) {
             if (args.length === 4) {
                 const [view, errorCode, description, failingUrl] = args as [android.webkit.WebView, number, string, string];
@@ -239,9 +260,9 @@ function initializeWebViewClient(): void {
                 const [view, request, error] = args as [android.webkit.WebView, any, any];
                 this.onReceivedErrorAPI23(view, request, error);
             }
-        },
+        }
         onReceivedErrorAPI23(view: android.webkit.WebView, request: any, error: any) {
-            this.super.onReceivedError(view, request, error);
+            super.onReceivedError(view, request, error);
 
             const owner = this.owner.get();
             if (!owner) {
@@ -254,12 +275,14 @@ function initializeWebViewClient(): void {
                 url = request.getUrl().toString();
             }
 
-            owner.writeTrace(() => `WebViewClientClass.onReceivedErrorAPI23(${error.getErrorCode()}, ${error.getDescription()}, ${url})`);
+            owner.writeTrace(
+                () => `WebViewClientClass.onReceivedErrorAPI23(${error.getErrorCode()}, ${error.getDescription()}, ${url})`
+            );
 
             owner._onLoadFinished(url, `${error.getDescription()}(${error.getErrorCode()})`).catch(() => void 0);
-        },
+        }
         onReceivedErrorBeforeAPI23(view: android.webkit.WebView, errorCode: number, description: string, failingUrl: string) {
-            this.super.onReceivedError(view, errorCode, description, failingUrl);
+            super.onReceivedError(view, errorCode, description, failingUrl);
 
             const owner = this.owner.get();
             if (!owner) {
@@ -267,15 +290,18 @@ function initializeWebViewClient(): void {
                 return;
             }
 
-            owner.writeTrace(() => `WebViewClientClass.onReceivedErrorBeforeAPI23(${errorCode}, "${description}", "${failingUrl}")`);
+            owner.writeTrace(
+                () => `WebViewClientClass.onReceivedErrorBeforeAPI23(${errorCode}, "${description}", "${failingUrl}")`
+            );
             owner._onLoadFinished(failingUrl, `${description}(${errorCode})`).catch(() => void 0);
-        },
-    });
+        }
+    }
 
-    // AWebViewClient = AWebViewClientImpl;
+    AWebViewClient = AWebViewClientImpl;
 
-    WebChromeViewExtClient = (android.webkit.WebChromeClient as any).extend({
-        // private owner: WeakRef<AWebView>;
+    @NativeClass
+    class WebChromeViewExtClientImpl extends android.webkit.WebChromeClient {
+        private owner: WeakRef<AWebView>;
         // constructor(owner: AWebView) {
         //     super();
 
@@ -283,8 +309,8 @@ function initializeWebViewClient(): void {
         //     return global.__native(this);
         // },
         onGeolocationPermissionsHidePrompt(): void {
-            return this.super.onGeolocationPermissionsHidePrompt();
-        },
+            return super.onGeolocationPermissionsHidePrompt();
+        }
         onProgressChanged(view: AndroidWebView, newProgress: number) {
             const owner = this.owner.get();
             if (!owner) {
@@ -292,7 +318,7 @@ function initializeWebViewClient(): void {
             }
 
             owner._loadProgress(newProgress);
-        },
+        }
         onReceivedTitle(view: AndroidWebView, title: string) {
             const owner = this.owner.get();
             if (!owner) {
@@ -300,7 +326,7 @@ function initializeWebViewClient(): void {
             }
 
             owner._titleChanged(title);
-        },
+        }
         onJsAlert(view: android.webkit.WebView, url: string, message: string, result: android.webkit.JsResult): boolean {
             const owner = this.owner.get();
             if (!owner) {
@@ -315,7 +341,7 @@ function initializeWebViewClient(): void {
 
                 gotResponse = true;
             });
-        },
+        }
         onJsConfirm(view: android.webkit.WebView, url: string, message: string, result: android.webkit.JsResult): boolean {
             const owner = this.owner.get();
             if (!owner) {
@@ -334,8 +360,14 @@ function initializeWebViewClient(): void {
 
                 gotResponse = true;
             });
-        },
-        onJsPrompt(view: android.webkit.WebView, url: string, message: string, defaultValue: string, result: android.webkit.JsPromptResult): boolean {
+        }
+        onJsPrompt(
+            view: android.webkit.WebView,
+            url: string,
+            message: string,
+            defaultValue: string,
+            result: android.webkit.JsPromptResult
+        ): boolean {
             const owner = this.owner.get();
             if (!owner) {
                 return false;
@@ -353,7 +385,7 @@ function initializeWebViewClient(): void {
 
                 gotResponse = true;
             });
-        },
+        }
         onConsoleMessage(...args: any): boolean {
             if (arguments.length !== 1) {
                 return false;
@@ -390,12 +422,14 @@ function initializeWebViewClient(): void {
             }
 
             return false;
-        },
-    });
+        }
+    }
 
-    // WebChromeViewExtClient = WebChromeViewExtClientImpl;
+    WebChromeViewExtClient = WebChromeViewExtClientImpl;
 
-    WebViewBridgeInterface = (dk.nota.webviewinterface.WebViewBridgeInterface as any).extend({
+    @NativeClass
+    class WebViewBridgeInterfaceImpl extends com.nativescriptcommunity.webviewinterface.WebViewBridgeInterface {
+        private owner: WeakRef<AWebView>;
         emitEventToNativeScript(eventName: string, data: string) {
             const owner = this.owner.get();
             if (!owner) {
@@ -407,12 +441,15 @@ function initializeWebViewClient(): void {
                 owner.onWebViewEvent(eventName, JSON.parse(data));
                 return;
             } catch (err) {
-                owner.writeTrace(() => `AWebViewClientImpl.emitEventToNativeScript("${eventName}") - couldn't parse data: ${data} err: ${err}`);
+                owner.writeTrace(
+                    () => `AWebViewClientImpl.emitEventToNativeScript("${eventName}") - couldn't parse data: ${data} err: ${err}`
+                );
             }
 
             owner.onWebViewEvent(eventName, data);
-        },
-    });
+        }
+    }
+    WebViewBridgeInterface = WebViewBridgeInterfaceImpl;
 }
 // #endregion android_native_classes
 
@@ -577,7 +614,7 @@ export class AWebView extends AWebViewBase {
             return;
         }
 
-        const baseUrl = `file:///${fs.knownFolders.currentApp().path}/`;
+        const baseUrl = `file:///${knownFolders.currentApp().path}/`;
         this.writeTrace(() => `AWebView<android>._loadData("${src}") -> baseUrl: "${baseUrl}"`);
         nativeView.loadDataWithBaseURL(baseUrl, src, 'text/html', 'utf-8', null);
     }
@@ -631,7 +668,10 @@ export class AWebView extends AWebViewBase {
 
         const filepath = this.resolveLocalResourceFilePath(path);
         if (!filepath) {
-            this.writeTrace(() => `AWebView<android>.registerLocalResource("${resourceName}", "${path}") -> file doesn't exist`, traceMessageType.error);
+            this.writeTrace(
+                () => `AWebView<android>.registerLocalResource("${resourceName}", "${path}") -> file doesn't exist`,
+                Trace.messageType.error
+            );
             return;
         }
 
@@ -682,13 +722,16 @@ export class AWebView extends AWebViewBase {
 
     public async executeJavaScript<T>(scriptCode: string): Promise<T> {
         if (android.os.Build.VERSION.SDK_INT < 19) {
-            this.writeTrace(() => `AWebView<android>.executeJavaScript() -> SDK:${android.os.Build.VERSION.SDK_INT} not supported`, traceMessageType.error);
+            this.writeTrace(
+                () => `AWebView<android>.executeJavaScript() -> SDK:${android.os.Build.VERSION.SDK_INT} not supported`,
+                Trace.messageType.error
+            );
             return Promise.reject(new UnsupportedSDKError(19));
         }
 
         const result = await new Promise<T>((resolve, reject) => {
             if (!this.nativeViewProtected) {
-                this.writeTrace(() => 'AWebView<android>.executeJavaScript() -> no nativeView?', traceMessageType.error);
+                this.writeTrace(() => 'AWebView<android>.executeJavaScript() -> no nativeView?', Trace.messageType.error);
                 reject(new Error('Native Android not initialized, cannot call executeJavaScript'));
                 return;
             }

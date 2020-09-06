@@ -1,7 +1,7 @@
-# nativescript-webview-plus
+# @nativescript-community/ui-webview
 
 Extended WebView for NativeScript which adds many options.
-The code is originally based on [nativescript-webview-plus](https://github.com/Notalib/nativescript-webview-plus)
+The code is originally based on [@nativescript-community/ui-webview](https://github.com/nativescript-community/ui-webview)
 
 ## Features
 * Adds a custom-scheme handler for x-local:// to the webview for loading of resources inside the webview.
@@ -12,16 +12,10 @@ The code is originally based on [nativescript-webview-plus](https://github.com/N
     - `executeJavaScript(code: string)` for executing JavaScript-code and getting result.
     - `executePromise(code: string)` for calling promises and getting the result.
     - `getTitle()` returns document.title.
-* Two-Way event listeners between `NativeScript` and `WebView`
-    * From `NativeScript` to `WebView`
-    * From `WebView` to `NativeScript`
 * Adds functions to inject `css`- and `javascript`-files.
     * Into the current page.
     * Auto-injected on page load.
-* Polyfills:
-    * Promise
-    * Fetch API (overrides Native API on Android to support x-local:// and file://)
-* Allows `alert`, `confirm` and `prompt` with `WkWebView`.
+
 * Supports:
     * Android 19+
     * iOS 9+
@@ -31,18 +25,18 @@ The code is originally based on [nativescript-webview-plus](https://github.com/N
 Describe your plugin installation steps. Ideally it would be something like:
 
 ```bash
-tns plugin add @nota/nativescript-advanced-werbview
+tns plugin add @nativescript-community/ui-webview
 ```
 
 ### Angular support
 
-Import `AWebViewModule` from `nativescript-webview-plus/angular` and add it to your `NgModule`.
+Import `AWebViewModule` from `@nativescript-community/ui-webview/angular` and add it to your `NgModule`.
 
 This registers the element `AWebView`. Replace the <WebView> tag with <AWebView>
 
 ### Vue support
 
-Import `nativescript-webview-plus/vue` in your app entry file (likely app.js or main.js).
+Import `@nativescript-community/ui-webview/vue` in your app entry file (likely app.js or main.js).
 
 This registers the element `AWebView`. Replace the <WebView> tag with <AWebView>
 
@@ -143,7 +137,7 @@ Inside the WebView we have the `nsWebViewBridge` for sending events between the 
 To run the demo-project, the plugin must be build locally and a http-server must be running.
 
 The easiest way to run the demo is to follow these steps:
-- Clone the git repository from https://github.com/Notalib/nativescript-webview-plus.git
+- Clone the git repository from https://github.com/nativescript-community/ui-webview.git
 - Go into the `src`-folder
 - Use the npm-scripts:
   - npm run demo.ios
@@ -151,7 +145,7 @@ The easiest way to run the demo is to follow these steps:
 
 ### Running the unit-tests
 
-- Clone the git repository from https://github.com/Notalib/nativescript-webview-plus.git
+- Clone the git repository from https://github.com/nativescript-community/ui-webview.git
 - Go into the `src`-folder
 - Use the npm-scripts:
   - npm run test.ios

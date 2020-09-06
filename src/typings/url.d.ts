@@ -1,4 +1,4 @@
-declare module "url" {
+declare module 'url' {
     export interface ParsedUrlQuery {
         [key: string]: string | string[];
     }
