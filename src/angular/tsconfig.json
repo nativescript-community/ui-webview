@@ -5,7 +5,7 @@
         "baseUrl": "./",
         "plugins": [],
         "paths": {
-            "@nativescript-community/ui-awebview": ["../../plugin"]
+            "@nativescript-community/ui-webview": ["../../plugin"]
         }
     },
     "include": ["./**/*.ts", "../references.d.ts"],

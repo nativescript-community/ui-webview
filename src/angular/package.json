@@ -8,7 +8,7 @@
       "umdModuleIds": {
         "@nativescript/core": "ns-core",
         "@nativescript/angular": "ns-angular",
-        "@nativescript-community/ui-awebview": "ns-webview"
+        "@nativescript-community/ui-webview": "ns-webview"
       }
     },
     "whitelistedNonPeerDependencies": [
