@@ -1,6 +1,6 @@
 {
     "name": "@nativescript-community/ui-webview",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "main": "./webview",
     "sideEffects": false,
     "typings": "./webview.d.ts",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/nativescript-community/ui-webview/compare/v1.1.0...v1.1.1) (2020-09-09)
+
+
+### Bug Fixes
+
+* **angular:** fix imports ([5ed744d](https://github.com/nativescript-community/ui-webview/commit/5ed744dc2225d52bcbe6d9eb197734a282474bca))
+
+
+
+
+
 # [1.1.0](https://github.com/nativescript-community/ui-webview/compare/v1.0.13...v1.1.0) (2020-09-06)
 
 
