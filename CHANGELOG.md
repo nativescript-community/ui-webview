@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/nativescript-community/ui-webview/compare/v1.1.1...v1.1.2) (2020-10-28)
+
+
+### Bug Fixes
+
+* android crash ([6219151](https://github.com/nativescript-community/ui-webview/commit/621915114cec45a26dca1e179ea514a9f57f3b82))
+
+
+
+
+
 ## [1.1.1](https://github.com/nativescript-community/ui-webview/compare/v1.1.0...v1.1.1) (2020-09-09)
 
 
