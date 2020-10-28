@@ -79,6 +79,11 @@ function initializeWebViewClient(): void {
     @NativeClass
     class WebViewImpl extends android.webkit.WebView {
         isScrollEnabled = true;
+
+        constructor(context: android.content.Context) {
+            super(context);
+            return global.__native(this);
+        }
         overScrollBy(
             param0: number,
             param1: number,
@@ -111,12 +116,6 @@ function initializeWebViewClient(): void {
     @NativeClass
     class AWebViewClientImpl extends android.webkit.WebViewClient {
         owner: WeakRef<AWebView>;
-        // constructor(owner: AWebView) {
-        //     super();
-
-        //     this.owner = new WeakRef(owner);
-        //     return global.__native(this);
-        // }
 
         /**
          * Give the host application a chance to take control when a URL is about to be loaded in the current WebView.
@@ -302,12 +301,7 @@ function initializeWebViewClient(): void {
     @NativeClass
     class WebChromeViewExtClientImpl extends android.webkit.WebChromeClient {
         private owner: WeakRef<AWebView>;
-        // constructor(owner: AWebView) {
-        //     super();
 
-        //     this.owner = new WeakRef(owner);
-        //     return global.__native(this);
-        // },
         onGeolocationPermissionsHidePrompt(): void {
             return super.onGeolocationPermissionsHidePrompt();
         }
@@ -459,10 +453,12 @@ export class AWebView extends AWebViewBase {
 
     protected readonly localResourceMap = new Map<string, string>();
 
+    //@ts-ignore
     public get isUIWebView() {
         return false;
     }
 
+    //@ts-ignore
     public get isWKWebView() {
         return false;
     }
