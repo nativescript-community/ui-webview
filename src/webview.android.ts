@@ -48,20 +48,18 @@ const extToBinaryEncoding = new Set<string>(['gif', 'jpeg', 'jpg', 'otf', 'png',
 // #region android_native_classes
 let cacheModeMap: Map<CacheMode, number>;
 
-export interface AndroidWebViewClient extends android.webkit.WebViewClient {}
-
-export interface AndroidWebView extends android.webkit.WebView {
+declare class AndroidWebView extends com.nativescriptcommunity.webview.WebView {
     client: AndroidWebViewClient | null;
     chromeClient: android.webkit.WebChromeClient | null;
-    bridgeInterface?: com.nativescriptcommunity.webviewinterface.WebViewBridgeInterface;
+    bridgeInterface?: com.nativescriptcommunity.webview.WebViewBridgeInterface;
     scrollListener: android.view.View.OnScrollChangeListener;
     isScrollEnabled: boolean;
 }
+export interface AndroidWebViewClient extends android.webkit.WebViewClient {}
 
-let WebView: new (context) => AndroidWebView;
 let AWebViewClient: new () => AndroidWebViewClient;
 let WebChromeViewExtClient: new () => android.webkit.WebChromeClient;
-let WebViewBridgeInterface: new () => com.nativescriptcommunity.webviewinterface.WebViewBridgeInterface;
+let WebViewBridgeInterface: new () => com.nativescriptcommunity.webview.WebViewBridgeInterface;
 
 function initializeWebViewClient(): void {
     if (AWebViewClient) {
@@ -75,43 +73,6 @@ function initializeWebViewClient(): void {
         ['no_cache', android.webkit.WebSettings.LOAD_NO_CACHE],
         ['normal', android.webkit.WebSettings.LOAD_NORMAL],
     ]);
-
-    @NativeClass
-    class WebViewImpl extends android.webkit.WebView {
-        isScrollEnabled = true;
-
-        constructor(context: android.content.Context) {
-            super(context);
-            return global.__native(this);
-        }
-        overScrollBy(
-            param0: number,
-            param1: number,
-            param2: number,
-            param3: number,
-            param4: number,
-            param5: number,
-            param6: number,
-            param7: number,
-            param8: boolean
-        ): boolean {
-            if (this.isScrollEnabled) {
-                return super.overScrollBy(param0, param1, param2, param3, param4, param5, param6, param7, param8);
-            }
-            return false;
-        }
-        computeScroll() {
-            if (this.isScrollEnabled) {
-                super.computeScroll();
-            }
-        }
-        scrollTo(param0: number, param1: number) {
-            if (this.isScrollEnabled) {
-                super.scrollTo(param0, param1);
-            }
-        }
-    }
-    WebView = WebViewImpl as any;
 
     @NativeClass
     class AWebViewClientImpl extends android.webkit.WebViewClient {
@@ -422,7 +383,7 @@ function initializeWebViewClient(): void {
     WebChromeViewExtClient = WebChromeViewExtClientImpl;
 
     @NativeClass
-    class WebViewBridgeInterfaceImpl extends com.nativescriptcommunity.webviewinterface.WebViewBridgeInterface {
+    class WebViewBridgeInterfaceImpl extends com.nativescriptcommunity.webview.WebViewBridgeInterface {
         private owner: WeakRef<AWebView>;
         emitEventToNativeScript(eventName: string, data: string) {
             const owner = this.owner.get();
@@ -469,7 +430,7 @@ export class AWebView extends AWebViewBase {
 
     public createNativeView() {
         initializeWebViewClient();
-        const nativeView = new WebView(this._context);
+        const nativeView = new com.nativescriptcommunity.webview.WebView(this._context);
         const settings = nativeView.getSettings();
 
         // Needed for the bridge library
