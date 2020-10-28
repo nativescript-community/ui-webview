@@ -1374,6 +1374,7 @@ export class AWebViewBase extends ContainerView {
     }
 }
 
+// eslint-disable-next-line no-redeclare
 export interface AWebViewBase {
     /**
      * A basic method signature to hook an event listener (shortcut alias to the addEventListener method).

@@ -19,10 +19,12 @@ export const useWKWebView = typeof CustomUrlSchemeHandler !== 'undefined';
 export class AWebView extends AWebViewBase {
     protected nativeWrapper: IOSWebViewWrapper;
 
+    //@ts-ignore
     public get isUIWebView() {
         return !useWKWebView;
     }
 
+    //@ts-ignore
     public get isWKWebView() {
         return useWKWebView;
     }
