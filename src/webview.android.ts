@@ -1,4 +1,5 @@
-import { File, knownFolders } from '@nativescript/core/file-system';
+import { File, Trace, knownFolders } from '@nativescript/core';
+import * as utils from '@nativescript/core/utils/utils';
 import {
     AWebViewBase,
     CacheMode,
@@ -12,8 +13,6 @@ import {
     isScrollEnabledProperty,
     supportZoomProperty,
 } from './webview-common';
-import * as utils from '@nativescript/core/utils/utils';
-import { Trace } from '@nativescript/core';
 
 export * from './webview-common';
 
