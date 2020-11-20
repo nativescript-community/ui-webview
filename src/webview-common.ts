@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/adjacent-overload-signatures */
-import { File, knownFolders, path } from '@nativescript/core/file-system';
-import { CSSType, ContainerView } from '@nativescript/core/ui/core/view';
-import { booleanConverter } from '@nativescript/core/ui/core/view-base';
-import { EventData } from '@nativescript/core/data/observable';
-import { Property } from '@nativescript/core/ui/core/properties';
-import { Trace } from '@nativescript/core';
+import {
+    CSSType,
+    ContainerView,
+    EventData,
+    File,
+    Property,
+    Trace,
+    booleanConverter,
+    knownFolders,
+    path,
+} from '@nativescript/core';
 import * as URL from 'url';
 
 export interface ViewPortProperties {
