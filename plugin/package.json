@@ -1,6 +1,6 @@
 {
     "name": "@nativescript-community/ui-webview",
-    "version": "1.1.6",
+    "version": "1.2.0",
     "description": "Extended WebView which adds many options such as custom scheme handlers, JavaScript execution, URL capturing, and more.",
     "main": "./webview-ext",
     "sideEffects": false,
