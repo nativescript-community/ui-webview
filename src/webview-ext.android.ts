@@ -894,16 +894,13 @@ export class AWebView extends WebViewExtBase {
     }
 
     [debugModeProperty.setNative](enabled: boolean) {
-        console.log('debugModeProperty', enabled);
         android.webkit.WebView.setWebContentsDebuggingEnabled(!!enabled);
     }
     [webConsoleProperty.getDefault]() {
         return true;
     }
     [webConsoleProperty.setNative](enabled: boolean) {
-        console.log('webConsoleProperty', enabled);
         if (this.nativeViewProtected?.chromeClient) {
-            console.log('webConsoleProperty2', enabled);
             this.nativeViewProtected.chromeClient.setConsoleEnabled(enabled);
         }
     }
