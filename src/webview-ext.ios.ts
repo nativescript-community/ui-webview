@@ -1,7 +1,7 @@
 import { File, Trace, alert, confirm, knownFolders, profile, prompt } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import { webViewBridge } from './nativescript-webview-bridge-loader';
-import { NavigationType, WebViewExtBase, autoInjectJSBridgeProperty, scrollBounceProperty, NotaTraceCategory, webRTCProperty } from './webview-ext-common';
+import { NavigationType, WebViewExtBase, autoInjectJSBridgeProperty, scrollBounceProperty, NotaTraceCategory, webRTCProperty, mediaPlaybackRequiresUserActionProperty, allowsInlineMediaPlaybackProperty } from './webview-ext-common';
 
 export * from './webview-ext-common';
 
@@ -458,6 +458,14 @@ export class AWebView extends WebViewExtBase {
         }
 
         this.webViewRTC = WKWebViewRTC.alloc().initWithWkwebviewContentController(nativeView, nativeView.configuration.userContentController);
+    }
+
+    [mediaPlaybackRequiresUserActionProperty.setNative](enabled: boolean) {
+        this.nativeViewProtected.configuration.setValueForKey(enabled?WKAudiovisualMediaTypes.All:WKAudiovisualMediaTypes.None, 'mediaTypesRequiringUserActionForPlayback');
+
+    }
+    [allowsInlineMediaPlaybackProperty.setNative](enabled: boolean) {
+        this.nativeViewProtected.configuration.setValueForKey(enabled, 'allowsInlineMediaPlayback');
     }
 
     /**
