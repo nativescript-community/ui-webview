@@ -84,6 +84,17 @@ export const webRTCProperty = new Property<WebViewExtBase, boolean>({
     valueConverter: booleanConverter,
 });
 
+export const mediaPlaybackRequiresUserActionProperty = new Property<WebViewExtBase, boolean>({
+    name: 'mediaPlaybackRequiresUserAction',
+    defaultValue: true,
+    valueConverter: booleanConverter,
+});
+
+export const allowsInlineMediaPlaybackProperty = new Property<WebViewExtBase, boolean>({
+    name: 'allowsInlineMediaPlayback',
+    valueConverter: booleanConverter,
+});
+
 export const srcProperty = new Property<WebViewExtBase, string>({
     name: 'src',
 });
@@ -1666,3 +1677,4 @@ viewPortProperty.register(WebViewExtBase);
 isScrollEnabledProperty.register(WebViewExtBase);
 scalesPageToFitProperty.register(WebViewExtBase);
 webRTCProperty.register(WebViewExtBase);
+mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);

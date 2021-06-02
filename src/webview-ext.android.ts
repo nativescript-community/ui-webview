@@ -14,6 +14,8 @@ import {
     supportZoomProperty,
     webConsoleProperty,
     NotaTraceCategory,
+    mediaPlaybackRequiresUserActionProperty,
+    allowsInlineMediaPlaybackProperty,
 } from './webview-ext-common';
 
 export * from './webview-ext-common';
@@ -1061,5 +1063,13 @@ export class AWebView extends WebViewExtBase {
                 })
             );
         }
+    }
+
+
+    [mediaPlaybackRequiresUserActionProperty.setNative](enabled: boolean) {
+        this.nativeViewProtected.getSettings().setMediaPlaybackRequiresUserGesture(enabled);
+    }
+    [allowsInlineMediaPlaybackProperty.setNative](enabled: boolean) {
+        // not supported
     }
 }
