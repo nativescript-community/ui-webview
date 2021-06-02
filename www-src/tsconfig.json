@@ -1,0 +1,16 @@
+{
+"compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "lib": ["es5", "es6", "dom"], "target": "es5",
+    "sourceMap": false,
+    "removeComments": true,
+    "noImplicitUseStrict":true,
+    "noEmitHelpers": false,
+    "importHelpers": false,
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "../build"
+}
+}

@@ -1,0 +1,8 @@
+<Page
+  xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page"
+  xmlns:nota="@nativescript-community/ui-webview">
+  <GridLayout class="p-2" rows="auto, *" columns="*">
+    <Button id="test_button" row="0" text="Run Tests" tap="runTests" class="btn btn-primary"></Button>
+    <nota:AWebView row="1" loaded="webviewLoaded" webConsoleEnabled="false" debugMode="true" viewPortSize="initial-scale=1.2" enterFullscreen="enterFullscreen" exitFullscreen="exitFullscreen"></nota:AWebView>
+  </GridLayout>
+</Page>
