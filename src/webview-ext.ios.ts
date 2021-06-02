@@ -1,7 +1,7 @@
 import { File, Trace, alert, confirm, knownFolders, profile, prompt } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import { webViewBridge } from './nativescript-webview-bridge-loader';
-import { NavigationType, WebViewExtBase, autoInjectJSBridgeProperty, scrollBounceProperty, NotaTraceCategory } from './webview-ext-common';
+import { NavigationType, WebViewExtBase, autoInjectJSBridgeProperty, scrollBounceProperty, NotaTraceCategory, webRTCProperty } from './webview-ext-common';
 
 export * from './webview-ext-common';
 
@@ -9,6 +9,8 @@ const messageHandlerName = 'nsBridge';
 
 export class AWebView extends WebViewExtBase {
     public ios: WKWebView;
+    nativeViewProtected: WKWebView;
+    webViewRTC: WKWebViewRTC
 
     public static supportXLocalScheme = typeof CustomUrlSchemeHandler !== 'undefined';
 
@@ -27,7 +29,6 @@ export class AWebView extends WebViewExtBase {
     public readonly supportXLocalScheme = typeof CustomUrlSchemeHandler !== 'undefined';
 
     public viewPortSize = { initialScale: 1.0 };
-
     public createNativeView() {
         const configuration = WKWebViewConfiguration.new();
         configuration.dataDetectorTypes = WKDataDetectorTypes.All;
@@ -448,6 +449,15 @@ export class AWebView extends WebViewExtBase {
 
         nativeView.userInteractionEnabled = !!enabled;
         nativeView.scrollView.userInteractionEnabled = !!enabled;
+    }
+
+    [webRTCProperty.setNative](enabled: boolean) {
+        const nativeView = this.nativeViewProtected;
+        if (!nativeView || this.webViewRTC) {
+            return;
+        }
+
+        this.webViewRTC = WKWebViewRTC.alloc().initWithWkwebviewContentController(nativeView, nativeView.configuration.userContentController);
     }
 
     /**

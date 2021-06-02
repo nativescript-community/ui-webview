@@ -78,6 +78,11 @@ export const supportZoomProperty = new Property<WebViewExtBase, boolean>({
     defaultValue: false,
     valueConverter: booleanConverter,
 });
+export const webRTCProperty = new Property<WebViewExtBase, boolean>({
+    name: 'webRTC',
+    defaultValue: false,
+    valueConverter: booleanConverter,
+});
 
 export const srcProperty = new Property<WebViewExtBase, string>({
     name: 'src',
@@ -223,6 +228,7 @@ export enum EventNames {
     EnterFullscreen = 'enterFullscreen',
     ExitFullscreen = 'exitFullscreen',
     WebPrompt = 'webPrompt',
+    RequestPermissions = 'requestPermissions',
 }
 
 export interface LoadJavaScriptResource {
@@ -327,6 +333,12 @@ export interface WebConsoleEventData extends WebViewExtEventData {
         message: string;
         level: string;
     };
+}
+
+export interface RequestPermissionsEventData extends WebViewExtEventData {
+    eventName: EventNames.RequestPermissions;
+    url: string;
+    permissions: string[]
 }
 
 /**
@@ -435,6 +447,9 @@ export class WebViewExtBase extends ContainerView {
     }
     public static get exitFullscreenEvent() {
         return EventNames.ExitFullscreen;
+    }
+    public static get requestPermissionsEvent() {
+        return EventNames.RequestPermissions;
     }
 
     public readonly supportXLocalScheme: boolean;
@@ -1536,6 +1551,29 @@ export class WebViewExtBase extends ContainerView {
     [isEnabledProperty.getDefault]() {
         return true;
     }
+
+    async _onRequestPermissions (permissions) {
+        if (!this.hasListeners(EventNames.RequestPermissions)) {
+            return false
+        }
+        return new Promise<void>((resolve, reject)=>{
+            const args = {
+                eventName: EventNames.RequestPermissions,
+                object: this,
+                url: this.src,
+                permissions: permissions,
+                callback: function (allow) {
+                    if (allow) {
+                        resolve();
+                    }
+                    else {
+                        reject();
+                    }
+                },
+            };
+            this.notify(args);
+        });
+    }
 }
 
 // eslint-disable-next-line no-redeclare
@@ -1606,6 +1644,11 @@ export interface WebViewExtBase {
      */
     on(event: EventNames.WebConsole, callback: (args: WebConsoleEventData) => void, thisArg?: any);
     once(event: EventNames.WebConsole, callback: (args: WebConsoleEventData) => void, thisArg?: any);
+    /**
+     * Get Android WebView console entries.
+     */
+    on(event: EventNames.RequestPermissions, callback: (args: WebConsoleEventData) => void, thisArg?: any);
+    once(event: EventNames.RequestPermissions, callback: (args: WebConsoleEventData) => void, thisArg?: any);
 }
 
 autoInjectJSBridgeProperty.register(WebViewExtBase);
@@ -1622,3 +1665,4 @@ scrollBounceProperty.register(WebViewExtBase);
 viewPortProperty.register(WebViewExtBase);
 isScrollEnabledProperty.register(WebViewExtBase);
 scalesPageToFitProperty.register(WebViewExtBase);
+webRTCProperty.register(WebViewExtBase);

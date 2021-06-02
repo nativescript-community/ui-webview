@@ -3,3 +3,4 @@
 /// <reference path="./src/types/url.d.ts" />
 /// <reference path="./src/types/android/webviewinterface.d.ts" />
 /// <reference path="./src/types/ios/NotaWebViewExt.d.ts" />
+/// <reference path="./src/types/ios/objc!WKWebViewRTC.d.ts" />
