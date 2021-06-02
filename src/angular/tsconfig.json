@@ -1,6 +1,7 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
+        "skipLibCheck": true,
         "rootDir": "./",
         "paths": {
             "tns-core-modules": ["./node_modules/@nativescript/core"],
