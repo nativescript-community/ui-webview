@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.6](https://github.com/nativescript-community/ui-webview/compare/v1.1.5...v1.1.6) (2021-06-02)
+
+
+### Bug Fixes
+
+* ios event data parse fix ([2eaea76](https://github.com/nativescript-community/ui-webview/commit/2eaea7670f6731fcf1dbfda5f8de0534050c9fd9))
+
+
+
+
+
 ## [1.1.5](https://github.com/nativescript-community/ui-webview/compare/v1.1.4...v1.1.5) (2020-11-23)
 
 
