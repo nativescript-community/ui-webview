@@ -64,30 +64,34 @@ async function executeJavaScriptTest<T>(js: string, expected?: T): Promise<T> {
 }
 
 export async function runTests() {
-    console.time('runTests');
+    try {
+        console.time('runTests');
 
-    await executeJavaScriptTest('console.log("test console from web view")');
-    await executeJavaScriptTest('callFromNativeScript()');
+        await executeJavaScriptTest('console.log("test console from web view")');
+        await executeJavaScriptTest('callFromNativeScript()');
 
-    const expected = {
-        huba: 'hop',
-    };
-    const gotJson = JSON.stringify(gotMessageData);
+        const expected = {
+            huba: 'hop',
+        };
+        const gotJson = JSON.stringify(gotMessageData);
 
-    if (fastEqual(expected, gotMessageData)) {
-        console.log(`executeJavaScript via message 'callFromNativeScript()' => ${gotJson} (${typeof gotMessageData})`);
-    } else {
-        throw new Error(`Expected: ${JSON.stringify(expected)}. Got: ${gotJson}`);
-    }
+        if (fastEqual(expected, gotMessageData)) {
+            console.log(`executeJavaScript via message 'callFromNativeScript()' => ${gotJson} (${typeof gotMessageData})`);
+        } else {
+            throw new Error(`Expected: ${JSON.stringify(expected)}. Got: ${gotJson}`);
+        }
 
-    await executeJavaScriptTest('getNumber()', 42);
-    await executeJavaScriptTest('getNumberFloat()', 3.14);
-    await executeJavaScriptTest('getBoolean()', false);
-    await executeJavaScriptTest('getString()', 'string result from webview JS function');
-    await executeJavaScriptTest('getArray()', [1.5, true, 'hello']);
-    await executeJavaScriptTest('getObject()', { name: 'object-test', prop: 'test', values: [42, 3.14] });
+        await executeJavaScriptTest('getNumber()', 42);
+        await executeJavaScriptTest('getNumberFloat()', 3.14);
+        await executeJavaScriptTest('getBoolean()', false);
+        await executeJavaScriptTest('getString()', 'string result from webview JS function');
+        await executeJavaScriptTest('getArray()', [1.5, true, 'hello']);
+        await executeJavaScriptTest('getObject()', { name: 'object-test', prop: 'test', values: [42, 3.14] });
 
-    console.timeEnd('runTests');
+        console.timeEnd('runTests');
+        } catch(err) {
+        console.error(err);
+        }
 }
 
 let closeFullscreen: () => void;
