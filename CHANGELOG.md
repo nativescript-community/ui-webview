@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/nativescript-community/ui-webview/compare/v1.2.0...v1.2.1) (2021-06-02)
+
+
+### Bug Fixes
+
+* remove logs ([fc83f18](https://github.com/nativescript-community/ui-webview/commit/fc83f18e486ba72448c52d9083ab0d934c92dde1))
+* removed logs ([d3def27](https://github.com/nativescript-community/ui-webview/commit/d3def2701addb95f159ca7ed6d109d57657a6af9))
+
+
+### Features
+
+* mediaPlaybackRequiresUserAction && allowsInlineMediaPlayback ([bf72f2c](https://github.com/nativescript-community/ui-webview/commit/bf72f2cfc08884450e2b3dc7522da57c095f983b))
+
+
+
+
+
 # [1.2.0](https://github.com/nativescript-community/ui-webview/compare/v1.1.6...v1.2.0) (2021-06-02)
 
 
