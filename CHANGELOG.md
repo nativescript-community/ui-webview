@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/nativescript-community/ui-webview/compare/v1.1.6...v1.2.0) (2021-06-02)
+
+
+### Features
+
+* camera support ([40cad20](https://github.com/nativescript-community/ui-webview/commit/40cad20f54beecbdfd2f923d8d3ac558badc049c))
+
+
+
+
+
 ## [1.1.6](https://github.com/nativescript-community/ui-webview/compare/v1.1.5...v1.1.6) (2021-06-02)
 
 
