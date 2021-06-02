@@ -8,7 +8,7 @@
         "noLib": false,
         "emitDecoratorMetadata": false,
         "experimentalDecorators": true,
-        "lib": ["es6", "dom"],
+        "lib": ["es6", "dom", "es2017"],
         "sourceMap": true,
         "pretty": true,
         "allowUnreachableCode": false,
@@ -19,7 +19,7 @@
         "noImplicitReturns": true,
         "noImplicitUseStrict": true,
         "noFallthroughCasesInSwitch": true,
-        "sourceRoot": "../src",
+        "sourceRoot": "src",
         "baseUrl": ".",
         "outDir": "./plugin",
         "paths": {

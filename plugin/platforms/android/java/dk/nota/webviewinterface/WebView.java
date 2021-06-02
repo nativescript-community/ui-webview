@@ -1,4 +1,4 @@
-package com.nativescriptcommunity.webview;
+package dk.nota.webviewinterface;
 
 public class WebView extends android.webkit.WebView {
     boolean mScrollEnabled;

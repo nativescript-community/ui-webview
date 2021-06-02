@@ -10,7 +10,9 @@ import {
     knownFolders,
     path,
 } from '@nativescript/core';
+import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import * as URL from 'url';
+import { metadataViewPort, webViewBridge, promisePolyfill } from './nativescript-webview-bridge-loader';
 
 export interface ViewPortProperties {
     width?: number | 'device-width';
@@ -21,77 +23,85 @@ export interface ViewPortProperties {
     userScalable?: boolean;
 }
 
+export const NotaTraceCategory = 'NOTA';
+
 export type CacheMode = 'default' | 'cache_first' | 'no_cache' | 'cache_only' | 'normal';
 
-export const autoInjectJSBridgeProperty = new Property<AWebViewBase, boolean>({
+export const autoInjectJSBridgeProperty = new Property<WebViewExtBase, boolean>({
     name: 'autoInjectJSBridge',
     defaultValue: true,
     valueConverter: booleanConverter,
 });
 
-export const builtInZoomControlsProperty = new Property<AWebViewBase, boolean>({
+export const builtInZoomControlsProperty = new Property<WebViewExtBase, boolean>({
     name: 'builtInZoomControls',
     defaultValue: true,
     valueConverter: booleanConverter,
 });
 
-export const cacheModeProperty = new Property<AWebViewBase, CacheMode>({
+export const cacheModeProperty = new Property<WebViewExtBase, CacheMode>({
     name: 'cacheMode',
     defaultValue: 'default',
 });
 
-export const databaseStorageProperty = new Property<AWebViewBase, boolean>({
+export const databaseStorageProperty = new Property<WebViewExtBase, boolean>({
     name: 'databaseStorage',
     defaultValue: false,
     valueConverter: booleanConverter,
 });
 
-export const domStorageProperty = new Property<AWebViewBase, boolean>({
+export const domStorageProperty = new Property<WebViewExtBase, boolean>({
     name: 'domStorage',
     defaultValue: false,
     valueConverter: booleanConverter,
 });
 
-export const debugModeProperty = new Property<AWebViewBase, boolean>({
+export const debugModeProperty = new Property<WebViewExtBase, boolean>({
     name: 'debugMode',
     defaultValue: false,
     valueConverter: booleanConverter,
 });
+export const webConsoleProperty = new Property<WebViewExtBase, boolean>({
+    name: 'webConsoleEnabled',
+    defaultValue: true,
+    valueConverter: booleanConverter,
+});
 
-export const displayZoomControlsProperty = new Property<AWebViewBase, boolean>({
+export const displayZoomControlsProperty = new Property<WebViewExtBase, boolean>({
     name: 'displayZoomControls',
     defaultValue: true,
     valueConverter: booleanConverter,
 });
 
-export const supportZoomProperty = new Property<AWebViewBase, boolean>({
+export const supportZoomProperty = new Property<WebViewExtBase, boolean>({
     name: 'supportZoom',
     defaultValue: false,
     valueConverter: booleanConverter,
 });
 
-export const srcProperty = new Property<AWebViewBase, string>({
+export const srcProperty = new Property<WebViewExtBase, string>({
     name: 'src',
 });
 
-export const scrollBounceProperty = new Property<AWebViewBase, boolean>({
+export const scrollBounceProperty = new Property<WebViewExtBase, boolean>({
     name: 'scrollBounce',
     valueConverter: booleanConverter,
 });
 
-export const scalesPageToFitProperty = new Property<AWebViewBase, boolean>({
+export const scalesPageToFitProperty = new Property<WebViewExtBase, boolean>({
     name: 'scalesPageToFit',
     defaultValue: false,
     valueConverter: booleanConverter,
 });
 
-export const isScrollEnabledProperty = new Property<AWebViewBase, boolean>({
+export const isScrollEnabledProperty = new Property<WebViewExtBase, boolean>({
     name: 'isScrollEnabled',
     defaultValue: true,
     valueConverter: booleanConverter,
 });
+
 export type ViewPortValue = boolean | ViewPortProperties;
-export const viewPortProperty = new Property<AWebViewBase, ViewPortValue>({
+export const viewPortProperty = new Property<WebViewExtBase, ViewPortValue>({
     name: 'viewPortSize',
     defaultValue: false,
     valueConverter(value: string | ViewPortProperties): ViewPortValue {
@@ -189,6 +199,7 @@ export const viewPortProperty = new Property<AWebViewBase, ViewPortValue>({
             minimumScale,
             maximumScale,
         } = viewPortInputValues;
+
         return {
             initialScale,
             width,
@@ -205,10 +216,12 @@ export enum EventNames {
     LoadProgress = 'loadProgress',
     LoadStarted = 'loadStarted',
     ShouldOverrideUrlLoading = 'shouldOverrideUrlLoading',
-    TitleChanged = 'titleChange',
+    TitleChanged = 'titleChanged',
     WebAlert = 'webAlert',
     WebConfirm = 'webConfirm',
     WebConsole = 'webConsole',
+    EnterFullscreen = 'enterFullscreen',
+    ExitFullscreen = 'exitFullscreen',
     WebPrompt = 'webPrompt',
 }
 
@@ -228,13 +241,14 @@ export interface InjectExecuteJavaScript {
     name: string;
 }
 
-export const AWebViewTraceCategory = 'AWebView';
+export interface WebViewExtEventData extends EventData {
+    object: WebViewExtBase;
+}
+
 /**
  * Event data containing information for the loading events of a WebView.
  */
-export interface LoadEventData extends EventData {
-    object: AWebViewBase;
-
+export interface LoadEventData extends WebViewExtEventData {
     /**
      * Gets the url of the web-view.
      */
@@ -271,30 +285,26 @@ export interface ShouldOverrideUrlLoadEventData extends LoadEventData {
 /** BackForward compat for spelling error... */
 export interface ShouldOverideUrlLoadEventData extends ShouldOverrideUrlLoadEventData {}
 
-export interface LoadProgressEventData extends EventData {
-    object: AWebViewBase;
+export interface LoadProgressEventData extends WebViewExtEventData {
     eventName: EventNames.LoadProgress;
     url: string;
     progress: number;
 }
 
-export interface TitleChangedEventData extends EventData {
-    object: AWebViewBase;
+export interface TitleChangedEventData extends WebViewExtEventData {
     eventName: EventNames.TitleChanged;
     url: string;
     title: string;
 }
 
-export interface WebAlertEventData extends EventData {
-    object: AWebViewBase;
+export interface WebAlertEventData extends WebViewExtEventData {
     eventName: EventNames.WebAlert;
     url: string;
     message: string;
     callback: () => void;
 }
 
-export interface WebPromptEventData extends EventData {
-    object: AWebViewBase;
+export interface WebPromptEventData extends WebViewExtEventData {
     eventName: EventNames.WebPrompt;
     url: string;
     message: string;
@@ -302,16 +312,14 @@ export interface WebPromptEventData extends EventData {
     callback: (response?: string) => void;
 }
 
-export interface WebConfirmEventData extends EventData {
-    object: AWebViewBase;
+export interface WebConfirmEventData extends WebViewExtEventData {
     eventName: EventNames.WebConfirm;
     url: string;
     message: string;
     callback: (response: boolean) => void;
 }
 
-export interface WebConsoleEventData extends EventData {
-    object: AWebViewBase;
+export interface WebConsoleEventData extends WebViewExtEventData {
     eventName: EventNames.WebConsole;
     url: string;
     data: {
@@ -324,10 +332,19 @@ export interface WebConsoleEventData extends EventData {
 /**
  * Event data containing information for the loading events of a WebView.
  */
-export interface WebViewEventData extends EventData {
-    object: AWebViewBase;
-
+export interface WebViewEventData extends WebViewExtEventData {
     data?: any;
+}
+
+export interface EnterFullscreenEventData extends WebViewExtEventData {
+    eventName: EventNames.EnterFullscreen;
+    url: string;
+    exitFullscreen(): void;
+}
+
+export interface ExitFullscreenEventData extends WebViewExtEventData {
+    eventName: EventNames.ExitFullscreen;
+    url: string;
 }
 
 /**
@@ -344,8 +361,11 @@ export class UnsupportedSDKError extends Error {
 }
 
 @CSSType('WebView')
-export class AWebViewBase extends ContainerView {
-    public static scrollEvent = 'scroll';
+export class WebViewExtBase extends ContainerView {
+    public webConsole: boolean;
+
+    public static readonly supportXLocalScheme: boolean;
+
     /**
      * Is Fetch API supported?
      *
@@ -365,9 +385,8 @@ export class AWebViewBase extends ContainerView {
 
     /**
      * Gets the native [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview/) that represents the user interface for this component. Valid only when running on iOS 11+.
-     * Gets the native [UIWebView]https://developer.apple.com/documentation/uikit/uiwebview that represents the user interface for this component. Valid only when running on iOS <11
      */
-    public ios: any /* WKWebView | UIWebView */;
+    public ios: any /* WKWebView */;
 
     public get interceptScheme() {
         return 'x-local';
@@ -411,16 +430,14 @@ export class AWebViewBase extends ContainerView {
     public static get webConsoleEvent() {
         return EventNames.WebConsole;
     }
+    public static get enterFullscreenEvent() {
+        return EventNames.EnterFullscreen;
+    }
+    public static get exitFullscreenEvent() {
+        return EventNames.ExitFullscreen;
+    }
 
-    /**
-     * iOS <11 uses an UIWebview
-     */
-    public readonly isUIWebView: boolean;
-
-    /**
-     * iOS 11+ uses a WKWebView
-     */
-    public readonly isWKWebView: boolean;
+    public readonly supportXLocalScheme: boolean;
 
     /**
      * Gets or sets the url, local file path or HTML string.
@@ -469,11 +486,6 @@ export class AWebViewBase extends ContainerView {
     public scrollBounce: boolean;
 
     /**
-     * iOS(UIWebView): If true, the webpage is scaled to fit and the user can zoom in and zoom out. If false, user zooming is disabled. The default value is false.
-     */
-    public scalesPageToFit: boolean;
-
-    /**
      * Set viewport metadata for the webview.
      * Set to false to disable.
      *
@@ -486,24 +498,22 @@ export class AWebViewBase extends ContainerView {
     /**
      * List of js-files to be auto injected on load finished
      */
-    protected autoInjectScriptFiles = [];
+    protected autoInjectScriptFiles = [] as LoadJavaScriptResource[];
 
     /**
      * List of css-files to be auto injected on load finished
      */
-    protected autoInjectStyleSheetFiles = [];
+    protected autoInjectStyleSheetFiles = [] as LoadStyleSheetResource[];
 
     /**
      * List of code blocks to be executed after JS-files and CSS-files have been loaded.
      */
-    protected autoInjectJavaScriptBlocks = [];
+    protected autoInjectJavaScriptBlocks = [] as InjectExecuteJavaScript[];
 
     /**
      * Prevent this.src loading changes from the webview's onLoadFinished-event
      */
     protected tempSuspendSrcLoading = false;
-
-    public headers?: { [k: string]: string };
 
     /**
      * Callback for the loadFinished-event. Called from the native-webview
@@ -525,7 +535,7 @@ export class AWebViewBase extends ContainerView {
 
         const args = {
             error,
-            eventName: AWebViewBase.loadFinishedEvent,
+            eventName: WebViewExtBase.loadFinishedEvent,
             navigationType: undefined,
             object: this,
             url,
@@ -533,17 +543,24 @@ export class AWebViewBase extends ContainerView {
 
         if (error) {
             this.notify(args);
-            return Promise.reject(args);
+
+            throw args;
         }
 
-        this.writeTrace(() => `_onLoadFinished("${url}", ${error || void 0}) - > Injecting webview-bridge JS code`);
+        if (Trace.isEnabled()) {
+            Trace.write(
+                `WebViewExt._onLoadFinished("${url}", ${error || void 0}) - > Injecting webview-bridge JS code`,
+                'NOTA',
+                Trace.messageType.info
+            );
+        }
 
         if (!this.autoInjectJSBridge) {
-            return Promise.resolve(args);
+            return args;
         }
 
         try {
-            // await this.injectWebViewBridge();
+            await this.injectWebViewBridge();
 
             await this.loadJavaScriptFiles(this.autoInjectScriptFiles);
             await this.loadStyleSheetFiles(this.autoInjectStyleSheetFiles);
@@ -557,7 +574,10 @@ export class AWebViewBase extends ContainerView {
 
         this.notify(args);
 
-        this.getTitle().then((title) => this._titleChanged(title));
+        this.getTitle()
+            .then((title) => title && this._titleChanged(title))
+            .catch(() => void 0);
+
         return args;
     }
 
@@ -569,7 +589,7 @@ export class AWebViewBase extends ContainerView {
      */
     public _onLoadStarted(url: string, navigationType?: NavigationType) {
         const args = {
-            eventName: AWebViewBase.loadStartedEvent,
+            eventName: WebViewExtBase.loadStartedEvent,
             navigationType,
             object: this,
             url,
@@ -588,7 +608,7 @@ export class AWebViewBase extends ContainerView {
      */
     public _onShouldOverrideUrlLoading(url: string, httpMethod: string, navigationType?: NavigationType) {
         const args = {
-            eventName: AWebViewBase.shouldOverrideUrlLoadingEvent,
+            eventName: WebViewExtBase.shouldOverrideUrlLoadingEvent,
             httpMethod,
             navigationType,
             object: this,
@@ -599,7 +619,7 @@ export class AWebViewBase extends ContainerView {
         const eventNameWithSpellingError = 'shouldOverideUrlLoading';
         if (this.hasListeners(eventNameWithSpellingError)) {
             console.error(
-                `eventName '${eventNameWithSpellingError}' is deprecated due to spelling error:\nPlease use: ${AWebViewBase.shouldOverrideUrlLoadingEvent}`
+                `eventName '${eventNameWithSpellingError}' is deprecated due to spelling error:\nPlease use: ${WebViewExtBase.shouldOverrideUrlLoadingEvent}`
             );
             const argsWithSpellingError = {
                 ...args,
@@ -617,7 +637,7 @@ export class AWebViewBase extends ContainerView {
 
     public _loadProgress(progress: number) {
         const args = {
-            eventName: AWebViewBase.loadProgressEvent,
+            eventName: WebViewExtBase.loadProgressEvent,
             object: this,
             progress,
             url: this.src,
@@ -628,7 +648,7 @@ export class AWebViewBase extends ContainerView {
 
     public _titleChanged(title: string) {
         const args = {
-            eventName: AWebViewBase.titleChangedEvent,
+            eventName: WebViewExtBase.titleChangedEvent,
             object: this,
             title,
             url: this.src,
@@ -638,12 +658,12 @@ export class AWebViewBase extends ContainerView {
     }
 
     public _webAlert(message: string, callback: () => void) {
-        if (!this.hasListeners(AWebViewBase.webAlertEvent)) {
+        if (!this.hasListeners(WebViewExtBase.webAlertEvent)) {
             return false;
         }
 
         const args = {
-            eventName: AWebViewBase.webAlertEvent,
+            eventName: WebViewExtBase.webAlertEvent,
             object: this,
             message,
             url: this.src,
@@ -651,16 +671,17 @@ export class AWebViewBase extends ContainerView {
         } as WebAlertEventData;
 
         this.notify(args);
+
         return true;
     }
 
-    public _webConfirm(message: string, callback: (response: boolean) => void) {
-        if (!this.hasListeners(AWebViewBase.webConfirmEvent)) {
+    public _webConfirm(message: string, callback: (response: boolean | null) => void) {
+        if (!this.hasListeners(WebViewExtBase.webConfirmEvent)) {
             return false;
         }
 
         const args = {
-            eventName: AWebViewBase.webConfirmEvent,
+            eventName: WebViewExtBase.webConfirmEvent,
             object: this,
             message,
             url: this.src,
@@ -668,16 +689,17 @@ export class AWebViewBase extends ContainerView {
         } as WebConfirmEventData;
 
         this.notify(args);
+
         return true;
     }
 
-    public _webPrompt(message: string, defaultText: string, callback: (response: string) => void) {
-        if (!this.hasListeners(AWebViewBase.webPromptEvent)) {
+    public _webPrompt(message: string, defaultText: string, callback: (response: string | null) => void) {
+        if (!this.hasListeners(WebViewExtBase.webPromptEvent)) {
             return false;
         }
 
         const args = {
-            eventName: AWebViewBase.webPromptEvent,
+            eventName: WebViewExtBase.webPromptEvent,
             object: this,
             message,
             defaultText,
@@ -686,16 +708,17 @@ export class AWebViewBase extends ContainerView {
         } as WebPromptEventData;
 
         this.notify(args);
+
         return true;
     }
 
     public _webConsole(message: string, lineNo: number, level: string) {
-        if (!this.hasListeners(AWebViewBase.webConsoleEvent)) {
+        if (!this.hasListeners(WebViewExtBase.webConsoleEvent)) {
             return false;
         }
 
         const args = {
-            eventName: AWebViewBase.webConsoleEvent,
+            eventName: WebViewExtBase.webConsoleEvent,
             object: this,
             data: {
                 message,
@@ -706,13 +729,43 @@ export class AWebViewBase extends ContainerView {
         } as WebConsoleEventData;
 
         this.notify(args);
+
+        return true;
+    }
+
+    public _onEnterFullscreen(exitFullscreen: () => void) {
+        if (!this.hasListeners(WebViewExtBase.enterFullscreenEvent)) {
+            return false;
+        }
+
+        const args = {
+            eventName: WebViewExtBase.enterFullscreenEvent,
+            object: this,
+            exitFullscreen,
+            url: this.src,
+        } as EnterFullscreenEventData;
+
+        this.notify(args);
+
+        return true;
+    }
+
+    public _onExitFullscreen() {
+        const args = {
+            eventName: WebViewExtBase.exitFullscreenEvent,
+            object: this,
+            url: this.src,
+        } as ExitFullscreenEventData;
+
+        this.notify(args);
+
         return true;
     }
 
     /**
      * Platform specific loadURL-implementation.
      */
-    public _loadUrl(src: string, headers?: { [k: string]: string }): void {
+    public _loadUrl(src: string): void {
         throw new Error('Method not implemented.');
     }
 
@@ -781,10 +834,14 @@ export class AWebViewBase extends ContainerView {
         // They should be loaded with _loadUrl() method as it handles query params.
         if (src.startsWith('~/')) {
             src = `file://${knownFolders.currentApp().path}/${src.substr(2)}`;
-            this.writeTrace(() => `src = "${originSrc}" startsWith ~/ resolved to "${src}"`);
+            if (Trace.isEnabled()) {
+                Trace.write(`WebViewExt.src = "${originSrc}" startsWith ~/ resolved to "${src}"`, 'NOTA', Trace.messageType.info);
+            }
         } else if (src.startsWith('/')) {
             src = `file://${src}`;
-            this.writeTrace(() => `src = "${originSrc}" startsWith "/" resolved to ${src}`);
+            if (Trace.isEnabled()) {
+                Trace.write(`WebViewExt.src = "${originSrc}" startsWith "/" resolved to ${src}`, 'NOTA', Trace.messageType.info);
+            }
         }
 
         const lcSrc = src.toLowerCase();
@@ -793,7 +850,9 @@ export class AWebViewBase extends ContainerView {
         if (lcSrc.startsWith('file:///')) {
             src = encodeURI(src);
             if (lcSrc !== src) {
-                this.writeTrace(() => `src = "${originSrc}" escaped to "${src}"`);
+                if (Trace.isEnabled()) {
+                    Trace.write(`WebViewExt.src = "${originSrc}" escaped to "${src}"`, 'NOTA', Trace.messageType.info);
+                }
             }
         }
 
@@ -804,7 +863,6 @@ export class AWebViewBase extends ContainerView {
             lcSrc.startsWith('file:///')
         ) {
             src = this.normalizeURL(src);
-            console.log(src, originSrc);
 
             if (originSrc !== src) {
                 // Make sure the src-property reflects the actual value.
@@ -818,24 +876,31 @@ export class AWebViewBase extends ContainerView {
                 }
             }
 
-            this._loadUrl(src, this.headers);
+            this._loadUrl(src);
 
-            this.writeTrace(() => `src = "${originSrc}" - LoadUrl("${src}")`);
+            if (Trace.isEnabled()) {
+                Trace.write(`WebViewExt.src = "${originSrc}" - LoadUrl("${src}")`, 'NOTA', Trace.messageType.info);
+            }
         } else {
             this._loadData(src);
-            this.writeTrace(() => `src = "${originSrc}" - LoadData("${src}")`);
+            if (Trace.isEnabled()) {
+                Trace.write(`WebViewExt.src = "${originSrc}" - LoadData("${src}")`, 'NOTA', Trace.messageType.info);
+            }
         }
     }
 
-    // [viewPortProperty.setNative](value: ViewPortProperties) {
-    //     if (this.src) {
-    //         this.injectViewPortMeta();
-    //     }
-    // }
+    [viewPortProperty.setNative](value: ViewPortProperties) {
+        if (this.src) {
+            this.injectViewPortMeta();
+        }
+    }
 
     public resolveLocalResourceFilePath(filepath: string): string | void {
         if (!filepath) {
-            this.writeTrace(() => 'AWebView.resolveLocalResourceFilePath() no filepath', Trace.messageType.error);
+            if (Trace.isEnabled()) {
+                Trace.write('WebViewExt.resolveLocalResourceFilePath() no filepath', 'Nota', Trace.messageType.error);
+            }
+
             return;
         }
 
@@ -848,7 +913,13 @@ export class AWebViewBase extends ContainerView {
         }
 
         if (!File.exists(filepath)) {
-            this.writeTrace(() => `resolveLocalResourceFilePath("${filepath}") - no such file`, Trace.messageType.error);
+            if (Trace.isEnabled()) {
+                Trace.write(
+                    `WebViewExt.resolveLocalResourceFilePath("${filepath}") - no such file`,
+                    'Nota',
+                    Trace.messageType.error
+                );
+            }
             return;
         }
 
@@ -873,7 +944,7 @@ export class AWebViewBase extends ContainerView {
     /**
      * Resolve a "x-local://{name}" to file-path.
      */
-    public getRegisteredLocalResource(name: string): string {
+    public getRegisteredLocalResource(name: string): string | void {
         throw new Error('Method not implemented.');
     }
 
@@ -890,7 +961,7 @@ export class AWebViewBase extends ContainerView {
 
         return new Promise<LoadFinishedEventData>((resolve, reject) => {
             const loadFinishedEvent = (args: LoadFinishedEventData) => {
-                this.off(AWebViewBase.loadFinishedEvent, loadFinishedEvent);
+                this.off(WebViewExtBase.loadFinishedEvent, loadFinishedEvent);
                 if (args.error) {
                     reject(args);
                 } else {
@@ -898,7 +969,7 @@ export class AWebViewBase extends ContainerView {
                 }
             };
 
-            this.on(AWebViewBase.loadFinishedEvent, loadFinishedEvent);
+            this.on(WebViewExtBase.loadFinishedEvent, loadFinishedEvent);
 
             this.src = src;
         });
@@ -907,7 +978,7 @@ export class AWebViewBase extends ContainerView {
     /**
      * Load a JavaScript file on the current page in the webview.
      */
-    public loadJavaScriptFile(scriptName: string, filepath?: string) {
+    public loadJavaScriptFile(scriptName: string, filepath: string) {
         return this.loadJavaScriptFiles([
             {
                 resourceName: scriptName,
@@ -924,29 +995,35 @@ export class AWebViewBase extends ContainerView {
             return;
         }
 
-        const promiseScriptCodes = [];
+        const promiseScriptCodes = [] as Promise<string>[];
 
         for (const { resourceName, filepath } of files) {
-            const fixedResourceName = this.fixLocalResourceName(resourceName);
-            if (filepath) {
-                this.registerLocalResource(fixedResourceName, filepath);
-            }
-            const href = `${this.interceptScheme}://${fixedResourceName}`;
-            const scriptCode = this.generateLoadJavaScriptFileScriptCode(href);
+            const scriptCode = this.generateLoadJavaScriptFileScriptCode(resourceName, filepath);
             promiseScriptCodes.push(scriptCode);
-            this.writeTrace(() => `loadJavaScriptFiles: Loading javascript file: "${href}"`);
+            if (Trace.isEnabled()) {
+                Trace.write(
+                    `WebViewExt.loadJavaScriptFiles() - > Loading javascript file: "${filepath}"`,
+                    'NOTA',
+                    Trace.messageType.info
+                );
+            }
         }
 
         if (promiseScriptCodes.length !== files.length) {
-            this.writeTrace(
-                () =>
-                    `loadJavaScriptFiles: Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
-                Trace.messageType.error
-            );
+            if (Trace.isEnabled()) {
+                Trace.write(
+                    `WebViewExt.loadJavaScriptFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
+                    'Nota',
+                    Trace.messageType.error
+                );
+            }
         }
 
         if (!promiseScriptCodes.length) {
-            this.writeTrace(() => 'AWebView.loadJavaScriptFiles: No files');
+            if (Trace.isEnabled()) {
+                Trace.write('WebViewExt.loadJavaScriptFiles() - > No files', 'NOTA', Trace.messageType.info);
+            }
+
             return;
         }
 
@@ -954,7 +1031,7 @@ export class AWebViewBase extends ContainerView {
             return;
         }
 
-        await this.executePromises(promiseScriptCodes);
+        await this.executePromises(await Promise.all(promiseScriptCodes));
     }
 
     /**
@@ -978,35 +1055,32 @@ export class AWebViewBase extends ContainerView {
             return;
         }
 
-        const promiseScriptCodes = [];
+        const promiseScriptCodes = [] as Promise<string>[];
 
         for (const { resourceName, filepath, insertBefore } of files) {
-            const fixedResourceName = this.fixLocalResourceName(resourceName);
-            if (filepath) {
-                this.registerLocalResource(fixedResourceName, filepath);
-            }
-            const href = `${this.interceptScheme}://${fixedResourceName}`;
-            const scriptCode = this.generateLoadCSSFileScriptCode(href, insertBefore);
-
+            const scriptCode = this.generateLoadCSSFileScriptCode(resourceName, filepath, insertBefore);
             promiseScriptCodes.push(scriptCode);
-
-            this.writeTrace(() => `loadStyleSheetFiles: Loading stylesheet file: ${href}`);
         }
 
         if (promiseScriptCodes.length !== files.length) {
-            this.writeTrace(
-                () =>
-                    `loadStyleSheetFiles: Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
-                Trace.messageType.error
-            );
+            if (Trace.isEnabled()) {
+                Trace.write(
+                    `WebViewExt.loadStyleSheetFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
+                    'Nota',
+                    Trace.messageType.error
+                );
+            }
         }
 
         if (!promiseScriptCodes.length) {
-            this.writeTrace(() => 'AWebView.loadStyleSheetFiles: No files');
+            if (Trace.isEnabled()) {
+                Trace.write('WebViewExt.loadStyleSheetFiles() - > No files', 'NOTA', Trace.messageType.info);
+            }
+
             return;
         }
 
-        await this.executePromises(promiseScriptCodes);
+        await this.executePromises(await Promise.all(promiseScriptCodes));
     }
 
     /**
@@ -1077,22 +1151,42 @@ export class AWebViewBase extends ContainerView {
      * Ensure fetch-api is available.
      */
     protected async ensureFetchSupport(): Promise<void> {
-        if (AWebViewBase.isFetchSupported) {
+        if (WebViewExtBase.isFetchSupported) {
             return Promise.resolve();
         }
 
-        if (typeof AWebViewBase.isFetchSupported === 'undefined') {
-            this.writeTrace(() => 'AWebViewBase.ensureFetchSupport() - need to check for fetch support.');
+        if (typeof WebViewExtBase.isFetchSupported === 'undefined') {
+            if (Trace.isEnabled()) {
+                Trace.write(
+                    'WebViewExtBase.ensureFetchSupport() - need to check for fetch support.',
+                    'NOTA',
+                    Trace.messageType.info
+                );
+            }
 
-            AWebViewBase.isFetchSupported = await this.executeJavaScript<boolean>("typeof fetch !== 'undefined'");
+            WebViewExtBase.isFetchSupported = await this.executeJavaScript<boolean>("typeof fetch !== 'undefined'");
         }
 
-        if (AWebViewBase.isFetchSupported) {
-            this.writeTrace(() => 'AWebViewBase.ensureFetchSupport() - fetch is supported - polyfill not needed.');
+        if (WebViewExtBase.isFetchSupported) {
+            if (Trace.isEnabled()) {
+                Trace.write(
+                    'WebViewExtBase.ensureFetchSupport() - fetch is supported - polyfill not needed.',
+                    'NOTA',
+                    Trace.messageType.info
+                );
+            }
+
             return;
         }
 
-        this.writeTrace(() => 'AWebViewBase.ensureFetchSupport() - fetch is not supported - polyfill needed.');
+        if (Trace.isEnabled()) {
+            Trace.write(
+                'WebViewExtBase.ensureFetchSupport() - fetch is not supported - polyfill needed.',
+                'NOTA',
+                Trace.messageType.info
+            );
+        }
+
         // return await this.loadFetchPolyfill();
     }
 
@@ -1105,39 +1199,57 @@ export class AWebViewBase extends ContainerView {
      * Inject the promise-polyfill if needed.
      */
     protected async ensurePromiseSupport() {
-        if (AWebViewBase.isPromiseSupported) {
+        if (WebViewExtBase.isPromiseSupported) {
             return;
         }
 
-        if (typeof AWebViewBase.isPromiseSupported === 'undefined') {
-            this.writeTrace(() => 'AWebViewBase.ensurePromiseSupport() - need to check for promise support.');
+        if (typeof WebViewExtBase.isPromiseSupported === 'undefined') {
+            if (Trace.isEnabled()) {
+                Trace.write(
+                    'WebViewExtBase.ensurePromiseSupport() - need to check for promise support.',
+                    'NOTA',
+                    Trace.messageType.info
+                );
+            }
 
-            AWebViewBase.isPromiseSupported = await this.executeJavaScript<boolean>("typeof Promise !== 'undefined'");
+            WebViewExtBase.isPromiseSupported = await this.executeJavaScript<boolean>("typeof Promise !== 'undefined'");
         }
 
-        if (AWebViewBase.isPromiseSupported) {
-            this.writeTrace(() => 'AWebViewBase.ensurePromiseSupport() - promise is supported - polyfill not needed.');
+        if (WebViewExtBase.isPromiseSupported) {
+            if (Trace.isEnabled()) {
+                Trace.write(
+                    'WebViewExtBase.ensurePromiseSupport() - promise is supported - polyfill not needed.',
+                    'NOTA',
+                    Trace.messageType.info
+                );
+            }
+
             return;
         }
 
-        this.writeTrace(() => 'AWebViewBase.ensurePromiseSupport() - promise is not supported - polyfill needed.');
-        // await this.loadPromisePolyfill();
+        if (Trace.isEnabled()) {
+            Trace.write(
+                'WebViewExtBase.ensurePromiseSupport() - promise is not supported - polyfill needed.',
+                'NOTA',
+                Trace.messageType.info
+            );
+        }
+        await this.loadPromisePolyfill();
     }
 
-    // protected async loadPromisePolyfill() {
-    //     await this.executeJavaScript<void>(promisePolyfill, false);
-    // }
+    protected async loadPromisePolyfill() {
+        await this.executeJavaScript<void>(promisePolyfill, false);
+    }
 
-    // protected async ensurePolyfills() {
-    //     await this.ensurePromiseSupport();
-    //     await this.ensureFetchSupport();
-    // }
+    protected async ensurePolyfills() {
+        await this.ensurePromiseSupport();
+        // await this.ensureFetchSupport();
+    }
 
     /**
      * Execute JavaScript inside the webview.
      * The code should be wrapped inside an anonymous-function.
      * Larger scripts should be injected with loadJavaScriptFile.
-     * NOTE: It's not possible to capture syntax errors on UIWebView.
      * NOTE: stringifyResult only applies on iOS.
      */
     public executeJavaScript<T>(scriptCode: string, stringifyResult?: boolean): Promise<T> {
@@ -1167,10 +1279,20 @@ export class AWebViewBase extends ContainerView {
             var p = Promise.resolve();
         `.trim();
 
-        const scriptBody = [];
+        const scriptBody = [] as string[];
 
-        // Execute the promises in order, one at a time.
         for (const scriptCode of scriptCodes) {
+            if (!scriptCode) {
+                continue;
+            }
+
+            if (typeof scriptCode !== 'string') {
+                if (Trace.isEnabled()) {
+                    Trace.write('WebViewExt.executePromises() - scriptCode is not a string', 'NOTA', Trace.messageType.info);
+                }
+                continue;
+            }
+
             // Wrapped in a Promise.then to delay executing scriptCode till the previous promise have finished
             scriptBody.push(
                 `
@@ -1215,19 +1337,29 @@ export class AWebViewBase extends ContainerView {
                 // Was it a success? No 'err' received.
                 if (typeof err === 'undefined') {
                     resolve(data);
+
                     return;
                 }
 
                 // Rejected promise.
                 if (err && typeof err === 'object') {
                     // err is an object. Might be a serialized Error-object.
-                    const error = new Error(err.message || err);
+                    const error = new Error(err.message || err.name || err);
                     if (err.stack) {
                         // Add the web stack to the Error object.
                         (error as any).webStack = err.stack;
                     }
 
+                    for (const [key, value] of Object.entries(err)) {
+                        if (key in error) {
+                            continue;
+                        }
+
+                        error[key] = value;
+                    }
+
                     reject(error);
+
                     return;
                 }
 
@@ -1235,7 +1367,6 @@ export class AWebViewBase extends ContainerView {
             };
 
             this.once(eventName, tmpPromiseEvent);
-
             this.executeJavaScript(promiseScriptCode, false);
 
             if (timeout > 0) {
@@ -1251,46 +1382,77 @@ export class AWebViewBase extends ContainerView {
     /**
      * Generate script code for loading javascript-file.
      */
-    public generateLoadJavaScriptFileScriptCode(scriptHref: string) {
-        return `window.nsWebViewBridge.injectJavaScriptFile(${JSON.stringify(scriptHref)});`;
+    public async generateLoadJavaScriptFileScriptCode(resourceName: string, path: string) {
+        if (this.supportXLocalScheme) {
+            const fixedResourceName = this.fixLocalResourceName(resourceName);
+            if (path) {
+                this.registerLocalResource(fixedResourceName, path);
+            }
+
+            const scriptHref = `${this.interceptScheme}://${fixedResourceName}`;
+
+            return `window.nsWebViewBridge.injectJavaScriptFile(${JSON.stringify(scriptHref)});`;
+        } else {
+            const elId = resourceName.replace(/^[:]*:\/\//, '').replace(/[^a-z0-9]/g, '');
+            const scriptCode = await File.fromPath(this.resolveLocalResourceFilePath(path) as string).readText();
+
+            return `window.nsWebViewBridge.injectJavaScript(${JSON.stringify(elId)}, ${scriptCode});`;
+        }
     }
 
     /**
      * Generate script code for loading CSS-file.generateLoadCSSFileScriptCode
      */
-    public generateLoadCSSFileScriptCode(stylesheetHref: string, insertBefore = false) {
-        return `window.nsWebViewBridge.injectStyleSheetFile(${JSON.stringify(stylesheetHref)}, ${!!insertBefore});`;
+    public async generateLoadCSSFileScriptCode(resourceName: string, path: string, insertBefore = false) {
+        if (this.supportXLocalScheme) {
+            resourceName = this.fixLocalResourceName(resourceName);
+            if (path) {
+                this.registerLocalResource(resourceName, path);
+            }
+
+            const stylesheetHref = `${this.interceptScheme}://${resourceName}`;
+
+            return `window.nsWebViewBridge.injectStyleSheetFile(${JSON.stringify(stylesheetHref)}, ${!!insertBefore});`;
+        } else {
+            const elId = resourceName.replace(/^[:]*:\/\//, '').replace(/[^a-z0-9]/g, '');
+
+            const stylesheetCode = await File.fromPath(this.resolveLocalResourceFilePath(path) as string).readText();
+
+            return `window.nsWebViewBridge.injectStyleSheet(${JSON.stringify(elId)}, ${JSON.stringify(
+                stylesheetCode
+            )}, ${!!insertBefore})`;
+        }
     }
 
     /**
      * Inject WebView JavaScript Bridge.
      */
-    // protected async injectWebViewBridge(): Promise<void> {
-    //     // await this.executeJavaScript(webViewBridge, false);
-    //     // await this.ensurePolyfills();
-    //     await this.injectViewPortMeta();
-    // }
+    protected async injectWebViewBridge(): Promise<void> {
+        await this.executeJavaScript(webViewBridge, false);
+        await this.ensurePolyfills();
+        await this.injectViewPortMeta();
+    }
 
-    // protected async injectViewPortMeta(): Promise<void> {
-    //     const scriptCode = await this.generateViewPortCode();
-    //     if (!scriptCode) {
-    //         return;
-    //     }
+    protected async injectViewPortMeta(): Promise<void> {
+        const scriptCode = await this.generateViewPortCode();
+        if (!scriptCode) {
+            return;
+        }
 
-    //     await this.executeJavaScript(scriptCode, false);
-    // }
+        await this.executeJavaScript(scriptCode, false);
+    }
 
-    // public async generateViewPortCode(): Promise<string | null> {
-    //     if (this.viewPortSize === false) {
-    //         return null;
-    //     }
+    public async generateViewPortCode(): Promise<string | null> {
+        if (this.viewPortSize === false) {
+            return null;
+        }
 
-    //     const scriptCodeTmpl = metadataViewPort;
+        const scriptCodeTmpl = metadataViewPort;
 
-    //     const viewPortCode = JSON.stringify(this.viewPortSize || {});
+        const viewPortCode = JSON.stringify(this.viewPortSize || {});
 
-    //     return scriptCodeTmpl.replace('"<%= VIEW_PORT %>"', viewPortCode);
-    // }
+        return scriptCodeTmpl.replace('"<%= VIEW_PORT %>"', viewPortCode);
+    }
 
     /**
      * Convert response from WebView into usable JS-type.
@@ -1311,9 +1473,9 @@ export class AWebViewBase extends ContainerView {
         }
     }
 
-    public writeTrace(message: () => string, type = Trace.messageType.info) {
+    public writeTrace(message: string, type = Trace.messageType.info) {
         if (Trace.isEnabled()) {
-            Trace.write(message(), AWebViewTraceCategory, type);
+            Trace.write(message, 'NOTA', type);
         }
     }
 
@@ -1344,15 +1506,8 @@ export class AWebViewBase extends ContainerView {
      * Get document.title
      * NOTE: On Android, if empty returns filename
      */
-    public getTitle(): Promise<string> {
+    public getTitle(): Promise<string | void> {
         throw new Error('Method not implemented.');
-    }
-
-    /**
-     * Handles UIWebView events. Called from the delegate
-     */
-    public onUIWebViewEvent(url: string) {
-        throw new Error('AWebView.onUIWebViewEvent() only available on iOS');
     }
 
     public zoomIn(): boolean {
@@ -1377,10 +1532,14 @@ export class AWebViewBase extends ContainerView {
 
         return resourceName;
     }
+
+    [isEnabledProperty.getDefault]() {
+        return true;
+    }
 }
 
 // eslint-disable-next-line no-redeclare
-export interface AWebViewBase {
+export interface WebViewExtBase {
     /**
      * A basic method signature to hook an event listener (shortcut alias to the addEventListener method).
      * @param eventNames - String corresponding to events (e.g. "propertyChange"). Optionally could be used more events separated by `,` (e.g. "propertyChange", "change").
@@ -1424,7 +1583,6 @@ export interface AWebViewBase {
     /**
      * Override web alerts to replace them.
      * Call args.cancel() on close.
-     * NOTE: Not supported on UIWebView
      */
     on(event: EventNames.WebAlert, callback: (args: WebAlertEventData) => void, thisArg?: any);
     once(event: EventNames.WebAlert, callback: (args: WebAlertEventData) => void, thisArg?: any);
@@ -1432,7 +1590,6 @@ export interface AWebViewBase {
     /**
      * Override web confirm dialogs to replace them.
      * Call args.cancel(res) on close.
-     * NOTE: Not supported on UIWebView
      */
     on(event: EventNames.WebConfirm, callback: (args: WebConfirmEventData) => void, thisArg?: any);
     once(event: EventNames.WebConfirm, callback: (args: WebConfirmEventData) => void, thisArg?: any);
@@ -1440,7 +1597,6 @@ export interface AWebViewBase {
     /**
      * Override web confirm prompts to replace them.
      * Call args.cancel(res) on close.
-     * NOTE: Not supported on UIWebView
      */
     on(event: EventNames.WebPrompt, callback: (args: WebPromptEventData) => void, thisArg?: any);
     once(event: EventNames.WebPrompt, callback: (args: WebPromptEventData) => void, thisArg?: any);
@@ -1452,84 +1608,17 @@ export interface AWebViewBase {
     once(event: EventNames.WebConsole, callback: (args: WebConsoleEventData) => void, thisArg?: any);
 }
 
-autoInjectJSBridgeProperty.register(AWebViewBase);
-builtInZoomControlsProperty.register(AWebViewBase);
-cacheModeProperty.register(AWebViewBase);
-databaseStorageProperty.register(AWebViewBase);
-debugModeProperty.register(AWebViewBase);
-displayZoomControlsProperty.register(AWebViewBase);
-domStorageProperty.register(AWebViewBase);
-srcProperty.register(AWebViewBase);
-supportZoomProperty.register(AWebViewBase);
-scrollBounceProperty.register(AWebViewBase);
-scalesPageToFitProperty.register(AWebViewBase);
-viewPortProperty.register(AWebViewBase);
-isScrollEnabledProperty.register(AWebViewBase);
-
-/**
- * IOS uses a bridge class to map calls to UIWebView or WKWebView
- */
-export interface IOSWebViewWrapper {
-    owner: WeakRef<AWebViewBase>;
-
-    /**
-     * Create Native View object
-     */
-    createNativeView(): any;
-
-    /**
-     * Init the native view.
-     */
-    initNativeView(): void;
-
-    /**
-     * Dispose the native view
-     */
-    disposeNativeView(): void;
-
-    /**
-     * Add Delegate on loaded event
-     */
-    onLoaded(): void;
-
-    /**
-     * Null the delegate on unloaded event.
-     */
-    onUnloaded(): void;
-
-    // Resource APIs
-    executeJavaScript(scriptCode: string): Promise<any>;
-    registerLocalResourceForNative(resourceName: string, filepath: string): void;
-    unregisterLocalResourceForNative(resourceName: string): void;
-    getRegisteredLocalResourceFromNative(resourceName: string): string;
-    autoLoadStyleSheetFile(resourceName: string, filepath: string, insertBefore?: boolean): void;
-    removeAutoLoadStyleSheetFile(resourceName: string): void;
-    autoLoadJavaScriptFile(resourceName: string, filepath: string): Promise<void>;
-    removeAutoLoadJavaScriptFile(resourceName: string): void;
-
-    // resetViewPortCode(): Promise<void>;
-
-    // WebView calls and properties
-    stopLoading(): void;
-    loadUrl(url: string): void;
-    loadData(content: string): void;
-    readonly canGoBack: boolean;
-    readonly canGoForward: boolean;
-    goBack(): void;
-    goForward(): void;
-    reload(): void;
-
-    /**
-     * Should WebViewBridge be inject on loadFinished?
-     * WKWebView uses WKUserScripts for this.
-     */
-    readonly shouldInjectWebViewBridge: boolean;
-
-    /**
-     * Enable/Disable auto injection of scripts.
-     */
-    enableAutoInject(enable: boolean): void;
-
-    scrollBounce: boolean;
-    scalesPageToFit: boolean;
-}
+autoInjectJSBridgeProperty.register(WebViewExtBase);
+builtInZoomControlsProperty.register(WebViewExtBase);
+cacheModeProperty.register(WebViewExtBase);
+databaseStorageProperty.register(WebViewExtBase);
+debugModeProperty.register(WebViewExtBase);
+webConsoleProperty.register(WebViewExtBase);
+displayZoomControlsProperty.register(WebViewExtBase);
+domStorageProperty.register(WebViewExtBase);
+srcProperty.register(WebViewExtBase);
+supportZoomProperty.register(WebViewExtBase);
+scrollBounceProperty.register(WebViewExtBase);
+viewPortProperty.register(WebViewExtBase);
+isScrollEnabledProperty.register(WebViewExtBase);
+scalesPageToFitProperty.register(WebViewExtBase);
