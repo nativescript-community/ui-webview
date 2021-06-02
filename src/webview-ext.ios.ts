@@ -117,6 +117,7 @@ export class AWebView extends WebViewExtBase {
 
         const rawResult = await new Promise<any>((resolve, reject) => {
             nativeView.evaluateJavaScriptCompletionHandler(scriptCode.trim(), (result, error) => {
+                console.log('evaluateJavaScriptCompletionHandler', result, error);
                 if (error) {
                     reject(error);
 
@@ -744,7 +745,7 @@ export class WKScriptMessageHandlerNotaImpl extends NSObject implements WKScript
 
         try {
             const message = JSON.parse(webViewMessage.body as string);
-            owner.onWebViewEvent(message.eventName, message.data);
+            owner.onWebViewEvent(message.eventName, JSON.parse(message.data));
         } catch (err) {
             owner.writeTrace(
                 `userContentControllerDidReceiveScriptMessage(${userContentController}, ${webViewMessage}) - bad message: ${webViewMessage.body}`,
