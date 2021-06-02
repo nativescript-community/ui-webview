@@ -489,7 +489,6 @@ function initializeWebViewClient(): void {
                     }
                 }
 
-                console.log('handleConsoleMessage',message, lineNo, level);
                 return owner._webConsole(message, lineNo, level);
             }
 
