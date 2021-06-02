@@ -315,6 +315,7 @@ function initializeWebViewClient(): void {
             }
             owner._onLoadFinished(failingUrl, `${description}(${errorCode})`).catch(() => void 0);
         }
+
     }
 
     WebViewExtClient = WebViewExtClientImpl;
@@ -494,6 +495,43 @@ function initializeWebViewClient(): void {
 
             return false;
         }
+        async _onPermissionsRequest (permissionRequest: android.webkit.PermissionRequest) {
+            try {
+                const requests = permissionRequest.getResources();
+                const wantedPermissions = new Array();
+                const requestedPermissions = new Array();
+                for (let i = 0; i < requests.length; i += 1) {
+                    switch (requests[i]) {
+                        case android.webkit.PermissionRequest.RESOURCE_AUDIO_CAPTURE: {
+                            requestedPermissions.push(android.webkit.PermissionRequest.RESOURCE_AUDIO_CAPTURE);
+                            wantedPermissions.push("audio");
+                            break;
+                        }
+                        case android.webkit.PermissionRequest.RESOURCE_VIDEO_CAPTURE: {
+                            requestedPermissions.push(android.webkit.PermissionRequest.RESOURCE_VIDEO_CAPTURE);
+                            wantedPermissions.push("camera");
+                            break;
+                        }
+                    }
+                }
+                if (requestedPermissions.length === 0) {
+                    permissionRequest.deny();
+                }
+                await this.owner.get()._onRequestPermissions(wantedPermissions);
+            
+                permissionRequest.grant(requestedPermissions);
+            } catch(err) {
+                console.error(err);
+                permissionRequest.deny();
+            }
+        }
+        onPermissionRequest (permissionRequest: android.webkit.PermissionRequest) {
+            this._onPermissionsRequest(permissionRequest);
+        }
+        // onPermissionRequestCanceled (permissionRequest: android.webkit.PermissionRequest) {
+        //     console.log("onPermissionRequestCanceled", permissionRequest);
+        //     return super.onPermissionRequestCanceled(permissionRequest);
+        // }
     }
 
     WebChromeViewExtClient = WebChromeViewExtClientImpl;

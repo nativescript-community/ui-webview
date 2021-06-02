@@ -30,6 +30,10 @@
 	<array>
 		<string>armv7</string>
 	</array>
+
+
+    <key>NSCameraUsageDescription</key>
+    <string>lokavaluto needs your camera to scan QRCodes</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

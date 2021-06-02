@@ -7,6 +7,7 @@ import {
     ShouldOverrideUrlLoadEventData,
 } from '@nativescript-community/ui-webview';
 import * as fastEqual from 'fast-deep-equal';
+import { request } from '@nativescript-community/perms';
 
 let webview: AWebView;
 let page: Page;
@@ -26,7 +27,7 @@ export function webviewLoaded(args: LoadEventData) {
     // } else {
     //     webview.src = 'http://localhost:8080';
     // }
-    webview.src = "~/assets/test-data/html/javascript-calls.html";
+    webview.src = "~/assets/test-data/html/camera.html";
 
     webview.on(AWebView.shouldOverrideUrlLoadingEvent, (args: ShouldOverrideUrlLoadEventData) => {
         console.log(`${args.httpMethod} ${args.url}`);
@@ -37,12 +38,18 @@ export function webviewLoaded(args: LoadEventData) {
 
     webview.on(AWebView.loadFinishedEvent, (args: LoadFinishedEventData) => {
         console.log(`WebViewExt.loadFinishedEvent: ${args.url}`);
-        webview.loadStyleSheetFile('local-stylesheet.css', '~/assets/test-data/css/local-stylesheet.css', false);
+        // webview.loadStyleSheetFile('local-stylesheet.css', '~/assets/test-data/css/local-stylesheet.css', false);
     });
 
     webview.on('gotMessage', (msg) => {
         gotMessageData = msg.data;
         console.log(`webview.gotMessage: ${JSON.stringify(msg.data)} (${typeof msg})`);
+    });
+
+    webview.on('requestPermissions', async (args: any) => {
+        // only android
+        const res = await request(args.permissions[0]);
+        args.callback(res[0] === 'authorized');
     });
 }
 

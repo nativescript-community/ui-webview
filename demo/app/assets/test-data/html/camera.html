@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+    video {
+        object-fit: cover;
+        position: absolute;
+        min-width: 100%;
+        min-height: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    </style>
+    <head>
+        <title>Blank</title>
+    </head>
+    <body>
+        <video autoplay playsinline style='z-index:-1;'>
+    </video>
+    <button onclick="startCam()">startCam</button>
+
+<script>
+
+    function startCam() {
+        console.log('startCam')
+        const constraints = {
+  video: true,
+};
+
+const video = document.querySelector("video");
+
+navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+  video.srcObject = stream;
+});
+video.onloadedmetadata = function (e) {
+                    video.play();
+                };
+    }
+
+</script>
+    </body>
+</html>

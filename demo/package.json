@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/NativeScript/nativescript-app-templates",
   "dependencies": {
+    "@nativescript-community/perms": "^2.1.6",
     "@nativescript-community/ui-webview": "file:../plugin",
     "@nativescript/core": "~8.0.7",
     "@nativescript/theme": "~3.0.1",
