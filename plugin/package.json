@@ -30,7 +30,7 @@
         "url": "https://github.com/nativescript-community/ui-webview/issues"
     },
     "dependencies": {
-        "normalize-url": "^7.0.0"
+        "url": "^0.11.0"
     },
     "gitHead": "afa99a5f27006ed7545af88d2f8544fc1721e41c"
 }
