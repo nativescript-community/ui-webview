@@ -1,7 +1,16 @@
 import { File, Trace, alert, confirm, knownFolders, profile, prompt } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import { webViewBridge } from './nativescript-webview-bridge-loader';
-import { NavigationType, WebViewExtBase, autoInjectJSBridgeProperty, scrollBounceProperty, NotaTraceCategory, webRTCProperty, mediaPlaybackRequiresUserActionProperty, allowsInlineMediaPlaybackProperty } from './webview-ext-common';
+import {
+    NavigationType,
+    NotaTraceCategory,
+    WebViewExtBase,
+    allowsInlineMediaPlaybackProperty,
+    autoInjectJSBridgeProperty,
+    mediaPlaybackRequiresUserActionProperty,
+    scrollBounceProperty,
+    webRTCProperty,
+} from './webview-ext-common';
 
 export * from './webview-ext-common';
 
@@ -10,7 +19,7 @@ const messageHandlerName = 'nsBridge';
 export class AWebView extends WebViewExtBase {
     public ios: WKWebView;
     nativeViewProtected: WKWebView;
-    webViewRTC: WKWebViewRTC
+    webViewRTC: WKWebViewRTC;
 
     public static supportXLocalScheme = typeof CustomUrlSchemeHandler !== 'undefined';
 
@@ -457,12 +466,17 @@ export class AWebView extends WebViewExtBase {
             return;
         }
 
-        this.webViewRTC = WKWebViewRTC.alloc().initWithWkwebviewContentController(nativeView, nativeView.configuration.userContentController);
+        this.webViewRTC = WKWebViewRTC.alloc().initWithWkwebviewContentController(
+            nativeView,
+            nativeView.configuration.userContentController
+        );
     }
 
     [mediaPlaybackRequiresUserActionProperty.setNative](enabled: boolean) {
-        this.nativeViewProtected.configuration.setValueForKey(enabled?WKAudiovisualMediaTypes.All:WKAudiovisualMediaTypes.None, 'mediaTypesRequiringUserActionForPlayback');
-
+        this.nativeViewProtected.configuration.setValueForKey(
+            enabled ? WKAudiovisualMediaTypes.All : WKAudiovisualMediaTypes.None,
+            'mediaTypesRequiringUserActionForPlayback'
+        );
     }
     [allowsInlineMediaPlaybackProperty.setNative](enabled: boolean) {
         this.nativeViewProtected.configuration.setValueForKey(enabled, 'allowsInlineMediaPlayback');
