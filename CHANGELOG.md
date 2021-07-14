@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/nativescript-community/ui-webview/compare/v1.2.1...v1.2.2) (2021-07-14)
+
+
+### Bug Fixes
+
+* drop url dependency for smaller build ([0e3e172](https://github.com/nativescript-community/ui-webview/commit/0e3e172e4622729a3a41742ac533c0139a0e1080))
+
+
+
+
+
 ## [1.2.1](https://github.com/nativescript-community/ui-webview/compare/v1.2.0...v1.2.1) (2021-06-02)
 
 
