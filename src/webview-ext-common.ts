@@ -11,8 +11,8 @@ import {
     path,
 } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
-import * as URL from 'url';
 import { metadataViewPort, webViewBridge, promisePolyfill } from './nativescript-webview-bridge-loader';
+import normalizeUrl from 'normalize-url';
 
 export interface ViewPortProperties {
     width?: number | 'device-width';
@@ -1170,7 +1170,7 @@ export class WebViewExtBase extends ContainerView {
             return url;
         }
 
-        return URL.parse(url).format();
+        return normalizeUrl(url);
     }
 
     /**
