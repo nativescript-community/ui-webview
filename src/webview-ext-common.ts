@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unified-signatures */
 /* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 import {
     CSSType,
@@ -11,8 +12,8 @@ import {
     path,
 } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
-import { metadataViewPort, webViewBridge, promisePolyfill } from './nativescript-webview-bridge-loader';
 import normalizeUrl from 'normalize-url';
+import { metadataViewPort, promisePolyfill, webViewBridge } from './nativescript-webview-bridge-loader';
 
 export interface ViewPortProperties {
     width?: number | 'device-width';
@@ -349,7 +350,7 @@ export interface WebConsoleEventData extends WebViewExtEventData {
 export interface RequestPermissionsEventData extends WebViewExtEventData {
     eventName: EventNames.RequestPermissions;
     url: string;
-    permissions: string[]
+    permissions: string[];
 }
 
 /**
@@ -600,9 +601,11 @@ export class WebViewExtBase extends ContainerView {
 
         this.notify(args);
 
-        this.getTitle()
-            .then((title) => title && this._titleChanged(title))
-            .catch(() => void 0);
+        if (this.hasListeners(WebViewExtBase.titleChangedEvent)) {
+            this.getTitle()
+                .then((title) => title && this._titleChanged(title))
+                .catch(() => void 0);
+        }
 
         return args;
     }
@@ -1563,21 +1566,20 @@ export class WebViewExtBase extends ContainerView {
         return true;
     }
 
-    async _onRequestPermissions (permissions) {
+    async _onRequestPermissions(permissions) {
         if (!this.hasListeners(EventNames.RequestPermissions)) {
-            return false
+            return false;
         }
-        return new Promise<void>((resolve, reject)=>{
+        return new Promise<void>((resolve, reject) => {
             const args = {
                 eventName: EventNames.RequestPermissions,
                 object: this,
                 url: this.src,
-                permissions: permissions,
-                callback: function (allow) {
+                permissions,
+                callback(allow) {
                     if (allow) {
                         resolve();
-                    }
-                    else {
+                    } else {
                         reject();
                     }
                 },

@@ -2,8 +2,10 @@ import { File, Trace, knownFolders } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import {
     CacheMode,
+    NotaTraceCategory,
     UnsupportedSDKError,
     WebViewExtBase,
+    allowsInlineMediaPlaybackProperty,
     builtInZoomControlsProperty,
     cacheModeProperty,
     databaseStorageProperty,
@@ -11,11 +13,9 @@ import {
     displayZoomControlsProperty,
     domStorageProperty,
     isScrollEnabledProperty,
+    mediaPlaybackRequiresUserActionProperty,
     supportZoomProperty,
     webConsoleProperty,
-    NotaTraceCategory,
-    mediaPlaybackRequiresUserActionProperty,
-    allowsInlineMediaPlaybackProperty,
 } from './webview-ext-common';
 
 export * from './webview-ext-common';
@@ -317,7 +317,6 @@ function initializeWebViewClient(): void {
             }
             owner._onLoadFinished(failingUrl, `${description}(${errorCode})`).catch(() => void 0);
         }
-
     }
 
     WebViewExtClient = WebViewExtClientImpl;
@@ -496,7 +495,7 @@ function initializeWebViewClient(): void {
 
             return false;
         }
-        async _onPermissionsRequest (permissionRequest: android.webkit.PermissionRequest) {
+        async _onPermissionsRequest(permissionRequest: android.webkit.PermissionRequest) {
             try {
                 const requests = permissionRequest.getResources();
                 const wantedPermissions = new Array();
@@ -505,12 +504,12 @@ function initializeWebViewClient(): void {
                     switch (requests[i]) {
                         case android.webkit.PermissionRequest.RESOURCE_AUDIO_CAPTURE: {
                             requestedPermissions.push(android.webkit.PermissionRequest.RESOURCE_AUDIO_CAPTURE);
-                            wantedPermissions.push("audio");
+                            wantedPermissions.push('audio');
                             break;
                         }
                         case android.webkit.PermissionRequest.RESOURCE_VIDEO_CAPTURE: {
                             requestedPermissions.push(android.webkit.PermissionRequest.RESOURCE_VIDEO_CAPTURE);
-                            wantedPermissions.push("camera");
+                            wantedPermissions.push('camera');
                             break;
                         }
                     }
@@ -519,14 +518,14 @@ function initializeWebViewClient(): void {
                     permissionRequest.deny();
                 }
                 await this.owner.get()._onRequestPermissions(wantedPermissions);
-            
+
                 permissionRequest.grant(requestedPermissions);
-            } catch(err) {
+            } catch (err) {
                 console.error(err);
                 permissionRequest.deny();
             }
         }
-        onPermissionRequest (permissionRequest: android.webkit.PermissionRequest) {
+        onPermissionRequest(permissionRequest: android.webkit.PermissionRequest) {
             this._onPermissionsRequest(permissionRequest);
         }
         // onPermissionRequestCanceled (permissionRequest: android.webkit.PermissionRequest) {
@@ -654,7 +653,7 @@ export class AWebView extends WebViewExtBase {
             return;
         }
 
-        return await super.ensurePromiseSupport();
+        return super.ensurePromiseSupport();
     }
 
     public _loadUrl(src: string) {
@@ -680,7 +679,11 @@ export class AWebView extends WebViewExtBase {
 
         const baseUrl = `file:///${knownFolders.currentApp().path}/`;
         if (Trace.isEnabled()) {
-            Trace.write(`WebViewExt<android>._loadData("${src}") -> baseUrl: "${baseUrl}"`, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(
+                `WebViewExt<android>._loadData("${src}") -> baseUrl: "${baseUrl}"`,
+                NotaTraceCategory,
+                Trace.messageType.info
+            );
         }
         nativeView.loadDataWithBaseURL(baseUrl, src, 'text/html', 'utf-8', null!);
     }
@@ -760,7 +763,11 @@ export class AWebView extends WebViewExtBase {
 
     public unregisterLocalResource(resourceName: string) {
         if (Trace.isEnabled()) {
-            Trace.write(`WebViewExt<android>.unregisterLocalResource("${resourceName}")`, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(
+                `WebViewExt<android>.unregisterLocalResource("${resourceName}")`,
+                NotaTraceCategory,
+                Trace.messageType.info
+            );
         }
         resourceName = this.fixLocalResourceName(resourceName);
 
@@ -828,7 +835,11 @@ export class AWebView extends WebViewExtBase {
             const androidWebView = this.nativeViewProtected;
             if (!androidWebView) {
                 if (Trace.isEnabled()) {
-                    Trace.write('WebViewExt<android>.executeJavaScript() -> no nativeView?', NotaTraceCategory, Trace.messageType.error);
+                    Trace.write(
+                        'WebViewExt<android>.executeJavaScript() -> no nativeView?',
+                        NotaTraceCategory,
+                        Trace.messageType.error
+                    );
                 }
                 reject(new Error('Native Android not initialized, cannot call executeJavaScript'));
 
@@ -1064,7 +1075,6 @@ export class AWebView extends WebViewExtBase {
             );
         }
     }
-
 
     [mediaPlaybackRequiresUserActionProperty.setNative](enabled: boolean) {
         this.nativeViewProtected.getSettings().setMediaPlaybackRequiresUserGesture(enabled);
