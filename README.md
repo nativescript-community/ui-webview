@@ -36,9 +36,14 @@ This registers the element `AWebView`. Replace the <WebView> tag with <AWebView>
 
 ### Vue support
 
-Import `@nativescript-community/ui-webview/vue` in your app entry file (likely app.js or main.js).
+```js
+import Vue from 'nativescript-vue';
+import WebViewPlugin from '@nativescript-community/ui-webview/vue';
 
+Vue.use(WebViewPlugin);
+```
 This registers the element `AWebView`. Replace the <WebView> tag with <AWebView>
+
 
 ## Usage
 
