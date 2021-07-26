@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.4](https://github.com/nativescript-community/ui-webview/compare/v1.2.3...v1.2.4) (2021-07-26)
+
+
+### Bug Fixes
+
+* vue plugin import fix ([5462566](https://github.com/nativescript-community/ui-webview/commit/546256633d816f9e673bde48dcc555f311962b27))
+
+
+
+
+
 ## [1.2.3](https://github.com/nativescript-community/ui-webview/compare/v1.2.2...v1.2.3) (2021-07-14)
 
 
