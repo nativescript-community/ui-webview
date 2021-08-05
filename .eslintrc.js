@@ -1,13 +1,22 @@
 module.exports = {
     extends: ['plugin:prettier/recommended'],
-    plugins: ['prettier', '@typescript-eslint'],
+    plugins: ['@nativescript', 'prettier', '@typescript-eslint'],
     parser: '@typescript-eslint/parser',
     parserOptions: {
-        createDefaultProgram: true,
-        project: './tsconfig.json',
+        ecmaVersion: 2018,
+        sourceType: 'module',
+        parser: '@typescript-eslint/parser',
+        project: 'tsconfig.eslint.json',
+        extraFileExtensions: ['.vue'],
+        warnOnUnsupportedTypeScriptVersion: false,
+        tsconfigRootDir: __dirname,
+        createDefaultProgram: true
     },
     rules: {
         'prettier/prettier': 'warn',
+        '@nativescript/no-nativescript-angular-imports': 'warn',
+        '@nativescript/no-tns-core-modules-imports': 'warn',
+        '@nativescript/no-duplicate-ns-imports': 'warn',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/array-type': 'error',
         '@typescript-eslint/await-thenable': 'error',
@@ -21,7 +30,19 @@ module.exports = {
                 accessibility: 'explicit',
             },
         ],
-
+        '@typescript-eslint/indent': [
+            'error',
+            4,
+            {
+                FunctionDeclaration: {
+                    parameters: 'first',
+                },
+                FunctionExpression: {
+                    parameters: 'first',
+                },
+                SwitchCase: 1,
+            },
+        ],
         '@typescript-eslint/interface-name-prefix': 'off',
         '@typescript-eslint/member-delimiter-style': 'error',
         '@typescript-eslint/member-ordering': 'off',

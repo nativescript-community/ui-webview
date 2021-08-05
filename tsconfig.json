@@ -4,11 +4,12 @@
         "module": "esnext",
         "moduleResolution": "node",
         "removeComments": true,
-        "downlevelIteration": true,
         "noLib": false,
         "emitDecoratorMetadata": false,
         "experimentalDecorators": true,
-        "lib": ["es6", "dom", "es2017"],
+        "jsx": "react",
+        "lib": ["es2019", "dom"],
+        "types": ["node", "svelte"],
         "sourceMap": true,
         "pretty": true,
         "allowUnreachableCode": false,
@@ -19,24 +20,19 @@
         "noImplicitReturns": true,
         "noImplicitUseStrict": true,
         "noFallthroughCasesInSwitch": true,
-        "sourceRoot": "src",
+        "sourceRoot": "../src",
         "baseUrl": ".",
-        "outDir": "./plugin",
+        "outDir": "./packages",
         "paths": {
-            "tns-core-modules": ["./node_modules/@nativescript/core"],
-            "@nativescript/core/*": ["./node_modules/@nativescript/core/*"],
-            "nativescript-canvaslabel": ["src/canvaslabel"],
-            "nativescript-canvaslabel/*": ["src/*"],
+            "@nativescript-community/ui-webview": ["src/webview/index"],
+            "@nativescript-community/ui-webview/*": ["src/*"],
             "*": ["node_modules/*"]
         },
-        "plugins": [
-          { "transform": "./node_modules/@nativescript/webpack/transformers/ns-transform-native-classes", "type": "raw" }
-        ]
+        "plugins": [{ "transform": "@nativescript/webpack/transformers/ns-transform-native-classes", "type": "raw" }],
+        "skipDefaultLibCheck": true,
+        "skipLibCheck": true
     },
     "include": ["src/**/*", "./references.d.ts"],
-    "exclude": ["node_modules", "platforms"],
-    "compileOnSave": false,
-    "angularCompilerOptions": {
-        "skipTemplateCodegen": true
-    }
+    "exclude": ["node_modules", "platforms", "packages/**/angular/**/*"],
+    "compileOnSave": false
 }

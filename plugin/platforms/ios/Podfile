@@ -1,2 +1,0 @@
-platform :ios, '11'
-pod 'WKWebViewRTC', :git => 'https://github.com/pplink/WKWebViewRTC.git', :branch => 'objc-support'
