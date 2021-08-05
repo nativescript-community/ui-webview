@@ -1,0 +1,76 @@
+{
+    "name": "@nativescript-community/ui-webview",
+    "version": "1.2.4",
+    "description": "Image caching plugin for NativeScript",
+    "main": "./index",
+    "sideEffects": false,
+    "typings": "./index.d.ts",
+    "scripts": {
+        "build": "npm run build.www && npm run tsc",
+        "build.www": " cd ../../www-src && ../node_modules/.bin/rollup -c && cd .. && ./node_modules/.bin/ts-node make-bridge-loader",
+        "build.all": "npm run build && npm run build.angular",
+        "build.angular": "../../node_modules/.bin/ng-packagr -p ../../src/webview/angular/package.json -c ../../src/webview/angular/tsconfig.json",
+        "tsc": "../../node_modules/.bin/cpy '**/*.d.ts' '../../packages/webview' --parents --cwd=../../src/webview && ../../node_modules/.bin/tsc -skipLibCheck -d",
+        "clean": "../../node_modules/.bin/rimraf ./*.d.ts ./*.js ./*.js.map"
+    },
+    "nativescript": {
+        "platforms": {
+            "android": "6.0.0",
+            "ios": "6.0.0"
+        }
+    },
+    "keywords": [
+        "NativeScript",
+        "JavaScript",
+        "Android",
+        "iOS",
+        "webview",
+        "WebView",
+        "cache",
+        "NativeScript UI",
+        "nativescript community",
+        "Angular",
+        "Vue.js",
+        "Vue.js Native",
+        "Vue Native",
+        "Svelte",
+        "Svelte Native",
+        "React",
+        "React NativeScript",
+        "preview|https://raw.githubusercontent.com/nativescript-community/ui-webview/master/images/demo-ios.gif|iOS Demo",
+        "preview|https://raw.githubusercontent.com/nativescript-community/ui-webview/master/images/demo-android.gif|Android Demo"
+    ],
+    "author": {
+        "name": "Nota",
+        "email": "app@nota.dk",
+        "url": "https://nota.dk"
+    },
+    "contributors": [
+        {
+            "name": "Martin Guillon",
+            "email": "martin@akylas.fr"
+        },
+        {
+            "name": "Morten Anton Bach Sjøgren",
+            "url": "http://mabs.dk",
+            "email": "m_abs@mabs.dk"
+        },
+        {
+            "name": "Daniel Dam Freiling",
+            "email": "dfg@nota.dk"
+        }
+    ],
+    "bugs": {
+        "url": "https://github.com/nativescript-community/ui-webview/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nativescript-community/ui-webview"
+    },
+    "license": "Apache-2.0",
+    "readmeFilename": "README.md",
+    "dependencies": {
+        "url": "^0.11.0"
+
+    }
+}

@@ -1,0 +1,6 @@
+{
+  "uses": [
+    "com.nativescript.webviewinterface:*",
+    "android.webkit:*"
+  ]
+}

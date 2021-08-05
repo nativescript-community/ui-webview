@@ -23,7 +23,7 @@ async function nativescriptWebviewBridgeLoader(platform: 'ios' | 'android') {
         template = template.replace(`<?= ${name} ?>`, JSON.stringify(terserRes.code));
     }
 
-    await fsWriteFile(`./src/nativescript-webview-bridge-loader.${platform}.ts`, template);
+    await fsWriteFile(`./src/webview/nativescript-webview-bridge-loader.${platform}.ts`, template);
 }
 
 async function worker() {

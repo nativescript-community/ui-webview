@@ -1,0 +1,6 @@
+{
+  "uses": [
+	"NativescriptWebViewExt*:*",
+	"WebKit.WKURLSchemeHandler:*"
+  ]
+}

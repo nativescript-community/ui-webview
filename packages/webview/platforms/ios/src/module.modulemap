@@ -1,0 +1,11 @@
+framework module NativescriptWebViewExt {
+  umbrella header "NativescriptWebViewExt.h"
+
+  export *
+  module * { export * }
+}
+
+module NativescriptWebViewExt.Swift {
+    header "NativescriptWebViewExt-Swift.h"
+    requires objc
+}

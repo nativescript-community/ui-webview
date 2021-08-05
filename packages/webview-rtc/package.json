@@ -1,0 +1,41 @@
+{
+    "name": "@nativescript-community/ui-webview-rtc",
+    "version": "1.2.4",
+    "main": "./index",
+    "sideEffects": false,
+    "typings": "./index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nativescript-community/ui-collectionview.git"
+    },
+    "scripts": {
+        "build": "npm run tsc",
+        "build.all": "npm run build",
+        "tsc": "../../node_modules/.bin/cpy '**/*.d.ts' '../../packages/webview-rtc' --parents --cwd=../../src/webview-rtc && ../../node_modules/.bin/tsc -skipLibCheck -d",
+        "clean": "../../node_modules/.bin/rimraf ./*.d.ts ./*.js ./*.js.map"
+    },
+    "nativescript": {
+        "platforms": {
+            "android": "6.1.0",
+            "ios": "6.1.0"
+        }
+    },
+    "keywords": [
+        "NativeScript",
+        "JavaScript",
+        "Android",
+        "iOS"
+    ],
+    "author": {
+        "name": "Martin Guillon",
+        "email": "martin@akylas.fr"
+    },
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/nativescript-community/ui-webview/issues"
+    },
+    "homepage": "https://github.com/nativescript-community/ui-webview#readme",
+    "dependencies": {
+        "@nativescript-community/ui-webview": "^1.2.4"
+    }
+}
