@@ -362,7 +362,7 @@ export class UnsupportedSDKError extends Error {
 }
 
 @CSSType('WebView')
-export class WebViewExtBase extends ContainerView {
+export abstract class WebViewExtBase extends ContainerView {
     public webConsole: boolean;
 
     public static readonly supportXLocalScheme: boolean;
@@ -765,58 +765,42 @@ export class WebViewExtBase extends ContainerView {
     /**
      * Platform specific loadURL-implementation.
      */
-    public _loadUrl(src: string): void {
-        throw new Error('Method not implemented.');
-    }
+    abstract _loadUrl(src: string): void;
 
     /**
      * Platform specific loadData-implementation.
      */
-    public _loadData(src: string): void {
-        throw new Error('Method not implemented.');
-    }
+    abstract _loadData(src: string): void;
 
     /**
      * Stops loading the current content (if any).
      */
-    public stopLoading() {
-        throw new Error('Method not implemented.');
-    }
+    abstract stopLoading();
 
     /**
      * Gets a value indicating whether the WebView can navigate back.
      */
-    public get canGoBack(): boolean {
-        throw new Error('This member is abstract.');
-    }
+    abstract get canGoBack(): boolean;
 
     /**
      * Gets a value indicating whether the WebView can navigate forward.
      */
-    public get canGoForward(): boolean {
-        throw new Error('This member is abstract.');
-    }
+    abstract get canGoForward(): boolean;
 
     /**
      * Navigates back.
      */
-    public goBack() {
-        throw new Error('Method not implemented.');
-    }
+    abstract goBack();
 
     /**
      * Navigates forward.
      */
-    public goForward() {
-        throw new Error('Method not implemented.');
-    }
+    abstract goForward();
 
     /**
      * Reloads the current url.
      */
-    public reload() {
-        throw new Error('Method not implemented.');
-    }
+    abstract reload();
 
     [srcProperty.getDefault](): string {
         return '';
@@ -921,24 +905,17 @@ export class WebViewExtBase extends ContainerView {
      * Register a local resource.
      * This resource can be loaded via "x-local://{name}" inside the webview
      */
-    public registerLocalResource(name: string, filepath: string): void {
-        throw new Error('Method not implemented.');
-    }
+    abstract registerLocalResource(name: string, filepath: string): void;
 
     /**
      * Unregister a local resource.
      */
-    public unregisterLocalResource(name: string): void {
-        throw new Error('Method not implemented.');
-    }
+    abstract unregisterLocalResource(name: string): void;
 
     /**
      * Resolve a "x-local://{name}" to file-path.
      */
-    public getRegisteredLocalResource(name: string): string | void {
-        throw new Error('Method not implemented.');
-    }
-
+    abstract getRegisteredLocalResource(name: string): string | void;
     /**
      * Load URL - Wait for promise
      *
@@ -1207,9 +1184,7 @@ export class WebViewExtBase extends ContainerView {
      * Larger scripts should be injected with loadJavaScriptFile.
      * NOTE: stringifyResult only applies on iOS.
      */
-    public executeJavaScript<T>(scriptCode: string, stringifyResult?: boolean): Promise<T> {
-        throw new Error('Method not implemented.');
-    }
+    abstract executeJavaScript<T>(scriptCode: string, stringifyResult?: boolean): Promise<T>;
 
     /**
      * Execute a promise inside the webview and wait for it to resolve.
@@ -1459,21 +1434,13 @@ export class WebViewExtBase extends ContainerView {
      * Get document.title
      * NOTE: On Android, if empty returns filename
      */
-    public getTitle(): Promise<string | void> {
-        throw new Error('Method not implemented.');
-    }
+    abstract getTitle(): Promise<string | void>;
 
-    public zoomIn(): boolean {
-        throw new Error('Method not implemented.');
-    }
+    abstract zoomIn(): boolean;
 
-    public zoomOut(): boolean {
-        throw new Error('Method not implemented.');
-    }
+    abstract zoomOut(): boolean;
 
-    public zoomBy(zoomFactor: number) {
-        throw new Error('Method not implemented.');
-    }
+    abstract zoomBy(zoomFactor: number);
 
     /**
      * Helper function, strips 'x-local://' from a resource name

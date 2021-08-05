@@ -16,6 +16,13 @@ export * from './index.common';
 const messageHandlerName = 'nsBridge';
 
 export class AWebView extends WebViewExtBase {
+    zoomIn(): boolean {
+        return false;
+    }
+    zoomOut(): boolean {
+        return false;
+    }
+    zoomBy(zoomFactor: number) {}
     public ios: WKWebView;
     nativeViewProtected: WKWebView;
 
