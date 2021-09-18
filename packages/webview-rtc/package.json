@@ -1,6 +1,6 @@
 {
     "name": "@nativescript-community/ui-webview-rtc",
-    "version": "1.2.6",
+    "version": "1.2.7",
     "main": "./index",
     "sideEffects": false,
     "typings": "./index.d.ts",
