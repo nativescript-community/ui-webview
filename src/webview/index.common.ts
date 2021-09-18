@@ -3,7 +3,7 @@
 import { CSSType, ContainerView, EventData, File, Property, Trace, booleanConverter, knownFolders, path } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import { metadataViewPort, promisePolyfill, webViewBridge } from './nativescript-webview-bridge-loader';
-import * as URL from 'url';
+import normalizeUrl from 'normalize-url';
 
 export interface ViewPortProperties {
     width?: number | 'device-width';
@@ -58,6 +58,7 @@ export const webConsoleProperty = new Property<WebViewExtBase, boolean>({
     valueConverter: booleanConverter
 });
 
+
 export const displayZoomControlsProperty = new Property<WebViewExtBase, boolean>({
     name: 'displayZoomControls',
     defaultValue: true,
@@ -99,6 +100,15 @@ export const isScrollEnabledProperty = new Property<WebViewExtBase, boolean>({
     name: 'isScrollEnabled',
     defaultValue: true,
     valueConverter: booleanConverter
+});
+
+export const normalizeUrlsProperty = new Property<WebViewExtBase, boolean>({
+    name: 'normalizeUrls',
+    defaultValue: true,
+    valueConverter: booleanConverter
+});
+export const normalizeUrlsOptionsProperty = new Property<WebViewExtBase, any>({
+    name: 'normalizeUrlsOptions'
 });
 
 export type ViewPortValue = boolean | ViewPortProperties;
@@ -363,7 +373,9 @@ export class UnsupportedSDKError extends Error {
 
 @CSSType('WebView')
 export abstract class WebViewExtBase extends ContainerView {
-    public webConsole: boolean;
+    public webConsoleEnabled: boolean;
+    public normalizeUrls: boolean;
+    public normalizeUrlsOptions: any;
 
     public static readonly supportXLocalScheme: boolean;
 
@@ -1092,15 +1104,11 @@ export abstract class WebViewExtBase extends ContainerView {
     }
 
     public normalizeURL(url: string): string {
-        if (!url) {
+        if (!url || !this.normalizeUrls || url.startsWith(this.interceptScheme)) {
             return url;
         }
 
-        if (url.startsWith(this.interceptScheme)) {
-            return url;
-        }
-
-        return URL.parse(url).format();
+        return normalizeUrl(url, this.normalizeUrlsOptions);
     }
 
     /**
@@ -1561,6 +1569,8 @@ cacheModeProperty.register(WebViewExtBase);
 databaseStorageProperty.register(WebViewExtBase);
 debugModeProperty.register(WebViewExtBase);
 webConsoleProperty.register(WebViewExtBase);
+normalizeUrlsProperty.register(WebViewExtBase);
+normalizeUrlsOptionsProperty.register(WebViewExtBase);
 displayZoomControlsProperty.register(WebViewExtBase);
 domStorageProperty.register(WebViewExtBase);
 srcProperty.register(WebViewExtBase);
