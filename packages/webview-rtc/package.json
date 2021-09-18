@@ -1,6 +1,6 @@
 {
     "name": "@nativescript-community/ui-webview-rtc",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "main": "./index",
     "sideEffects": false,
     "typings": "./index.d.ts",
@@ -36,6 +36,6 @@
     },
     "homepage": "https://github.com/nativescript-community/ui-webview#readme",
     "dependencies": {
-        "@nativescript-community/ui-webview": "^1.2.5"
+        "@nativescript-community/ui-webview": "^1.2.6"
     }
 }

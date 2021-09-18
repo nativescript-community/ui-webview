@@ -1,6 +1,6 @@
 {
     "name": "@nativescript-community/ui-webview",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "description": "Image caching plugin for NativeScript",
     "main": "./index",
     "sideEffects": false,
