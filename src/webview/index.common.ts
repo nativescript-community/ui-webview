@@ -3,7 +3,6 @@
 import { CSSType, ContainerView, EventData, File, Property, Trace, booleanConverter, knownFolders, path } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import { metadataViewPort, promisePolyfill, webViewBridge } from './nativescript-webview-bridge-loader';
-import normalizeUrl from 'normalize-url';
 
 export interface ViewPortProperties {
     width?: number | 'device-width';
@@ -1563,7 +1562,6 @@ databaseStorageProperty.register(WebViewExtBase);
 debugModeProperty.register(WebViewExtBase);
 webConsoleProperty.register(WebViewExtBase);
 normalizeUrlsProperty.register(WebViewExtBase);
-normalizeUrlsOptionsProperty.register(WebViewExtBase);
 displayZoomControlsProperty.register(WebViewExtBase);
 domStorageProperty.register(WebViewExtBase);
 srcProperty.register(WebViewExtBase);
