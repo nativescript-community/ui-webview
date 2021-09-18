@@ -58,7 +58,6 @@ export const webConsoleProperty = new Property<WebViewExtBase, boolean>({
     valueConverter: booleanConverter
 });
 
-
 export const displayZoomControlsProperty = new Property<WebViewExtBase, boolean>({
     name: 'displayZoomControls',
     defaultValue: true,
@@ -107,10 +106,6 @@ export const normalizeUrlsProperty = new Property<WebViewExtBase, boolean>({
     defaultValue: true,
     valueConverter: booleanConverter
 });
-export const normalizeUrlsOptionsProperty = new Property<WebViewExtBase, any>({
-    name: 'normalizeUrlsOptions'
-});
-
 export type ViewPortValue = boolean | ViewPortProperties;
 export const viewPortProperty = new Property<WebViewExtBase, ViewPortValue>({
     name: 'viewPortSize',
@@ -375,7 +370,6 @@ export class UnsupportedSDKError extends Error {
 export abstract class WebViewExtBase extends ContainerView {
     public webConsoleEnabled: boolean;
     public normalizeUrls: boolean;
-    public normalizeUrlsOptions: any;
 
     public static readonly supportXLocalScheme: boolean;
 
@@ -1107,8 +1101,7 @@ export abstract class WebViewExtBase extends ContainerView {
         if (!url || !this.normalizeUrls || url.startsWith(this.interceptScheme)) {
             return url;
         }
-
-        return normalizeUrl(url, this.normalizeUrlsOptions);
+        return require('url').parse(url).format();
     }
 
     /**
