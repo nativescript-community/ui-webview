@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/nativescript-community/ui-webview/compare/v1.2.7...v1.3.0) (2021-10-15)
+
+
+### Bug Fixes
+
+* **ios:** removed logs ([05ae314](https://github.com/nativescript-community/ui-webview/commit/05ae314b852e2e23dbe92d522d830e72b0c79ded))
+
+
+### Features
+
+* native-api-usage support ([62d92a1](https://github.com/nativescript-community/ui-webview/commit/62d92a1c27499df46227ddc7d3a5a48967a8c4ec))
+
+
+
+
+
 ## [1.2.7](https://github.com/nativescript-community/ui-webview/compare/v1.2.6...v1.2.7) (2021-09-18)
 
 
