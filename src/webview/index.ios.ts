@@ -132,7 +132,6 @@ export class AWebView extends WebViewExtBase {
 
         const rawResult = await new Promise<any>((resolve, reject) => {
             nativeView.evaluateJavaScriptCompletionHandler(scriptCode.trim(), (result, error) => {
-                console.log('evaluateJavaScriptCompletionHandler', result, error);
                 if (error) {
                     reject(error);
 
