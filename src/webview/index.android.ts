@@ -90,21 +90,21 @@ function initializeWebViewClient(): void {
 
             let url = request as string;
             let httpMethod = 'GET';
-            let isRedirect = false;
-            let hasGesture = false;
-            let isForMainFrame = false;
-            let requestHeaders: java.util.Map<string, string> | null = null;
             if (typeof request === 'object') {
                 httpMethod = request.getMethod();
-                isRedirect = request.isRedirect();
-                hasGesture = request.hasGesture();
-                isForMainFrame = request.isForMainFrame();
-                requestHeaders = request.getRequestHeaders();
-
                 url = request.getUrl().toString();
             }
 
             if (Trace.isEnabled()) {
+                const hasGesture = false;
+                let isRedirect = false;
+                let isForMainFrame = false;
+                let requestHeaders: java.util.Map<string, string> | null = null;
+                if (typeof request === 'object') {
+                    isRedirect = request.isRedirect();
+                    isForMainFrame = request.isForMainFrame();
+                    requestHeaders = request.getRequestHeaders();
+                }
                 Trace.write(
                     `WebViewClientClass.shouldOverrideUrlLoading("${url}") - method:${httpMethod} isRedirect:${isRedirect} hasGesture:${hasGesture} isForMainFrame:${isForMainFrame} headers:${requestHeaders}`,
                     NotaTraceCategory,
