@@ -552,9 +552,9 @@ export class AWebView extends WebViewExtBase {
 
         settings.setAllowFileAccess(true); // Needed for Android 11
 
-        settings.setBuiltInZoomControls(!!this.builtInZoomControls);
-        settings.setDisplayZoomControls(!!this.displayZoomControls);
-        settings.setSupportZoom(!!this.supportZoom);
+        // settings.setBuiltInZoomControls(!!this.builtInZoomControls);
+        // settings.setDisplayZoomControls(!!this.displayZoomControls);
+        // settings.setSupportZoom(!!this.supportZoom);
 
         if (sdkVersion() >= 21) {
             // Needed for x-local in https-sites
