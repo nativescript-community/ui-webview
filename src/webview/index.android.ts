@@ -589,8 +589,12 @@ export class AWebView extends WebViewExtBase {
     public disposeNativeView() {
         const nativeView = this.nativeViewProtected;
         if (nativeView) {
+            nativeView.setWebViewClient(null);
+            nativeView.setWebChromeClient(null);
+            nativeView.removeJavascriptInterface('androidWebViewBridge');
             nativeView.client = null;
             nativeView.chromeClient = null;
+            nativeView.bridgeInterface = null;
             nativeView.destroy();
         }
 
