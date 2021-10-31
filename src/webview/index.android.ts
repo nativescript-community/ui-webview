@@ -1,4 +1,5 @@
-import { File, Trace, knownFolders } from '@nativescript/core';
+import { Device, File, Trace, knownFolders } from '@nativescript/core';
+import lazy from '@nativescript/core/utils/lazy';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import {
     CacheMode,
@@ -52,6 +53,8 @@ export interface AndroidWebView extends com.nativescript.webviewinterface.WebVie
 let WebViewExtClient: new (owner: AWebView) => AndroidWebViewClient;
 let WebChromeViewExtClient: new (owner: AWebView) => com.nativescript.webviewinterface.WebChromeClient;
 let WebViewBridgeInterface: new (owner: AWebView) => com.nativescript.webviewinterface.WebViewBridgeInterface;
+
+const sdkVersion = lazy(() => parseInt(Device.sdkVersion, 10));
 
 function initializeWebViewClient(): void {
     if (WebViewExtClient) {
@@ -184,7 +187,7 @@ function initializeWebViewClient(): void {
                 Trace.write(`WebViewClientClass.shouldInterceptRequest("${url}") - file: "${filepath}" mimeType:${mimeType} encoding:${encoding}`, NotaTraceCategory, Trace.messageType.info);
             }
             const response = new android.webkit.WebResourceResponse(mimeType, encoding, stream);
-            if (android.os.Build.VERSION.SDK_INT < 21 || !response.getResponseHeaders) {
+            if (sdkVersion() < 21 || !response.getResponseHeaders) {
                 return response;
             }
 
@@ -553,7 +556,7 @@ export class AWebView extends WebViewExtBase {
         settings.setDisplayZoomControls(!!this.displayZoomControls);
         settings.setSupportZoom(!!this.supportZoom);
 
-        if (android.os.Build.VERSION.SDK_INT >= 21) {
+        if (sdkVersion() >= 21) {
             // Needed for x-local in https-sites
             settings.setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         }
@@ -603,7 +606,7 @@ export class AWebView extends WebViewExtBase {
     }
 
     public async ensurePromiseSupport() {
-        if (android.os.Build.VERSION.SDK_INT >= 21) {
+        if (sdkVersion() >= 21) {
             return;
         }
 
@@ -750,9 +753,9 @@ export class AWebView extends WebViewExtBase {
     }
 
     public async executeJavaScript<T>(scriptCode: string): Promise<T> {
-        if (android.os.Build.VERSION.SDK_INT < 19) {
+        if (sdkVersion() < 19) {
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt<android>.executeJavaScript() -> SDK:${android.os.Build.VERSION.SDK_INT} not supported`, NotaTraceCategory, Trace.messageType.error);
+                Trace.write(`WebViewExt<android>.executeJavaScript() -> SDK:${sdkVersion()} not supported`, NotaTraceCategory, Trace.messageType.error);
             }
             return Promise.reject(new UnsupportedSDKError(19));
         }
@@ -804,7 +807,7 @@ export class AWebView extends WebViewExtBase {
     }
 
     public zoomBy(zoomFactor: number) {
-        if (android.os.Build.VERSION.SDK_INT < 21) {
+        if (sdkVersion() < 21) {
             if (Trace.isEnabled()) {
                 Trace.write('WebViewExt<android>.zoomBy - not supported on this SDK', NotaTraceCategory, Trace.messageType.info);
             }
