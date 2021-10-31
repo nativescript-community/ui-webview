@@ -96,11 +96,12 @@ function initializeWebViewClient(): void {
             }
 
             if (Trace.isEnabled()) {
-                const hasGesture = false;
+                let hasGesture = false;
                 let isRedirect = false;
                 let isForMainFrame = false;
                 let requestHeaders: java.util.Map<string, string> | null = null;
                 if (typeof request === 'object') {
+                    hasGesture = request.hasGesture();
                     isRedirect = request.isRedirect();
                     isForMainFrame = request.isForMainFrame();
                     requestHeaders = request.getRequestHeaders();
