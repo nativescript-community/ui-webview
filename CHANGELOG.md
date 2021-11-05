@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.2](https://github.com/nativescript-community/ui-webview/compare/v1.3.1...v1.3.2) (2021-11-05)
+
+
+### Features
+
+* **android:** allow custom native WebViewClient ([5caf8aa](https://github.com/nativescript-community/ui-webview/commit/5caf8aa31ecea813aff34e17c9584811980a9e1a))
+
+
+
+
+
 ## [1.3.1](https://github.com/nativescript-community/ui-webview/compare/v1.3.0...v1.3.1) (2021-11-01)
 
 
