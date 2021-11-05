@@ -539,6 +539,8 @@ export class AWebView extends WebViewExtBase {
 
     public supportXLocalScheme = true;
 
+    public createWebViewClient?: (AWebView, clientClass: typeof WebViewExtClient) => android.webkit.WebViewClient;
+
     public readonly instance = ++instanceNo;
 
     public android: AndroidWebView;
@@ -576,11 +578,17 @@ export class AWebView extends WebViewExtBase {
         if (!nativeView) {
             return;
         }
+        if (this.createWebViewClient) {
+            const client = this.createWebViewClient(this, WebViewExtClient);
 
-        const client = new WebViewExtClient(this);
+            nativeView.setWebViewClient(client);
+            nativeView.client = client;
+        } else {
+            const client = new WebViewExtClient(this);
+            nativeView.setWebViewClient(client);
+            nativeView.client = client;
+        }
         const chromeClient = new WebChromeViewExtClient(this);
-        nativeView.setWebViewClient(client);
-        nativeView.client = client;
 
         nativeView.setWebChromeClient(chromeClient);
         nativeView.chromeClient = chromeClient;
