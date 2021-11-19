@@ -1,38 +1,9 @@
 {
+    "extends": "./tools/tsconfig",
     "compilerOptions": {
-        "target": "es2017",
-        "module": "esnext",
-        "moduleResolution": "node",
-        "removeComments": true,
-        "noLib": false,
-        "emitDecoratorMetadata": false,
-        "experimentalDecorators": true,
-        "jsx": "react",
-        "lib": ["es2019", "dom"],
-        "types": ["node", "svelte"],
-        "sourceMap": true,
-        "pretty": true,
-        "allowUnreachableCode": false,
-        "allowUnusedLabels": false,
-        "noEmitHelpers": true,
-        "noEmitOnError": false,
-        "noImplicitAny": false,
-        "noImplicitReturns": true,
-        "noImplicitUseStrict": true,
-        "noFallthroughCasesInSwitch": true,
-        "sourceRoot": "../src",
-        "baseUrl": ".",
-        "outDir": "./packages",
         "paths": {
-            "@nativescript-community/ui-webview": ["src/webview/index"],
-            "@nativescript-community/ui-webview/*": ["src/*"],
-            "*": ["node_modules/*"]
-        },
-        "plugins": [{ "transform": "@nativescript/webpack/transformers/ns-transform-native-classes", "type": "raw" }],
-        "skipDefaultLibCheck": true,
-        "skipLibCheck": true
-    },
-    "include": ["src/**/*", "./references.d.ts"],
-    "exclude": ["node_modules", "platforms", "packages/**/angular/**/*"],
-    "compileOnSave": false
+            "@nativescript-community/ui-webview": ["src/ui-webview"],
+            "@nativescript-community/ui-webview/*": ["src/ui-webview/*"]
+        }
+    }
 }

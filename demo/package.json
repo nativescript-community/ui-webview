@@ -30,18 +30,18 @@
   },
   "homepage": "https://github.com/NativeScript/nativescript-app-templates",
   "dependencies": {
-    "@nativescript-community/perms": "^2.1.6",
-    "@nativescript-community/ui-webview": "file:../plugin",
-    "@nativescript/core": "~8.0.7",
-    "@nativescript/theme": "~3.0.1",
+    "@nativescript-community/perms": "^2.2.0",
+    "@nativescript-community/ui-webview": "file:../packages/webview",
+    "@nativescript/core": "~8.1.5",
+    "@nativescript/theme": "~3.0.2",
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "@nativescript/android": "8.0.0",
-    "@nativescript/ios": "8.0.0",
-    "@nativescript/types": "~8.0.1",
-    "@nativescript/webpack": "beta",
-    "typescript": "~4.3.2"
+    "@nativescript/android": "8.1.1",
+    "@nativescript/ios": "6.5.4",
+    "@nativescript/types": "~8.1.1",
+    "@nativescript/webpack": "5.0.1",
+    "typescript": "~4.5.2"
   },
   "private": "true",
   "readme": "NativeScript Application"

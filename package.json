@@ -1,113 +1,74 @@
 {
     "name": "@nativescript-community/ui-webview",
     "version": "1.0.0",
-    "devDependencies": {
-        "@angular/animations": "^12.2.0",
-        "@angular/common": "^12.2.0",
-        "@angular/compiler": "~12.2.0",
-        "@angular/compiler-cli": "~12.2.0",
-        "@angular/core": "~12.2.0",
-        "@angular/forms": "~12.2.0",
-        "@angular/platform-browser": "~12.2.0",
-        "@angular/platform-browser-dynamic": "~12.2.0",
-        "@angular/router": "~12.2.0",
-        "@commitlint/cli": "^13.1.0",
-        "@commitlint/config-conventional": "^13.1.0",
-        "@nativescript/angular": "~12.0.6",
-        "@nativescript/core": "~8.0.8",
-        "@nativescript/eslint-plugin": "^0.0.4",
-        "@nativescript/types-android": "8.0.1",
-        "@nativescript/types-ios": "8.0.1",
-        "@nativescript/webpack": "4.1.0",
-        "@rollup/plugin-babel": "^5.3.0",
-        "@rollup/plugin-commonjs": "^20.0.0",
-        "@rollup/plugin-node-resolve": "^13.0.4",
-        "@rollup/plugin-replace": "^3.0.0",
-        "@rollup/plugin-strip": "^2.1.0",
-        "@rollup/plugin-typescript": "^8.2.5",
-        "@types/node": "16.4.12",
-        "@types/react": "17.0.15",
-        "@typescript-eslint/eslint-plugin": "4.29.0",
-        "@typescript-eslint/parser": "4.29.0",
-        "cpy-cli": "^3.1.1",
-        "detox": "18.20.1",
-        "eslint": "7.32.0",
-        "eslint-config-prettier": "^8.3.0",
-        "eslint-plugin-prettier": "^3.4.0",
-        "husky": "^7.0.1",
-        "jest": "^27.0.6",
-        "jest-circus": "^27.0.6",
-        "jest-cli": "^27.0.6",
-        "lerna": "^4.0.0",
-        "nativescript-vue": "^2.9.0",
-        "ng-packagr": "~12.2.0",
-        "prettier": "^2.3.2",
-        "promise-polyfill": "^8.2.0",
-        "react-nativescript": "^2.2.0",
-        "rimraf": "^3.0.2",
-        "rollup": "^2.48.0",
-        "rollup-plugin-cleanup": "^3.2.1",
-        "rollup-plugin-terser": "^7.0.2",
-        "rxjs": "^7.3.0",
-        "svelte": "^3.42.1",
-        "svelte-native": "0.9.7",
-        "ts-patch": "^1.4.2",
-        "tslib": "^2.3.0",
-        "typedoc": "^0.21.5",
-        "typescript": "~4.3.5",
-        "url": "^0.11.0",
-        "vue": "^2.6.14",
-        "yargs": "^17.1.0"
-    },
-    "scripts": {
-        "setup": "ts-patch install",
-        "prepare": "npm run setup",
-        "publish": "npm run setup && npm run build.all && lerna publish --create-release=github --force-publish",
-        "build": "lerna run build",
-        "build.angular": "lerna run build.angular",
-        "build.all": "lerna run build.all",
-        "build.win": "lerna run build-win",
-        "clean": "rimraf packages/**/*.d.ts packages/**/*.js packages/**/*.js.map packages/**/*.metadata.json packages/**/*.ngsummary.json packages/core/android",
-        "commitmsg": "commitlint -e $GIT_PARAMS",
-        "e2e.build": "./e2e/run-tests.js -b",
-        "e2e.run": "./e2e/run-tests.js -r",
-        "e2e": "./e2e/run-tests.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/nativescript-community/ui-webview"
-    },
-    "author": {
-        "name": "Nota",
-        "email": "app@nota.dk",
-        "url": "https://nota.dk"
-    },
-    "contributors": [
-        {
-            "name": "Martin Guillon",
-            "email": "martin@akylas.fr"
-        },
-        {
-            "name": "Morten Anton Bach Sjøgren",
-            "url": "http://mabs.dk",
-            "email": "m_abs@mabs.dk"
-        },
-        {
-            "name": "Daniel Dam Freiling",
-            "email": "dfg@nota.dk"
-        }
-    ],
-    "license": "ISC",
+    "homepage": "https://github.com/nativescript-community/ui-webview#readme",
     "bugs": {
         "url": "https://github.com/nativescript-community/ui-webview/issues"
     },
-    "homepage": "https://github.com/nativescript-community/ui-webview#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nativescript-community/ui-webview.git"
+    },
+    "license": "ISC",
+    "author": "",
+    "scripts": {
+        "build": "lerna run build",
+        "build.win": "lerna run build.win",
+        "build.all": "lerna run build.all",
+        "build.all.win": "lerna run build.all.win",
+        "build.angular": "lerna run build.angular",
+        "build.angular.win": "lerna run build.angular.win",
+        "clean": "rimraf packages/**/*.d.ts packages/**/*.js packages/**/*.js.map packages/**/*.metadata.json packages/**/*.ngsummary.json node_modules package-lock.json",
+        "clean.win": "rimraf packages\\**\\*.d.ts packages\\**\\*.js packages\\**\\*.js.map packages\\**\\*.metadata.json packages\\**\\*.ngsummary.json node_modules package-lock.json",
+        "commitmsg": "commitlint -e $GIT_PARAMS",
+        "demo.ng.android": "cd ./demo-ng && ns run android --no-hmr",
+        "demo.ng.ios": "cd ./demo-ng && ns run ios --no-hmr",
+        "demo.react.android": "cd ./demo-react && ns run android --no-hmr",
+        "demo.react.ios": "cd ./demo-react && ns run ios --no-hmr",
+        "demo.svelte.android": "cd ./demo-svelte && ns run android --no-hmr",
+        "demo.svelte.ios": "cd ./demo-svelte && ns run ios --no-hmr",
+        "demo.vue.android": "cd ./demo-vue && ns run android --no-hmr",
+        "demo.vue.ios": "cd ./demo-vue && ns run ios --no-hmr",
+        "postinstall": "npm run setup",
+        "publish": "npm run setup && npm run build.all && lerna publish --create-release=github --force-publish",
+        "readme": "node ./tools/readme.js",
+        "setup": "npm run submodules && ts-patch install",
+        "start": "./node_modules/.bin/ntl -A -s 15 -o",
+        "submodules": "git submodule update --init",
+        "sync": "node ./tools/sync.js -w && npx sort-package-json",
+        "sync.test": "node ./tools/sync.js",
+        "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && tsc -skipLibCheck -d",
+        "update": "node ./tools/update.js",
+        "watch": "npm run tsc -- -w"
+    },
     "commitlint": {
         "extends": [
             "@commitlint/config-conventional"
         ]
     },
+    "ntl": {
+        "descriptions": {
+            "build": "Build the plugin",
+            "build.angular": "Build the plugin for Angular",
+            "build.all": "Build the plugin for all platforms",
+            "clean": "Clean the local environment.",
+            "demo.ng.android": "Runs the Angular demo on Android.",
+            "demo.ng.ios": "Runs the Angular demo on iOS.",
+            "demo.react.android": "Runs the React demo on Android.",
+            "demo.react.ios": "Runs the React demo on iOS.",
+            "demo.svelte.android": "Runs the Svelte demo on Android.",
+            "demo.svelte.ios": "Runs the Svelte demo on iOS.",
+            "demo.vue.android": "Runs the Vue demo on Android.",
+            "demo.vue.ios": "Runs the Vue demo on iOS.",
+            "watch": "Watch for changes in the plugin source and re-build."
+        }
+    },
     "dependencies": {
-        "ts-node": "^9.0.0"
-    }
+        "@nativescript-community/plugin-seed-tools": "file:tools"
+    },
+    "dependenciesMeta": {
+        "@nativescript-community/plugin-seed-tools": {
+          "injected": true
+        }
+      }
 }
