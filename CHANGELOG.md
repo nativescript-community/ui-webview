@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.3](https://github.com/nativescript-community/ui-webview/compare/v1.3.2...v1.3.3) (2021-12-24)
+
+
+### Bug Fixes
+
+* bridge loader fix ([9ad6485](https://github.com/nativescript-community/ui-webview/commit/9ad64852fdade3f1702dfccc342592b6532f5996))
+
+
+### Features
+
+* allow to disable bridge and polyfills ([ab6dd67](https://github.com/nativescript-community/ui-webview/commit/ab6dd67511c533c7d8a44d0a7043eac889de1733))
+* **android:** appCachePath property ([5577446](https://github.com/nativescript-community/ui-webview/commit/55774460332ee4e58f72acf0baa8b65eaa76b861))
+
+
+
+
+
 ## [1.3.2](https://github.com/nativescript-community/ui-webview/compare/v1.3.1...v1.3.2) (2021-11-05)
 
 
