@@ -1,0 +1,11 @@
+{
+    "name": "www-src",
+    "dependencies": {
+        "@rollup/plugin-commonjs": "^21.0.1",
+        "@rollup/plugin-strip": "^2.1.0",
+        "@rollup/plugin-typescript": "^8.3.0",
+        "promise-polyfill": "^8.2.1",
+        "rollup": "^2.62.0",
+        "rollup-plugin-cleanup": "^3.2.1"
+    }
+}
