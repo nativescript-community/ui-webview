@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.3](https://github.com/nativescript-community/ui-webview/compare/v1.3.2...v1.3.3) (2021-12-24)
+
+
+### Bug Fixes
+
+* bridge loader fix ([9ad6485](https://github.com/nativescript-community/ui-webview/commit/9ad64852fdade3f1702dfccc342592b6532f5996))
+
+
+
+
+
 ## [1.3.2](https://github.com/nativescript-community/ui-webview/compare/v1.3.1...v1.3.2) (2021-11-05)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview
