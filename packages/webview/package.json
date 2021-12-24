@@ -7,7 +7,7 @@
     "typings": "./index.d.ts",
     "scripts": {
         "build": "npm run build.www && npm run tsc",
-        "build.www": " cd ../../www-src && ../node_modules/.bin/rollup -c && cd .. && ./node_modules/.bin/ts-node make-bridge-loader",
+        "build.www": " cd ../../www-src && rollup -c && cd .. && ts-node make-bridge-loader",
         "build.all": "npm run build && npm run build.angular",
         "build.angular": "../../node_modules/.bin/ng-packagr -p ../../src/webview/angular/package.json -c ../../src/webview/angular/tsconfig.json",
         "tsc": "../../node_modules/.bin/cpy '**/*.d.ts' '../../packages/webview' --parents --cwd=../../src/webview && ../../node_modules/.bin/tsc -skipLibCheck -d",

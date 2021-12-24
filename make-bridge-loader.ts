@@ -10,7 +10,7 @@ async function nativescriptWebviewBridgeLoader(platform: 'ios' | 'android') {
 
     const values = {
         // fetchPolyfill: await fsReadFile('./node_modules/whatwg-fetch/dist/fetch.umd.js', 'UTF-8'),
-        promisePolyfill: await fsReadFile('./node_modules/promise-polyfill/dist/polyfill.js', 'UTF-8'),
+        promisePolyfill: await fsReadFile('./www-src/node_modules/promise-polyfill/dist/polyfill.js', 'UTF-8'),
         webViewBridge: await fsReadFile(`./build/bridge.${platform}.js`, 'UTF-8'),
         metadataViewPort: await fsReadFile('./build/metadata-view-port.js', 'UTF-8'),
     };
