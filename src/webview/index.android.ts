@@ -18,6 +18,7 @@ import {
     supportZoomProperty,
     webConsoleProperty
 } from './index.common';
+import { appCachePathProperty } from '.';
 
 export * from './index.common';
 
@@ -529,7 +530,7 @@ function initializeWebViewClient(): void {
 }
 //#endregion android_native_classes
 
-let instanceNo = 0;
+// let instanceNo = 0;
 export class AWebView extends WebViewExtBase {
     public static supportXLocalScheme = true;
 
@@ -541,7 +542,7 @@ export class AWebView extends WebViewExtBase {
 
     public createWebViewClient?: (AWebView, clientClass: typeof WebViewExtClient) => android.webkit.WebViewClient;
 
-    public readonly instance = ++instanceNo;
+    // public readonly instance = ++instanceNo;
 
     public android: AndroidWebView;
 
@@ -551,12 +552,10 @@ export class AWebView extends WebViewExtBase {
 
         // Needed for the bridge library
         settings.setJavaScriptEnabled(true);
-
         settings.setAllowFileAccess(true); // Needed for Android 11
 
-        // settings.setBuiltInZoomControls(!!this.builtInZoomControls);
-        // settings.setDisplayZoomControls(!!this.displayZoomControls);
-        // settings.setSupportZoom(!!this.supportZoom);
+        // to support viewport tag
+        settings.setUseWideViewPort(true);
 
         if (sdkVersion() >= 21) {
             // Needed for x-local in https-sites
@@ -868,6 +867,15 @@ export class AWebView extends WebViewExtBase {
         }
         const settings = androidWebView.getSettings();
         settings.setBuiltInZoomControls(!!enabled);
+    }
+    [appCachePathProperty.setNative](pth: string) {
+        const androidWebView = this.nativeViewProtected;
+        if (!androidWebView) {
+            return;
+        }
+        const settings = androidWebView.getSettings();
+        settings.setAppCachePath(pth);
+        settings.setAppCacheEnabled(!!pth);
     }
 
     [displayZoomControlsProperty.getDefault]() {
