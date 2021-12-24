@@ -82,6 +82,9 @@ export const allowsInlineMediaPlaybackProperty = new Property<WebViewExtBase, bo
 export const srcProperty = new Property<WebViewExtBase, string>({
     name: 'src'
 });
+export const appCachePathProperty = new Property<WebViewExtBase, string>({
+    name: 'appCachePath'
+});
 
 export const scrollBounceProperty = new Property<WebViewExtBase, boolean>({
     name: 'scrollBounce',
@@ -1571,3 +1574,4 @@ viewPortProperty.register(WebViewExtBase);
 isScrollEnabledProperty.register(WebViewExtBase);
 scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
+appCachePathProperty.register(WebViewExtBase);
