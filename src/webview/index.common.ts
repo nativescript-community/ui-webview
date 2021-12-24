@@ -528,6 +528,16 @@ export abstract class WebViewExtBase extends ContainerView {
     protected tempSuspendSrcLoading = false;
 
     /**
+     * Whether to install promise polyfill
+     */
+    injectPolyfills = true;
+
+    /**
+     * Whether to install event bridge
+     */
+    injectBridge = true;
+
+    /**
      * Callback for the loadFinished-event. Called from the native-webview
      */
     public async _onLoadFinished(url: string, error?: string): Promise<LoadFinishedEventData> {
@@ -1359,8 +1369,12 @@ export abstract class WebViewExtBase extends ContainerView {
      * Inject WebView JavaScript Bridge.
      */
     protected async injectWebViewBridge(): Promise<void> {
-        await this.executeJavaScript(webViewBridge, false);
-        await this.ensurePolyfills();
+        if (this.injectBridge) {
+            await this.executeJavaScript(webViewBridge, false);
+        }
+        if (this.injectPolyfills) {
+            await this.ensurePolyfills();
+        }
         await this.injectViewPortMeta();
     }
 
