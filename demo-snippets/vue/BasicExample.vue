@@ -98,7 +98,8 @@ export default {
             // } else {
             //     webview.src = 'http://localhost:8080';
             // }
-            webview.src = '~/test-data/html/javascript-calls.html';
+            webview.registerLocalResource('local-stylesheet.css', '~/test-data/css/local-stylesheet.css');
+            webview.src = '~/test-data/html/css-predefined-link-tags.html';
 
             webview.on(AWebView.shouldOverrideUrlLoadingEvent, (args: ShouldOverrideUrlLoadEventData) => {
                 console.log(`${args.httpMethod} ${args.url}`);

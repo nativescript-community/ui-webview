@@ -1,9 +1,12 @@
 import Vue from 'nativescript-vue';
 import WebView from '@nativescript-community/ui-webview/vue';
+import {Trace} from '@nativescript/core';
 
 import BasicExample from './BasicExample.vue';
 
 export function installPlugin() {
+    Trace.addCategories('NOTA');
+    Trace.enable();
     Vue.use(WebView);
 }
 
