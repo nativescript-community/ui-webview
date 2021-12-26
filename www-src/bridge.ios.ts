@@ -3,47 +3,47 @@ import { NSWebViewBridgeBase } from './bridge.common';
 interface WKWebViewMessageHandler {
     postMessage(message: string): void;
 }
-if (!Object.keys) {
-    Object.keys = (function () {
-        'use strict';
-        const hasOwnProperty = Object.prototype.hasOwnProperty;
-        const hasDontEnumBug = !{ toString: null }.propertyIsEnumerable('toString');
-        const dontEnums = [
-            'toString',
-            'toLocaleString',
-            'valueOf',
-            'hasOwnProperty',
-            'isPrototypeOf',
-            'propertyIsEnumerable',
-            'constructor',
-        ];
-        const dontEnumsLength = dontEnums.length;
+// if (!Object.keys) {
+//     Object.keys = (function () {
+//         'use strict';
+//         const hasOwnProperty = Object.prototype.hasOwnProperty;
+//         const hasDontEnumBug = !{ toString: null }.propertyIsEnumerable('toString');
+//         const dontEnums = [
+//             'toString',
+//             'toLocaleString',
+//             'valueOf',
+//             'hasOwnProperty',
+//             'isPrototypeOf',
+//             'propertyIsEnumerable',
+//             'constructor',
+//         ];
+//         const dontEnumsLength = dontEnums.length;
 
-        return function (obj: any) {
-            if (typeof obj !== 'function' && (typeof obj !== 'object' || obj === null)) {
-                throw new TypeError('Object.keys called on non-object');
-            }
+//         return function (obj: any) {
+//             if (typeof obj !== 'function' && (typeof obj !== 'object' || obj === null)) {
+//                 throw new TypeError('Object.keys called on non-object');
+//             }
 
-            const result = new Array<any>();
+//             const result = new Array<any>();
 
-            for (const prop in obj) {
-                if (hasOwnProperty.call(obj, prop)) {
-                    result.push(prop);
-                }
-            }
+//             for (const prop in obj) {
+//                 if (hasOwnProperty.call(obj, prop)) {
+//                     result.push(prop);
+//                 }
+//             }
 
-            if (hasDontEnumBug) {
-                for (let i = 0; i < dontEnumsLength; i++) {
-                    if (hasOwnProperty.call(obj, dontEnums[i])) {
-                        result.push(dontEnums[i]);
-                    }
-                }
-            }
+//             if (hasDontEnumBug) {
+//                 for (let i = 0; i < dontEnumsLength; i++) {
+//                     if (hasOwnProperty.call(obj, dontEnums[i])) {
+//                         result.push(dontEnums[i]);
+//                     }
+//                 }
+//             }
 
-            return result;
-        };
-    })();
-}
+//             return result;
+//         };
+//     })();
+// }
 
 /**
  * With WKWebView it's assumed the there is a WKScriptMessage named nsBridge

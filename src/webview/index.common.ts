@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 import { CSSType, ContainerView, EventData, File, Property, Trace, booleanConverter, knownFolders, path } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
-import { metadataViewPort, promisePolyfill, webViewBridge } from './nativescript-webview-bridge-loader';
+import { metadataViewPort, webViewBridge } from './nativescript-webview-bridge-loader';
 
 export interface ViewPortProperties {
     width?: number | 'device-width';
@@ -987,7 +987,7 @@ export abstract class WebViewExtBase extends ContainerView {
             const scriptCode = this.generateLoadJavaScriptFileScriptCode(resourceName, filepath);
             promiseScriptCodes.push(scriptCode);
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.loadJavaScriptFiles() - > Loading javascript file: "${filepath}"`, 'NOTA', Trace.messageType.info);
+                Trace.write(`WebViewExt.loadJavaScriptFiles() - > Loading javascript file: "${filepath}" "${scriptCode}"`, 'NOTA', Trace.messageType.info);
             }
         }
 
@@ -1119,77 +1119,77 @@ export abstract class WebViewExtBase extends ContainerView {
     /**
      * Ensure fetch-api is available.
      */
-    protected async ensureFetchSupport(): Promise<void> {
-        if (WebViewExtBase.isFetchSupported) {
-            return Promise.resolve();
-        }
+    // protected async ensureFetchSupport(): Promise<void> {
+    //     if (WebViewExtBase.isFetchSupported) {
+    //         return Promise.resolve();
+    //     }
 
-        if (typeof WebViewExtBase.isFetchSupported === 'undefined') {
-            if (Trace.isEnabled()) {
-                Trace.write('WebViewExtBase.ensureFetchSupport() - need to check for fetch support.', 'NOTA', Trace.messageType.info);
-            }
+    //     if (typeof WebViewExtBase.isFetchSupported === 'undefined') {
+    //         if (Trace.isEnabled()) {
+    //             Trace.write('WebViewExtBase.ensureFetchSupport() - need to check for fetch support.', 'NOTA', Trace.messageType.info);
+    //         }
 
-            WebViewExtBase.isFetchSupported = await this.executeJavaScript<boolean>("typeof fetch !== 'undefined'");
-        }
+    //         WebViewExtBase.isFetchSupported = await this.executeJavaScript<boolean>("typeof fetch !== 'undefined'");
+    //     }
 
-        if (WebViewExtBase.isFetchSupported) {
-            if (Trace.isEnabled()) {
-                Trace.write('WebViewExtBase.ensureFetchSupport() - fetch is supported - polyfill not needed.', 'NOTA', Trace.messageType.info);
-            }
+    //     if (WebViewExtBase.isFetchSupported) {
+    //         if (Trace.isEnabled()) {
+    //             Trace.write('WebViewExtBase.ensureFetchSupport() - fetch is supported - polyfill not needed.', 'NOTA', Trace.messageType.info);
+    //         }
 
-            return;
-        }
+    //         return;
+    //     }
 
-        if (Trace.isEnabled()) {
-            Trace.write('WebViewExtBase.ensureFetchSupport() - fetch is not supported - polyfill needed.', 'NOTA', Trace.messageType.info);
-        }
+    //     if (Trace.isEnabled()) {
+    //         Trace.write('WebViewExtBase.ensureFetchSupport() - fetch is not supported - polyfill needed.', 'NOTA', Trace.messageType.info);
+    //     }
 
-        // return await this.loadFetchPolyfill();
-    }
+    //     return this.loadFetchPolyfill();
+    // }
 
     // protected async loadFetchPolyfill() {
-    //     await this.executeJavaScript<void>(fetchPolyfill, false);
+    //     // await this.executeJavaScript<void>(fetchPolyfill, false);
     // }
 
     /**
      * Older Android WebView don't support promises.
      * Inject the promise-polyfill if needed.
      */
-    protected async ensurePromiseSupport() {
-        if (WebViewExtBase.isPromiseSupported) {
-            return;
-        }
+    // protected async ensurePromiseSupport() {
+    //     if (WebViewExtBase.isPromiseSupported) {
+    //         return;
+    //     }
 
-        if (typeof WebViewExtBase.isPromiseSupported === 'undefined') {
-            if (Trace.isEnabled()) {
-                Trace.write('WebViewExtBase.ensurePromiseSupport() - need to check for promise support.', 'NOTA', Trace.messageType.info);
-            }
+    //     if (typeof WebViewExtBase.isPromiseSupported === 'undefined') {
+    //         if (Trace.isEnabled()) {
+    //             Trace.write('WebViewExtBase.ensurePromiseSupport() - need to check for promise support.', 'NOTA', Trace.messageType.info);
+    //         }
 
-            WebViewExtBase.isPromiseSupported = await this.executeJavaScript<boolean>("typeof Promise !== 'undefined'");
-        }
+    //         WebViewExtBase.isPromiseSupported = await this.executeJavaScript<boolean>("typeof Promise !== 'undefined'");
+    //     }
 
-        if (WebViewExtBase.isPromiseSupported) {
-            if (Trace.isEnabled()) {
-                Trace.write('WebViewExtBase.ensurePromiseSupport() - promise is supported - polyfill not needed.', 'NOTA', Trace.messageType.info);
-            }
+    //     if (WebViewExtBase.isPromiseSupported) {
+    //         if (Trace.isEnabled()) {
+    //             Trace.write('WebViewExtBase.ensurePromiseSupport() - promise is supported - polyfill not needed.', 'NOTA', Trace.messageType.info);
+    //         }
 
-            return;
-        }
+    //         return;
+    //     }
 
-        if (Trace.isEnabled()) {
-            Trace.write('WebViewExtBase.ensurePromiseSupport() - promise is not supported - polyfill needed.', 'NOTA', Trace.messageType.info);
-        }
-        await this.loadPromisePolyfill();
-    }
+    //     if (Trace.isEnabled()) {
+    //         Trace.write('WebViewExtBase.ensurePromiseSupport() - promise is not supported - polyfill needed.', 'NOTA', Trace.messageType.info);
+    //     }
+    //     await this.loadPromisePolyfill();
+    // }
 
-    protected async loadPromisePolyfill() {
-        await this.executeJavaScript<void>(promisePolyfill, false);
-    }
+    // protected async loadPromisePolyfill() {
+    // await this.executeJavaScript<void>(promisePolyfill, false);
+    // }
 
-    protected async ensurePolyfills() {
-        await this.ensurePromiseSupport();
-        // await this.ensureFetchSupport();
-    }
+    // protected async ensurePolyfills() {
+    // await this.ensurePromiseSupport();
+    // await this.ensureFetchSupport();
+    // }
 
     /**
      * Execute JavaScript inside the webview.
@@ -1372,9 +1372,9 @@ export abstract class WebViewExtBase extends ContainerView {
         if (this.injectBridge) {
             await this.executeJavaScript(webViewBridge, false);
         }
-        if (this.injectPolyfills) {
-            await this.ensurePolyfills();
-        }
+        // if (this.injectPolyfills) {
+        //     await this.ensurePolyfills();
+        // }
         await this.injectViewPortMeta();
     }
 

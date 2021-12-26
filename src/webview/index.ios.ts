@@ -87,8 +87,8 @@ export class AWebView extends WebViewExtBase {
         super.disposeNativeView();
     }
 
-    protected injectWebViewBridge() {
-        return this.ensurePolyfills();
+    protected async injectWebViewBridge() {
+        // return this.ensurePolyfills();
     }
 
     protected async injectViewPortMeta() {

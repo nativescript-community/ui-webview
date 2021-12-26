@@ -15,14 +15,7 @@ class NSWebViewBridge extends NSWebViewBridgeBase {
      * Calls native android function to emit event and payload to android
      */
     protected emitEvent(eventName: any, data: any) {
-        const androidWebViewBridge = this.androidWebViewBridge;
-        if (!androidWebViewBridge) {
-            console.error('Tried to emit to android without the androidWebViewBridge');
-
-            return;
-        }
-
-        androidWebViewBridge.emitEvent(eventName, data);
+        this.androidWebViewBridge.emitEvent(eventName, data);
     }
 }
 
@@ -37,7 +30,7 @@ if (!w.nsWebViewBridge) {
         if (typeof CustomEvent !== 'undefined') {
             window.dispatchEvent(
                 new CustomEvent(eventName, {
-                    detail: w.nsWebViewBridge,
+                    detail: w.nsWebViewBridge
                 })
             );
         } else {

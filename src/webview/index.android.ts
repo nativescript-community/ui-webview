@@ -612,13 +612,13 @@ export class AWebView extends WebViewExtBase {
         super.disposeNativeView();
     }
 
-    public async ensurePromiseSupport() {
-        if (sdkVersion() >= 21) {
-            return;
-        }
+    // public async ensurePromiseSupport() {
+    //     if (sdkVersion() >= 21) {
+    //         return;
+    //     }
 
-        return super.ensurePromiseSupport();
-    }
+    //     return super.ensurePromiseSupport();
+    // }
 
     public _loadUrl(src: string) {
         const nativeView = this.nativeViewProtected;
@@ -740,24 +740,24 @@ export class AWebView extends WebViewExtBase {
      * Native 'Fetch API' on Android rejects all request for resources no HTTP or HTTPS.
      * This breaks x-local:// requests (and file://).
      */
-    public async ensureFetchSupport() {
-        if (Trace.isEnabled()) {
-            Trace.write("WebViewExt<android>.ensureFetchSupport() - Override 'Fetch API' to support x-local.", NotaTraceCategory, Trace.messageType.info);
-        }
+    // public async ensureFetchSupport() {
+    //     if (Trace.isEnabled()) {
+    //         Trace.write("WebViewExt<android>.ensureFetchSupport() - Override 'Fetch API' to support x-local.", NotaTraceCategory, Trace.messageType.info);
+    //     }
 
-        // The polyfill is not loaded if fetch already exists, start by null'ing it.
-        await this.executeJavaScript(
-            `
-            try {
-                window.fetch = null;
-            } catch (err) {
-                console.error("null'ing Native Fetch API failed:", err);
-            }
-        `
-        );
+    //     // The polyfill is not loaded if fetch already exists, start by null'ing it.
+    //     await this.executeJavaScript(
+    //         `
+    //         try {
+    //             window.fetch = null;
+    //         } catch (err) {
+    //             console.error("null'ing Native Fetch API failed:", err);
+    //         }
+    //     `
+    //     );
 
-        // await this.loadFetchPolyfill();
-    }
+    //     await this.loadFetchPolyfill();
+    // }
 
     public async executeJavaScript<T>(scriptCode: string): Promise<T> {
         if (sdkVersion() < 19) {
