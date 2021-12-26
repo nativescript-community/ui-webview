@@ -23,13 +23,13 @@ export abstract class NSWebViewBridgeBase {
     /**
      * Mapping of native eventName and its handler in webView
      */
-    private eventListenerMap: EventListenerMap = {};
+    private mEventListenerMap: EventListenerMap = {};
 
     /**
      * Handles events/commands emitted by android/ios. This function is called from nativescript.
      */
     public onNativeEvent(eventName: string, data: any) {
-        const events = this.eventListenerMap[eventName];
+        const events = this.mEventListenerMap[eventName];
         if (!events?.length) {
             return;
         }
@@ -56,11 +56,11 @@ export abstract class NSWebViewBridgeBase {
             return;
         }
 
-        if (!this.eventListenerMap[eventName]) {
-            this.eventListenerMap[eventName] = [];
+        if (!this.mEventListenerMap[eventName]) {
+            this.mEventListenerMap[eventName] = [];
         }
 
-        this.eventListenerMap[eventName].push(callback);
+        this.mEventListenerMap[eventName].push(callback);
     }
 
     /**
@@ -76,25 +76,25 @@ export abstract class NSWebViewBridgeBase {
      */
     public off(eventName?: string, callback?: WebEventListener) {
         if (!eventName) {
-            this.eventListenerMap = {};
+            this.mEventListenerMap = {};
 
             return;
         }
 
-        if (!this.eventListenerMap[eventName]) {
+        if (!this.mEventListenerMap[eventName]) {
             return;
         }
 
         if (!callback) {
-            delete this.eventListenerMap[eventName];
+            delete this.mEventListenerMap[eventName];
 
             return;
         }
 
-        this.eventListenerMap[eventName] = this.eventListenerMap[eventName].filter((oldCallback) => oldCallback !== callback);
+        this.mEventListenerMap[eventName] = this.mEventListenerMap[eventName].filter((oldCallback) => oldCallback !== callback);
 
-        if (this.eventListenerMap[eventName].length === 0) {
-            delete this.eventListenerMap[eventName];
+        if (this.mEventListenerMap[eventName].length === 0) {
+            delete this.mEventListenerMap[eventName];
         }
     }
 

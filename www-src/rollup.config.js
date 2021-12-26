@@ -6,21 +6,19 @@ import cleanup from 'rollup-plugin-cleanup';
 export default [
     {
         input: 'bridge.android.ts',
-        plugins: [commonjs({ transformMixedEsModules: true }), typescript(), cleanup({ comments: 'none' }), strip({ functions: ['assert.*', 'debug', 'alert'] })],
+        plugins: [typescript(), cleanup({ comments: 'none' }), strip({ functions: ['assert.*', 'debug', 'alert'] })],
 
         output: [
             {
-                format: 'cjs',
-                esModule: false,
-                strict: false,
-                file: '../build/bridge.android.js'
+                format: 'es',
+                file: '../build/bridge.android.js',
                 // plugins: [terser()]
             }
         ]
     },
     {
         input: 'bridge.ios.ts',
-        plugins: [commonjs({ transformMixedEsModules: true }), typescript(), strip({ functions: ['assert.*', 'debug', 'alert'] })],
+        plugins: [commonjs({ transformMixedEsModules: true }), typescript(), cleanup({ comments: 'none' }), strip({ functions: ['assert.*', 'debug', 'alert'] })],
 
         output: [
             {
