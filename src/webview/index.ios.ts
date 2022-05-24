@@ -1,15 +1,12 @@
-import { File, Trace, alert, confirm, knownFolders, profile, prompt } from '@nativescript/core';
+import { alert, confirm, File, knownFolders, profile, prompt, Trace } from '@nativescript/core';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
-import { webViewBridge } from './nativescript-webview-bridge-loader';
 import {
-    NavigationType,
-    NotaTraceCategory,
-    WebViewExtBase,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
-    mediaPlaybackRequiresUserActionProperty,
-    scrollBounceProperty
+    mediaPlaybackRequiresUserActionProperty, NavigationType,
+    NotaTraceCategory, scrollBounceProperty, WebViewExtBase
 } from './index.common';
+import { webViewBridge } from './nativescript-webview-bridge-loader';
 
 export * from './index.common';
 
@@ -818,4 +815,14 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
             gotResponse = true;
         });
     }
+
+
+    webViewCreateWebViewWithConfigurationForNavigationActionWindowFeatures(webView: WKWebView, configuration: WKWebViewConfiguration, navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures): WKWebView {
+        // Handle links that open in a new window / frame (via target="_blank" or window.open())
+        if (navigationAction && (!navigationAction.targetFrame || (navigationAction.targetFrame && !navigationAction.targetFrame.mainFrame))) {
+            webView.loadRequest(navigationAction.request);
+        }
+
+        return null;
+	}
 }
