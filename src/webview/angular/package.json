@@ -1,16 +1,4 @@
 {
     "name": "@nativescript-community/ui-webview-angular",
-    "main": "index.js",
-    "ngPackage": {
-        "dest": "../../../packages/webview/angular",
-        "lib": {
-            "entryFile": "index.ts",
-            "umdModuleIds": {
-                "@nativescript/core": "ns-core",
-                "@nativescript/angular": "ns-angular",
-                "@nativescript-community/ui-webview": "ns-ui-webview"
-            }
-        },
-        "whitelistedNonPeerDependencies": ["."]
-    }
-}
+    "main": "index.js"
+  }
