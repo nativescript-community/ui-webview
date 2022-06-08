@@ -41,7 +41,23 @@ const extToMimeType = new Map<string, string>([
 const extToBinaryEncoding = new Set<string>(['gif', 'jpeg', 'jpg', 'otf', 'png', 'ttf']);
 
 //#region android_native_classes
-let cacheModeMap: Map<CacheMode, number>;
+const cacheModeMap = {
+    get cache_first() {
+        return android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
+    },
+    get cache_only() {
+        return android.webkit.WebSettings.LOAD_CACHE_ONLY;
+    },
+    get default() {
+        return android.webkit.WebSettings.LOAD_DEFAULT;
+    },
+    get no_cache() {
+        return android.webkit.WebSettings.LOAD_NO_CACHE;
+    },
+    get normal() {
+        return android.webkit.WebSettings.LOAD_NORMAL;
+    }
+};
 
 export interface AndroidWebViewClient extends android.webkit.WebViewClient {}
 
@@ -61,14 +77,6 @@ function initializeWebViewClient(): void {
     if (WebViewExtClient) {
         return;
     }
-
-    cacheModeMap = new Map<CacheMode, number>([
-        ['cache_first', android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK],
-        ['cache_only', android.webkit.WebSettings.LOAD_CACHE_ONLY],
-        ['default', android.webkit.WebSettings.LOAD_DEFAULT],
-        ['no_cache', android.webkit.WebSettings.LOAD_NO_CACHE],
-        ['normal', android.webkit.WebSettings.LOAD_NORMAL]
-    ]);
 
     @NativeClass()
     class WebViewExtClientImpl extends android.webkit.WebViewClient {
@@ -899,20 +907,22 @@ export class AWebView extends WebViewExtBase {
     }
 
     [cacheModeProperty.getDefault](): CacheMode | null {
-        const androidWebView = this.nativeViewProtected;
-        if (!androidWebView) {
-            return null;
-        }
+        return 'default';
+        // const androidWebView = this.nativeViewProtected;
+        // if (!androidWebView) {
+        //     return null;
+        // }
 
-        const settings = androidWebView.getSettings();
-        const cacheModeInt = settings.getCacheMode();
-        for (const [key, value] of cacheModeMap) {
-            if (value === cacheModeInt) {
-                return key;
-            }
-        }
+        // const settings = androidWebView.getSettings();
+        // const cacheModeInt = settings.getCacheMode();
 
-        return null;
+        // for (const key of Object.keys(cacheModeMap)) {
+        //     if (cacheModeMap[key] === cacheModeInt) {
+        //         return key as CacheMode;
+        //     }
+        // }
+
+        // return null;
     }
 
     [cacheModeProperty.setNative](cacheMode: CacheMode) {
@@ -922,13 +932,7 @@ export class AWebView extends WebViewExtBase {
         }
 
         const settings = androidWebView.getSettings();
-        for (const [key, nativeValue] of cacheModeMap) {
-            if (key === cacheMode) {
-                settings.setCacheMode(nativeValue);
-
-                return;
-            }
-        }
+        settings.setCacheMode(cacheModeMap[cacheMode]);
     }
 
     [databaseStorageProperty.getDefault]() {
