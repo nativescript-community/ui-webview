@@ -7,7 +7,9 @@ import {
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
     mediaPlaybackRequiresUserActionProperty,
-    scrollBounceProperty
+    scrollBounceProperty,
+    viewPortProperty,
+    limitsNavigationsToAppBoundDomainsProperty
 } from './index.common';
 import { webViewBridge } from './nativescript-webview-bridge-loader';
 
@@ -43,6 +45,8 @@ export class AWebView extends WebViewExtBase {
     public readonly supportXLocalScheme = typeof CustomUrlSchemeHandler !== 'undefined';
 
     public viewPortSize = { initialScale: 1.0 };
+    private limitsNavigationsToAppBoundDomains = false;
+
     public createNativeView() {
         const configuration = WKWebViewConfiguration.new();
         configuration.dataDetectorTypes = WKDataDetectorTypes.All;
@@ -54,6 +58,7 @@ export class AWebView extends WebViewExtBase {
         configuration.userContentController = wkUController;
         configuration.preferences.setValueForKey(true, 'allowFileAccessFromFileURLs');
         configuration.setValueForKey(true, 'allowUniversalAccessFromFileURLs');
+        configuration.limitsNavigationsToAppBoundDomains = this.limitsNavigationsToAppBoundDomains;
 
         if (this.supportXLocalScheme) {
             this.wkCustomUrlSchemeHandler = new CustomUrlSchemeHandler();
@@ -432,6 +437,20 @@ export class AWebView extends WebViewExtBase {
         }
 
         nativeView.scrollView.bounces = !!enabled;
+    }
+
+    [viewPortProperty.setNative](value: ViewPortProperties) {
+        if (this.src) {
+            this.injectViewPortMeta();
+        }
+    }
+
+    [limitsNavigationsToAppBoundDomainsProperty.setNative](enabled: boolean) {
+        this.limitsNavigationsToAppBoundDomains = enabled;
+    }
+
+    [limitsNavigationsToAppBoundDomainsProperty.getDefault]() {
+        return false;
     }
 
     [isEnabledProperty.setNative](enabled: boolean) {

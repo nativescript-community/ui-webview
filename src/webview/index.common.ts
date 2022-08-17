@@ -108,6 +108,12 @@ export const normalizeUrlsProperty = new Property<WebViewExtBase, boolean>({
     defaultValue: true,
     valueConverter: booleanConverter
 });
+
+export const limitsNavigationsToAppBoundDomainsProperty = new Property<WebViewExtBase, boolean>({
+    name: "limitsNavigationsToAppBoundDomains",
+    valueConverter: booleanConverter,
+});
+
 export type ViewPortValue = boolean | ViewPortProperties;
 export const viewPortProperty = new Property<WebViewExtBase, ViewPortValue>({
     name: 'viewPortSize',
@@ -1589,3 +1595,4 @@ isScrollEnabledProperty.register(WebViewExtBase);
 scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
 appCachePathProperty.register(WebViewExtBase);
+limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
