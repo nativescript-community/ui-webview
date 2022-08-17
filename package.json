@@ -43,7 +43,8 @@
         "sync.test": "node ./tools/sync.js",
         "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && tsc -skipLibCheck -d",
         "update": "node ./tools/update.js",
-        "watch": "npm run tsc -- -w"
+        "watch": "npm run tsc -- -w",
+        "doc": "node tools/builddoc.mjs && git add docs/* && git commit -m \"chore:doc\""
     },
     "commitlint": {
         "extends": [
@@ -51,13 +52,16 @@
         ]
     },
     "dependencies": {
-        "@nativescript-community/plugin-seed-tools": "file:tools"
+        "@nativescript-community/plugin-seed-tools": "file:tools",
+        "ts-node": "10.9.1"
     },
-    "dependenciesMeta": {
-        "@nativescript-community/plugin-seed-tools": {
-            "injected": true
-        }
-    },
+    "workspaces": [
+        "packages/*",
+        "demo-vue",
+        "demo-ng",
+        "demo-svelte",
+        "demo-react"
+    ],
     "ntl": {
         "descriptions": {
             "build": "Build the plugin",
@@ -74,5 +78,10 @@
             "demo.vue.ios": "Runs the Vue demo on iOS.",
             "watch": "Watch for changes in the plugin source and re-build."
         }
+    },
+    "engines": {
+        "npm": "please use yarn or pnpm",
+        "yarn": ">= 1.19.1",
+        "pnpm": ">= 7.0.0"
     }
 }
