@@ -21,7 +21,9 @@ yarn-error.log*
 .LSOverride
 .idea
 .cloud
+.gradle
 .project
+.yarn
 tmp/
 package-lock.json
 
@@ -54,4 +56,3 @@ packages/typings
 pnpm-lock.yaml
 
 /blueprint.md
-yarn.lock
