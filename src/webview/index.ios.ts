@@ -2,7 +2,7 @@ import { File, Trace, alert, confirm, knownFolders, profile, prompt } from '@nat
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import {
     NavigationType,
-    NotaTraceCategory,
+    WebViewTraceCategory,
     WebViewExtBase,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
@@ -200,13 +200,13 @@ export class AWebView extends WebViewExtBase {
             const cachePath = src.substring(0, src.lastIndexOf('/'));
             const nsReadAccessUrl = NSURL.URLWithString(cachePath);
             if (Trace.isEnabled()) {
-                Trace.write(`WKWebViewWrapper.loadUrl("${src}") -> ios.loadFileURLAllowingReadAccessToURL("${nsURL}", "${nsReadAccessUrl}"`, NotaTraceCategory, Trace.messageType.info);
+                Trace.write(`WKWebViewWrapper.loadUrl("${src}") -> ios.loadFileURLAllowingReadAccessToURL("${nsURL}", "${nsReadAccessUrl}"`, WebViewTraceCategory, Trace.messageType.info);
             }
             nativeView.loadFileURLAllowingReadAccessToURL(nsURL, nsReadAccessUrl);
         } else {
             const nsRequestWithUrl = NSURLRequest.requestWithURL(nsURL);
             if (Trace.isEnabled()) {
-                Trace.write(`WKWebViewWrapper.loadUrl("${src}") -> ios.loadRequest("${nsRequestWithUrl}"`, NotaTraceCategory, Trace.messageType.info);
+                Trace.write(`WKWebViewWrapper.loadUrl("${src}") -> ios.loadRequest("${nsRequestWithUrl}"`, WebViewTraceCategory, Trace.messageType.info);
             }
             nativeView.loadRequest(nsRequestWithUrl);
         }
@@ -222,7 +222,7 @@ export class AWebView extends WebViewExtBase {
         const nsBaseUrl = NSURL.URLWithString(baseUrl);
 
         if (Trace.isEnabled()) {
-            Trace.write(`WKWebViewWrapper.loadUrl(content) -> this.ios.loadHTMLStringBaseURL("${nsBaseUrl}")`, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(`WKWebViewWrapper.loadUrl(content) -> this.ios.loadHTMLStringBaseURL("${nsBaseUrl}")`, WebViewTraceCategory, Trace.messageType.info);
         }
         nativeView.loadHTMLStringBaseURL(content, nsBaseUrl);
     }
@@ -324,7 +324,7 @@ export class AWebView extends WebViewExtBase {
         }
 
         if (Trace.isEnabled()) {
-            Trace.write(`${cls} -> file: "${filepath}"`, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(`${cls} -> file: "${filepath}"`, WebViewTraceCategory, Trace.messageType.info);
         }
 
         this.registerLocalResourceForNative(resourceName, filepath);
@@ -341,7 +341,7 @@ export class AWebView extends WebViewExtBase {
         }
 
         if (Trace.isEnabled()) {
-            Trace.write(cls, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(cls, WebViewTraceCategory, Trace.messageType.info);
         }
 
         resourceName = this.fixLocalResourceName(resourceName);
@@ -363,7 +363,7 @@ export class AWebView extends WebViewExtBase {
         const result = this.getRegisteredLocalResourceFromNative(resourceName);
 
         if (Trace.isEnabled()) {
-            Trace.write(`${cls} -> "${result}"`, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(`${cls} -> "${result}"`, WebViewTraceCategory, Trace.messageType.info);
         }
 
         return result;
@@ -377,7 +377,7 @@ export class AWebView extends WebViewExtBase {
         const filepath = this.resolveLocalResourceFilePath(path);
         if (!filepath) {
             if (Trace.isEnabled()) {
-                Trace.write(`WKWebViewWrapper.autoLoadStyleSheetFile("${resourceName}", "${path}") - couldn't resolve filepath`, NotaTraceCategory, Trace.messageType.info);
+                Trace.write(`WKWebViewWrapper.autoLoadStyleSheetFile("${resourceName}", "${path}") - couldn't resolve filepath`, WebViewTraceCategory, Trace.messageType.info);
             }
 
             return;
@@ -400,7 +400,7 @@ export class AWebView extends WebViewExtBase {
         const filepath = this.resolveLocalResourceFilePath(path);
         if (!filepath) {
             if (Trace.isEnabled()) {
-                Trace.write(`WKWebViewWrapper.autoLoadJavaScriptFile("${resourceName}", "${path}") - couldn't resolve filepath`, NotaTraceCategory, Trace.messageType.info);
+                Trace.write(`WKWebViewWrapper.autoLoadJavaScriptFile("${resourceName}", "${path}") - couldn't resolve filepath`, WebViewTraceCategory, Trace.messageType.info);
             }
 
             return;
