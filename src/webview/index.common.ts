@@ -110,8 +110,14 @@ export const normalizeUrlsProperty = new Property<WebViewExtBase, boolean>({
 });
 
 export const limitsNavigationsToAppBoundDomainsProperty = new Property<WebViewExtBase, boolean>({
-    name: "limitsNavigationsToAppBoundDomains",
-    valueConverter: booleanConverter,
+    name: 'limitsNavigationsToAppBoundDomains',
+    valueConverter: booleanConverter
+});
+
+export const useWideViewPortProperty = new Property<WebViewExtBase, boolean>({
+    name: 'useWideViewPort',
+    defaultValue: true,
+    valueConverter: booleanConverter
 });
 
 export type ViewPortValue = boolean | ViewPortProperties;

@@ -6,10 +6,10 @@ import {
     WebViewExtBase,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
+    limitsNavigationsToAppBoundDomainsProperty,
     mediaPlaybackRequiresUserActionProperty,
     scrollBounceProperty,
-    viewPortProperty,
-    limitsNavigationsToAppBoundDomainsProperty
+    viewPortProperty
 } from './index.common';
 import { webViewBridge } from './nativescript-webview-bridge-loader';
 
@@ -439,7 +439,7 @@ export class AWebView extends WebViewExtBase {
         nativeView.scrollView.bounces = !!enabled;
     }
 
-    [viewPortProperty.setNative](value: ViewPortProperties) {
+    [viewPortProperty.setNative](value) {
         if (this.src) {
             this.injectViewPortMeta();
         }
