@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.2](https://github.com/nativescript-community/ui-webview/compare/v1.4.1...v1.4.2) (2022-09-02)
+
+### Bug Fixes
+
+* rename trace category ([33d1f60](https://github.com/nativescript-community/ui-webview/commit/33d1f6058a4defd29eedbf390465504faab3e1d9))
+
 ## [1.4.1](https://github.com/nativescript-community/ui-webview/compare/v1.4.0...v1.4.1) (2022-09-02)
 
 ### Bug Fixes
