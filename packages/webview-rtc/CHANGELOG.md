@@ -3,13 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.4.0](https://github.com/nativescript-community/ui-collectionview/compare/v1.3.5...v1.4.0) (2022-08-18)
+## [1.4.1](https://github.com/nativescript-community/ui-collectionview/compare/v1.4.0...v1.4.1) (2022-09-02)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview-rtc
 
+# [1.4.0](https://github.com/nativescript-community/ui-collectionview/compare/v1.3.5...v1.4.0) (2022-08-18)
 
-
-
+**Note:** Version bump only for package @nativescript-community/ui-webview-rtc
 
 ## [1.3.5](https://github.com/nativescript-community/ui-collectionview/compare/v1.3.4...v1.3.5) (2022-05-25)
 
