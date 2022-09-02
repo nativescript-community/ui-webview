@@ -5,7 +5,7 @@ import {Trace} from '@nativescript/core';
 import BasicExample from './BasicExample.vue';
 
 export function installPlugin() {
-    Trace.addCategories('NOTA');
+    Trace.addCategories(WebViewTraceCategory);
     Trace.enable();
     Vue.use(WebView);
 }
