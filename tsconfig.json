@@ -3,7 +3,9 @@
     "compilerOptions": {
         "paths": {
             "@nativescript-community/ui-webview": ["src/ui-webview"],
-            "@nativescript-community/ui-webview/*": ["src/ui-webview/*"]
+            "@nativescript-community/ui-webview/*": ["src/ui-webview/*"],
+            "@nativescript-community/ui-webview-rtc": ["src/ui-webview-rtc"],
+            "@nativescript-community/ui-webview-rtc/*": ["src/ui-webview-rtc/*"]
         }
     }
 }
