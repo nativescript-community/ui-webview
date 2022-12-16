@@ -78,6 +78,7 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | supportZoom | true / false | Android: should the webview support zoom |
 | viewPortSize | false / view-port string / ViewPortProperties | Set the viewport metadata on load finished. **Note:** WkWebView sets initial-scale=1.0 by default. |
 | limitsNavigationsToAppBoundDomains | false | iOS: allows to enable Service Workers **Note:** If set to true, WKAppBoundDomains also should be set in info.plist. |
+| scrollBarIndicatorVisible | false | Allow to hide scrollbars. |
 
 | Function | Description |
 | --- | --- |
