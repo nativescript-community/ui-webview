@@ -13,7 +13,7 @@ export interface ViewPortProperties {
     userScalable?: boolean;
 }
 
-export const NotaTraceCategory = 'NOTA';
+export const WebViewTraceCategory = 'AWebView';
 
 export type CacheMode = 'default' | 'cache_first' | 'no_cache' | 'cache_only' | 'normal';
 
@@ -110,8 +110,14 @@ export const normalizeUrlsProperty = new Property<WebViewExtBase, boolean>({
 });
 
 export const limitsNavigationsToAppBoundDomainsProperty = new Property<WebViewExtBase, boolean>({
-    name: "limitsNavigationsToAppBoundDomains",
-    valueConverter: booleanConverter,
+    name: 'limitsNavigationsToAppBoundDomains',
+    valueConverter: booleanConverter
+});
+
+export const scrollBarIndicatorVisibleProperty = new Property<WebViewExtBase, boolean>({
+    name: 'scrollBarIndicatorVisible',
+    defaultValue: true,
+    valueConverter: booleanConverter
 });
 
 export type ViewPortValue = boolean | ViewPortProperties;
@@ -393,15 +399,7 @@ export abstract class WebViewExtBase extends ContainerView {
      */
     public static isPromiseSupported: boolean;
 
-    /**
-     * Gets the native [android widget](http://developer.android.com/reference/android/webkit/WebView.html) that represents the user interface for this component. Valid only when running on Android OS.
-     */
-    public android: any /* android.webkit.WebView */;
-
-    /**
-     * Gets the native [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview/) that represents the user interface for this component. Valid only when running on iOS 11+.
-     */
-    public ios: any /* WKWebView */;
+    public scrollBarIndicatorVisible: boolean;
 
     public get interceptScheme() {
         return 'x-local';
@@ -548,6 +546,9 @@ export abstract class WebViewExtBase extends ContainerView {
      */
     public async _onLoadFinished(url: string, error?: string): Promise<LoadFinishedEventData> {
         url = this.normalizeURL(url);
+        if (Trace.isEnabled()) {
+            Trace.write(`WebViewExt._onLoadFinished("${url}", ${error || void 0} ${this.autoInjectJSBridge}) - > Injecting webview-bridge JS code`, WebViewTraceCategory, Trace.messageType.info);
+        }
 
         if (!error) {
             // When this is called without an error, update with this.src value without loading the url.
@@ -571,12 +572,7 @@ export abstract class WebViewExtBase extends ContainerView {
 
         if (error) {
             this.notify(args);
-
             throw args;
-        }
-
-        if (Trace.isEnabled()) {
-            Trace.write(`WebViewExt._onLoadFinished("${url}", ${error || void 0}) - > Injecting webview-bridge JS code`, 'NOTA', Trace.messageType.info);
         }
 
         if (!this.autoInjectJSBridge) {
@@ -593,6 +589,7 @@ export abstract class WebViewExtBase extends ContainerView {
                 -1
             );
         } catch (error) {
+            console.error(error);
             args.error = error;
         }
 
@@ -843,12 +840,12 @@ export abstract class WebViewExtBase extends ContainerView {
         if (src.startsWith('~/')) {
             src = `file://${knownFolders.currentApp().path}/${src.substr(2)}`;
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.src = "${originSrc}" startsWith ~/ resolved to "${src}"`, 'NOTA', Trace.messageType.info);
+                Trace.write(`WebViewExt.src = "${originSrc}" startsWith ~/ resolved to "${src}"`, WebViewTraceCategory, Trace.messageType.info);
             }
         } else if (src.startsWith('/')) {
             src = `file://${src}`;
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.src = "${originSrc}" startsWith "/" resolved to ${src}`, 'NOTA', Trace.messageType.info);
+                Trace.write(`WebViewExt.src = "${originSrc}" startsWith "/" resolved to ${src}`, WebViewTraceCategory, Trace.messageType.info);
             }
         }
 
@@ -859,7 +856,7 @@ export abstract class WebViewExtBase extends ContainerView {
             src = encodeURI(src);
             if (lcSrc !== src) {
                 if (Trace.isEnabled()) {
-                    Trace.write(`WebViewExt.src = "${originSrc}" escaped to "${src}"`, 'NOTA', Trace.messageType.info);
+                    Trace.write(`WebViewExt.src = "${originSrc}" escaped to "${src}"`, WebViewTraceCategory, Trace.messageType.info);
                 }
             }
         }
@@ -882,12 +879,12 @@ export abstract class WebViewExtBase extends ContainerView {
             this._loadUrl(src);
 
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.src = "${originSrc}" - LoadUrl("${src}")`, 'NOTA', Trace.messageType.info);
+                Trace.write(`WebViewExt.src = "${originSrc}" - LoadUrl("${src}")`, WebViewTraceCategory, Trace.messageType.info);
             }
         } else {
             this._loadData(src);
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.src = "${originSrc}" - LoadData("${src}")`, 'NOTA', Trace.messageType.info);
+                Trace.write(`WebViewExt.src = "${originSrc}" - LoadData("${src}")`, WebViewTraceCategory, Trace.messageType.info);
             }
         }
     }
@@ -901,7 +898,7 @@ export abstract class WebViewExtBase extends ContainerView {
     public resolveLocalResourceFilePath(filepath: string): string | void {
         if (!filepath) {
             if (Trace.isEnabled()) {
-                Trace.write('WebViewExt.resolveLocalResourceFilePath() no filepath', 'Nota', Trace.messageType.error);
+                Trace.write('WebViewExt.resolveLocalResourceFilePath() no filepath', WebViewTraceCategory, Trace.messageType.error);
             }
 
             return;
@@ -917,7 +914,7 @@ export abstract class WebViewExtBase extends ContainerView {
 
         if (!File.exists(filepath)) {
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.resolveLocalResourceFilePath("${filepath}") - no such file`, 'Nota', Trace.messageType.error);
+                Trace.write(`WebViewExt.resolveLocalResourceFilePath("${filepath}") - no such file`, WebViewTraceCategory, Trace.messageType.error);
             }
             return;
         }
@@ -993,19 +990,23 @@ export abstract class WebViewExtBase extends ContainerView {
             const scriptCode = this.generateLoadJavaScriptFileScriptCode(resourceName, filepath);
             promiseScriptCodes.push(scriptCode);
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.loadJavaScriptFiles() - > Loading javascript file: "${filepath}" "${scriptCode}"`, 'NOTA', Trace.messageType.info);
+                Trace.write(`WebViewExt.loadJavaScriptFiles() - > Loading javascript file: "${filepath}" "${scriptCode}"`, WebViewTraceCategory, Trace.messageType.info);
             }
         }
 
         if (promiseScriptCodes.length !== files.length) {
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.loadJavaScriptFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`, 'Nota', Trace.messageType.error);
+                Trace.write(
+                    `WebViewExt.loadJavaScriptFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
+                    WebViewTraceCategory,
+                    Trace.messageType.error
+                );
             }
         }
 
         if (!promiseScriptCodes.length) {
             if (Trace.isEnabled()) {
-                Trace.write('WebViewExt.loadJavaScriptFiles() - > No files', 'NOTA', Trace.messageType.info);
+                Trace.write('WebViewExt.loadJavaScriptFiles() - > No files', WebViewTraceCategory, Trace.messageType.info);
             }
 
             return;
@@ -1048,13 +1049,17 @@ export abstract class WebViewExtBase extends ContainerView {
 
         if (promiseScriptCodes.length !== files.length) {
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.loadStyleSheetFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`, 'Nota', Trace.messageType.error);
+                Trace.write(
+                    `WebViewExt.loadStyleSheetFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
+                    WebViewTraceCategory,
+                    Trace.messageType.error
+                );
             }
         }
 
         if (!promiseScriptCodes.length) {
             if (Trace.isEnabled()) {
-                Trace.write('WebViewExt.loadStyleSheetFiles() - > No files', 'NOTA', Trace.messageType.info);
+                Trace.write('WebViewExt.loadStyleSheetFiles() - > No files', WebViewTraceCategory, Trace.messageType.info);
             }
 
             return;
@@ -1119,7 +1124,11 @@ export abstract class WebViewExtBase extends ContainerView {
         if (!url || !this.normalizeUrls || url.startsWith(this.interceptScheme)) {
             return url;
         }
-        return require('url').parse(url).format();
+        try {
+            return require('url').parse(url).format();
+        } catch (error) {
+            return url;
+        }
     }
 
     /**
@@ -1132,7 +1141,7 @@ export abstract class WebViewExtBase extends ContainerView {
 
     //     if (typeof WebViewExtBase.isFetchSupported === 'undefined') {
     //         if (Trace.isEnabled()) {
-    //             Trace.write('WebViewExtBase.ensureFetchSupport() - need to check for fetch support.', 'NOTA', Trace.messageType.info);
+    //             Trace.write('WebViewExtBase.ensureFetchSupport() - need to check for fetch support.', WebViewTraceCategory, Trace.messageType.info);
     //         }
 
     //         WebViewExtBase.isFetchSupported = await this.executeJavaScript<boolean>("typeof fetch !== 'undefined'");
@@ -1140,14 +1149,14 @@ export abstract class WebViewExtBase extends ContainerView {
 
     //     if (WebViewExtBase.isFetchSupported) {
     //         if (Trace.isEnabled()) {
-    //             Trace.write('WebViewExtBase.ensureFetchSupport() - fetch is supported - polyfill not needed.', 'NOTA', Trace.messageType.info);
+    //             Trace.write('WebViewExtBase.ensureFetchSupport() - fetch is supported - polyfill not needed.', WebViewTraceCategory, Trace.messageType.info);
     //         }
 
     //         return;
     //     }
 
     //     if (Trace.isEnabled()) {
-    //         Trace.write('WebViewExtBase.ensureFetchSupport() - fetch is not supported - polyfill needed.', 'NOTA', Trace.messageType.info);
+    //         Trace.write('WebViewExtBase.ensureFetchSupport() - fetch is not supported - polyfill needed.', WebViewTraceCategory, Trace.messageType.info);
     //     }
 
     //     return this.loadFetchPolyfill();
@@ -1168,7 +1177,7 @@ export abstract class WebViewExtBase extends ContainerView {
 
     //     if (typeof WebViewExtBase.isPromiseSupported === 'undefined') {
     //         if (Trace.isEnabled()) {
-    //             Trace.write('WebViewExtBase.ensurePromiseSupport() - need to check for promise support.', 'NOTA', Trace.messageType.info);
+    //             Trace.write('WebViewExtBase.ensurePromiseSupport() - need to check for promise support.', WebViewTraceCategory, Trace.messageType.info);
     //         }
 
     //         WebViewExtBase.isPromiseSupported = await this.executeJavaScript<boolean>("typeof Promise !== 'undefined'");
@@ -1176,14 +1185,14 @@ export abstract class WebViewExtBase extends ContainerView {
 
     //     if (WebViewExtBase.isPromiseSupported) {
     //         if (Trace.isEnabled()) {
-    //             Trace.write('WebViewExtBase.ensurePromiseSupport() - promise is supported - polyfill not needed.', 'NOTA', Trace.messageType.info);
+    //             Trace.write('WebViewExtBase.ensurePromiseSupport() - promise is supported - polyfill not needed.', WebViewTraceCategory, Trace.messageType.info);
     //         }
 
     //         return;
     //     }
 
     //     if (Trace.isEnabled()) {
-    //         Trace.write('WebViewExtBase.ensurePromiseSupport() - promise is not supported - polyfill needed.', 'NOTA', Trace.messageType.info);
+    //         Trace.write('WebViewExtBase.ensurePromiseSupport() - promise is not supported - polyfill needed.', WebViewTraceCategory, Trace.messageType.info);
     //     }
     //     await this.loadPromisePolyfill();
     // }
@@ -1237,7 +1246,7 @@ export abstract class WebViewExtBase extends ContainerView {
 
             if (typeof scriptCode !== 'string') {
                 if (Trace.isEnabled()) {
-                    Trace.write('WebViewExt.executePromises() - scriptCode is not a string', 'NOTA', Trace.messageType.info);
+                    Trace.write('WebViewExt.executePromises() - scriptCode is not a string', WebViewTraceCategory, Trace.messageType.info);
                 }
                 continue;
             }
@@ -1426,7 +1435,7 @@ export abstract class WebViewExtBase extends ContainerView {
 
     public writeTrace(message: string, type = Trace.messageType.info) {
         if (Trace.isEnabled()) {
-            Trace.write(message, 'NOTA', type);
+            Trace.write(message, WebViewTraceCategory, type);
         }
     }
 
@@ -1596,3 +1605,4 @@ scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
 appCachePathProperty.register(WebViewExtBase);
 limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
+scrollBarIndicatorVisibleProperty.register(WebViewExtBase);

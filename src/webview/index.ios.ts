@@ -2,14 +2,16 @@ import { File, Trace, alert, confirm, knownFolders, profile, prompt } from '@nat
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import {
     NavigationType,
-    NotaTraceCategory,
+    ViewPortProperties,
     WebViewExtBase,
+    WebViewTraceCategory,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
+    limitsNavigationsToAppBoundDomainsProperty,
     mediaPlaybackRequiresUserActionProperty,
+    scrollBarIndicatorVisibleProperty,
     scrollBounceProperty,
-    viewPortProperty,
-    limitsNavigationsToAppBoundDomainsProperty
+    viewPortProperty
 } from './index.common';
 import { webViewBridge } from './nativescript-webview-bridge-loader';
 
@@ -25,7 +27,6 @@ export class AWebView extends WebViewExtBase {
         return false;
     }
     zoomBy(zoomFactor: number) {}
-    public ios: WKWebView;
     nativeViewProtected: WKWebView;
 
     public static supportXLocalScheme = typeof CustomUrlSchemeHandler !== 'undefined';
@@ -182,31 +183,25 @@ export class AWebView extends WebViewExtBase {
 
     public stopLoading() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.stopLoading();
     }
 
     public _loadUrl(src: string) {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         const nsURL = NSURL.URLWithString(src);
         if (src.startsWith('file:///')) {
             const cachePath = src.substring(0, src.lastIndexOf('/'));
             const nsReadAccessUrl = NSURL.URLWithString(cachePath);
             if (Trace.isEnabled()) {
-                Trace.write(`WKWebViewWrapper.loadUrl("${src}") -> ios.loadFileURLAllowingReadAccessToURL("${nsURL}", "${nsReadAccessUrl}"`, NotaTraceCategory, Trace.messageType.info);
+                Trace.write(`WKWebViewWrapper.loadUrl("${src}") -> ios.loadFileURLAllowingReadAccessToURL("${nsURL}", "${nsReadAccessUrl}"`, WebViewTraceCategory, Trace.messageType.info);
             }
             nativeView.loadFileURLAllowingReadAccessToURL(nsURL, nsReadAccessUrl);
         } else {
             const nsRequestWithUrl = NSURLRequest.requestWithURL(nsURL);
             if (Trace.isEnabled()) {
-                Trace.write(`WKWebViewWrapper.loadUrl("${src}") -> ios.loadRequest("${nsRequestWithUrl}"`, NotaTraceCategory, Trace.messageType.info);
+                Trace.write(`WKWebViewWrapper.loadUrl("${src}") -> ios.loadRequest("${nsRequestWithUrl}"`, WebViewTraceCategory, Trace.messageType.info);
             }
             nativeView.loadRequest(nsRequestWithUrl);
         }
@@ -214,15 +209,12 @@ export class AWebView extends WebViewExtBase {
 
     public _loadData(content: string) {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         const baseUrl = `file:///${knownFolders.currentApp().path}/`;
         const nsBaseUrl = NSURL.URLWithString(baseUrl);
 
         if (Trace.isEnabled()) {
-            Trace.write(`WKWebViewWrapper.loadUrl(content) -> this.ios.loadHTMLStringBaseURL("${nsBaseUrl}")`, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(`WKWebViewWrapper.loadUrl(content) -> this.ios.loadHTMLStringBaseURL("${nsBaseUrl}")`, WebViewTraceCategory, Trace.messageType.info);
         }
         nativeView.loadHTMLStringBaseURL(content, nsBaseUrl);
     }
@@ -241,27 +233,18 @@ export class AWebView extends WebViewExtBase {
 
     public goBack() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.goBack();
     }
 
     public goForward() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.goForward();
     }
 
     public reload() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.reload();
     }
@@ -307,7 +290,7 @@ export class AWebView extends WebViewExtBase {
 
         if (!this.supportXLocalScheme) {
             if (Trace.isEnabled()) {
-                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, 'Nota', Trace.messageType.error);
+                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, WebViewTraceCategory, Trace.messageType.error);
             }
             return;
         }
@@ -317,14 +300,14 @@ export class AWebView extends WebViewExtBase {
         const filepath = this.resolveLocalResourceFilePath(path);
         if (!filepath) {
             if (Trace.isEnabled()) {
-                Trace.write(`${cls} -> file doesn't exist`, 'Nota', Trace.messageType.error);
+                Trace.write(`${cls} -> file doesn't exist`, WebViewTraceCategory, Trace.messageType.error);
             }
 
             return;
         }
 
         if (Trace.isEnabled()) {
-            Trace.write(`${cls} -> file: "${filepath}"`, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(`${cls} -> file: "${filepath}"`, WebViewTraceCategory, Trace.messageType.info);
         }
 
         this.registerLocalResourceForNative(resourceName, filepath);
@@ -334,14 +317,14 @@ export class AWebView extends WebViewExtBase {
         const cls = `WebViewExt<${this}.ios>.unregisterLocalResource("${resourceName}")`;
         if (!this.supportXLocalScheme) {
             if (Trace.isEnabled()) {
-                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, 'Nota', Trace.messageType.error);
+                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, WebViewTraceCategory, Trace.messageType.error);
             }
 
             return;
         }
 
         if (Trace.isEnabled()) {
-            Trace.write(cls, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(cls, WebViewTraceCategory, Trace.messageType.info);
         }
 
         resourceName = this.fixLocalResourceName(resourceName);
@@ -354,7 +337,7 @@ export class AWebView extends WebViewExtBase {
         const cls = `WebViewExt<${this}.ios>.getRegisteredLocalResource("${resourceName}")`;
         if (!this.supportXLocalScheme) {
             if (Trace.isEnabled()) {
-                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, 'Nota', Trace.messageType.error);
+                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, WebViewTraceCategory, Trace.messageType.error);
             }
 
             return null;
@@ -363,7 +346,7 @@ export class AWebView extends WebViewExtBase {
         const result = this.getRegisteredLocalResourceFromNative(resourceName);
 
         if (Trace.isEnabled()) {
-            Trace.write(`${cls} -> "${result}"`, NotaTraceCategory, Trace.messageType.info);
+            Trace.write(`${cls} -> "${result}"`, WebViewTraceCategory, Trace.messageType.info);
         }
 
         return result;
@@ -377,7 +360,7 @@ export class AWebView extends WebViewExtBase {
         const filepath = this.resolveLocalResourceFilePath(path);
         if (!filepath) {
             if (Trace.isEnabled()) {
-                Trace.write(`WKWebViewWrapper.autoLoadStyleSheetFile("${resourceName}", "${path}") - couldn't resolve filepath`, NotaTraceCategory, Trace.messageType.info);
+                Trace.write(`WKWebViewWrapper.autoLoadStyleSheetFile("${resourceName}", "${path}") - couldn't resolve filepath`, WebViewTraceCategory, Trace.messageType.info);
             }
 
             return;
@@ -400,7 +383,7 @@ export class AWebView extends WebViewExtBase {
         const filepath = this.resolveLocalResourceFilePath(path);
         if (!filepath) {
             if (Trace.isEnabled()) {
-                Trace.write(`WKWebViewWrapper.autoLoadJavaScriptFile("${resourceName}", "${path}") - couldn't resolve filepath`, NotaTraceCategory, Trace.messageType.info);
+                Trace.write(`WKWebViewWrapper.autoLoadJavaScriptFile("${resourceName}", "${path}") - couldn't resolve filepath`, WebViewTraceCategory, Trace.messageType.info);
             }
 
             return;
@@ -423,18 +406,12 @@ export class AWebView extends WebViewExtBase {
 
     [scrollBounceProperty.getDefault]() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return false;
-        }
 
         return nativeView.scrollView.bounces;
     }
 
     [scrollBounceProperty.setNative](enabled: boolean) {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.scrollView.bounces = !!enabled;
     }
@@ -453,11 +430,26 @@ export class AWebView extends WebViewExtBase {
         return false;
     }
 
-    [isEnabledProperty.setNative](enabled: boolean) {
-        const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
+    [scrollBarIndicatorVisibleProperty.getDefault](): boolean {
+        return true;
+    }
+    [scrollBarIndicatorVisibleProperty.setNative](value: boolean) {
+        this.updateScrollBarVisibility(value);
+    }
+    protected updateScrollBarVisibility(value) {
+        if (!this.nativeViewProtected) {
             return;
         }
+        this.nativeViewProtected.scrollView.showsHorizontalScrollIndicator = value;
+        this.nativeViewProtected.scrollView.showsVerticalScrollIndicator = value;
+    }
+
+    public _onOrientationChanged() {
+        this.updateScrollBarVisibility(this.scrollBarIndicatorVisible);
+    }
+
+    [isEnabledProperty.setNative](enabled: boolean) {
+        const nativeView = this.nativeViewProtected;
 
         nativeView.userInteractionEnabled = !!enabled;
         nativeView.scrollView.userInteractionEnabled = !!enabled;
