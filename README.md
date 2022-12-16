@@ -61,9 +61,6 @@ Simply run
 npm run publish
 ```
 <br><br>This monorepo contains multiple packages:<br><br><details>
-<summary><b>ui-webview</b></summary>
-{{ load:packages/ui-webview/README.md }}
-</details><details>
 <summary><b>webview</b></summary>
 ﻿# @nativescript-community/ui-webview
 
