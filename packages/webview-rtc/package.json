@@ -11,8 +11,8 @@
     "scripts": {
         "build": "npm run tsc",
         "build.all": "npm run build",
-        "tsc": "../../node_modules/.bin/cpy '**/*.d.ts' '../../packages/webview-rtc' --parents --cwd=../../src/webview-rtc && ../../node_modules/.bin/tsc -skipLibCheck -d",
-        "clean": "../../node_modules/.bin/rimraf ./*.d.ts ./*.js ./*.js.map"
+        "tsc": "cpy '**/*.d.ts' '../../packages/webview-rtc' --parents --cwd=../../src/webview-rtc && tsc -skipLibCheck -d",
+        "clean": "rimraf ./*.d.ts ./*.js ./*.js.map"
     },
     "nativescript": {
         "platforms": {
