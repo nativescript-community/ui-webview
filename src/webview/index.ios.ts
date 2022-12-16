@@ -3,8 +3,8 @@ import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import {
     NavigationType,
     ViewPortProperties,
-    WebViewTraceCategory,
     WebViewExtBase,
+    WebViewTraceCategory,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
     limitsNavigationsToAppBoundDomainsProperty,

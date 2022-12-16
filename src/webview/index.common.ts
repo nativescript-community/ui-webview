@@ -1615,7 +1615,4 @@ scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
 appCachePathProperty.register(WebViewExtBase);
 limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
-<<<<<<< HEAD
 scrollBarIndicatorVisibleProperty.register(WebViewExtBase);
-=======
->>>>>>> master
