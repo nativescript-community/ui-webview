@@ -17,6 +17,7 @@ import {
     mediaPlaybackRequiresUserActionProperty,
     scrollBarIndicatorVisibleProperty,
     supportZoomProperty,
+    useWideViewPortProperty,
     webConsoleProperty
 } from './index.common';
 import { appCachePathProperty } from '.';
@@ -42,7 +43,23 @@ const extToMimeType = new Map<string, string>([
 const extToBinaryEncoding = new Set<string>(['gif', 'jpeg', 'jpg', 'otf', 'png', 'ttf']);
 
 //#region android_native_classes
-let cacheModeMap: Map<CacheMode, number>;
+const cacheModeMap = {
+    get cache_first() {
+        return android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK;
+    },
+    get cache_only() {
+        return android.webkit.WebSettings.LOAD_CACHE_ONLY;
+    },
+    get default() {
+        return android.webkit.WebSettings.LOAD_DEFAULT;
+    },
+    get no_cache() {
+        return android.webkit.WebSettings.LOAD_NO_CACHE;
+    },
+    get normal() {
+        return android.webkit.WebSettings.LOAD_NORMAL;
+    }
+};
 
 export interface AndroidWebViewClient extends android.webkit.WebViewClient {}
 
@@ -62,14 +79,6 @@ function initializeWebViewClient(): void {
     if (WebViewExtClient) {
         return;
     }
-
-    cacheModeMap = new Map<CacheMode, number>([
-        ['cache_first', android.webkit.WebSettings.LOAD_CACHE_ELSE_NETWORK],
-        ['cache_only', android.webkit.WebSettings.LOAD_CACHE_ONLY],
-        ['default', android.webkit.WebSettings.LOAD_DEFAULT],
-        ['no_cache', android.webkit.WebSettings.LOAD_NO_CACHE],
-        ['normal', android.webkit.WebSettings.LOAD_NORMAL]
-    ]);
 
     @NativeClass()
     class WebViewExtClientImpl extends android.webkit.WebViewClient {
@@ -555,9 +564,6 @@ export class AWebView extends WebViewExtBase {
         settings.setJavaScriptEnabled(true);
         settings.setAllowFileAccess(true); // Needed for Android 11
 
-        // to support viewport tag
-        settings.setUseWideViewPort(true);
-
         if (sdkVersion() >= 21) {
             // Needed for x-local in https-sites
             settings.setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
@@ -853,14 +859,10 @@ export class AWebView extends WebViewExtBase {
     }
 
     [builtInZoomControlsProperty.setNative](enabled: boolean) {
-        const androidWebView = this.nativeViewProtected;
-
-        const settings = androidWebView.getSettings();
-        settings.setBuiltInZoomControls(!!enabled);
+        this.nativeViewProtected.getSettings().setBuiltInZoomControls(!!enabled);
     }
     [appCachePathProperty.setNative](pth: string) {
         const androidWebView = this.nativeViewProtected;
-
         const settings = androidWebView.getSettings();
         settings.setAppCachePath(pth);
         settings.setAppCacheEnabled(!!pth);
@@ -874,9 +876,7 @@ export class AWebView extends WebViewExtBase {
     }
 
     [displayZoomControlsProperty.setNative](enabled: boolean) {
-        const androidWebView = this.nativeViewProtected;
-        const settings = androidWebView.getSettings();
-        settings.setDisplayZoomControls(!!enabled);
+        this.nativeViewProtected.getSettings().setDisplayZoomControls(!!enabled);
     }
 
     [scrollBarIndicatorVisibleProperty.getDefault](): boolean {
@@ -889,70 +889,54 @@ export class AWebView extends WebViewExtBase {
     }
 
     [cacheModeProperty.getDefault](): CacheMode | null {
-        const androidWebView = this.nativeViewProtected;
-        const settings = androidWebView.getSettings();
-        const cacheModeInt = settings.getCacheMode();
-        for (const [key, value] of cacheModeMap) {
-            if (value === cacheModeInt) {
-                return key;
-            }
-        }
+        return 'default';
+        // const androidWebView = this.nativeViewProtected;
+        // if (!androidWebView) {
+        //     return null;
+        // }
 
-        return null;
+        // const settings = androidWebView.getSettings();
+        // const cacheModeInt = settings.getCacheMode();
+
+        // for (const key of Object.keys(cacheModeMap)) {
+        //     if (cacheModeMap[key] === cacheModeInt) {
+        //         return key as CacheMode;
+        //     }
+        // }
+
+        // return null;
     }
 
     [cacheModeProperty.setNative](cacheMode: CacheMode) {
-        const androidWebView = this.nativeViewProtected;
-        const settings = androidWebView.getSettings();
-        for (const [key, nativeValue] of cacheModeMap) {
-            if (key === cacheMode) {
-                settings.setCacheMode(nativeValue);
+        this.nativeViewProtected.getSettings().setCacheMode(cacheModeMap[cacheMode]);
+    }
 
-                return;
-            }
-        }
+    [useWideViewPortProperty.setNative](value: boolean) {
+        this.nativeViewProtected.getSettings().setUseWideViewPort(value);
     }
 
     [databaseStorageProperty.getDefault]() {
-        const androidWebView = this.nativeViewProtected;
-        const settings = androidWebView.getSettings();
-
-        return settings.getDatabaseEnabled();
+        return this.nativeViewProtected.getSettings().getDatabaseEnabled();
     }
 
     [databaseStorageProperty.setNative](enabled: boolean) {
-        const androidWebView = this.nativeViewProtected;
-        const settings = androidWebView.getSettings();
-        settings.setDatabaseEnabled(!!enabled);
+        this.nativeViewProtected.getSettings().setDatabaseEnabled(!!enabled);
     }
 
     [domStorageProperty.getDefault]() {
-        const androidWebView = this.nativeViewProtected;
-        const settings = androidWebView.getSettings();
-
-        return settings.getDomStorageEnabled();
+        return this.nativeViewProtected.getSettings().getDomStorageEnabled();
     }
 
     [domStorageProperty.setNative](enabled: boolean) {
-        const androidWebView = this.nativeViewProtected;
-
-        const settings = androidWebView.getSettings();
-        settings.setDomStorageEnabled(!!enabled);
+        return this.nativeViewProtected.getSettings().setDomStorageEnabled(!!enabled);
     }
 
     [supportZoomProperty.getDefault]() {
-        const androidWebView = this.nativeViewProtected;
-
-        const settings = androidWebView.getSettings();
-
-        return settings.supportZoom();
+        return this.nativeViewProtected.getSettings().supportZoom();
     }
 
     [supportZoomProperty.setNative](enabled: boolean) {
-        const androidWebView = this.nativeViewProtected;
-
-        const settings = androidWebView.getSettings();
-        settings.setSupportZoom(!!enabled);
+        this.nativeViewProtected.getSettings().setSupportZoom(!!enabled);
     }
 
     public [isScrollEnabledProperty.setNative](value: boolean) {
@@ -961,7 +945,6 @@ export class AWebView extends WebViewExtBase {
 
     [isEnabledProperty.setNative](enabled: boolean) {
         const androidWebView = this.nativeViewProtected;
-
         if (enabled) {
             androidWebView.setOnTouchListener(null!);
         } else {

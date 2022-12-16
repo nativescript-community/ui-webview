@@ -120,6 +120,12 @@ export const scrollBarIndicatorVisibleProperty = new Property<WebViewExtBase, bo
     valueConverter: booleanConverter
 });
 
+export const useWideViewPortProperty = new Property<WebViewExtBase, boolean>({
+    name: 'useWideViewPort',
+    defaultValue: true,
+    valueConverter: booleanConverter
+});
+
 export type ViewPortValue = boolean | ViewPortProperties;
 export const viewPortProperty = new Property<WebViewExtBase, ViewPortValue>({
     name: 'viewPortSize',
@@ -573,6 +579,10 @@ export abstract class WebViewExtBase extends ContainerView {
         if (error) {
             this.notify(args);
             throw args;
+        }
+
+        if (Trace.isEnabled()) {
+            Trace.write(`WebViewExt._onLoadFinished("${url}", ${error || void 0}) - > Injecting webview-bridge JS code`, WebViewTraceCategory, Trace.messageType.info);
         }
 
         if (!this.autoInjectJSBridge) {
@@ -1605,4 +1615,7 @@ scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
 appCachePathProperty.register(WebViewExtBase);
 limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
+<<<<<<< HEAD
 scrollBarIndicatorVisibleProperty.register(WebViewExtBase);
+=======
+>>>>>>> master

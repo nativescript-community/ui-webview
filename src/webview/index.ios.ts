@@ -3,8 +3,8 @@ import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import {
     NavigationType,
     ViewPortProperties,
-    WebViewExtBase,
     WebViewTraceCategory,
+    WebViewExtBase,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
     limitsNavigationsToAppBoundDomainsProperty,
@@ -416,7 +416,7 @@ export class AWebView extends WebViewExtBase {
         nativeView.scrollView.bounces = !!enabled;
     }
 
-    [viewPortProperty.setNative](value: ViewPortProperties) {
+    [viewPortProperty.setNative](value) {
         if (this.src) {
             this.injectViewPortMeta();
         }
