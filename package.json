@@ -78,12 +78,12 @@
         "yarn": ">=1.19.1",
         "pnpm": ">=7.0.0"
     },
-    "workspaces": {
-        "0": "packages/*",
-        "1": "demo-vue",
-        "2": "demo-ng",
-        "3": "demo-svelte",
-        "4": "demo-react",
-        "5": "demo-snippets"
-    }
+    "workspaces": [
+        "packages/*",
+        "demo-vue",
+        "demo-ng",
+        "demo-svelte",
+        "demo-react",
+        "demo-snippets"
+    ]
 }
