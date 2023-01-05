@@ -1,0 +1,469 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@nativescript-community/ui-webview-root</title><meta name="description" content="Documentation for @nativescript-community/ui-webview-root"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"><a href="https://docs.nativescript.org">Nativescript Doc</a></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@nativescript-community/ui-webview-root</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<h2>@nativescript-community/ui-webview-root</h2></div>
+<div class="tsd-panel tsd-typography"><!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️-->This monorepo contains multiple packages:<br><br><details>
+<summary><b>webview</b></summary>
+﻿# @nativescript-community/ui-webview
+
+<p>Extended WebView for NativeScript which adds many options.
+The code is originally based on <a href="https://github.com/m-abs/nativescript-webview-ext">nativescript-webview-ext</a></p>
+<p><a href="#features"></a></p>
+
+<a href="#features" id="features" style="color: inherit; text-decoration: none;">
+  <h2>Features</h2>
+</a>
+<ul>
+<li><p>Adds a custom-scheme handler for x-local:// to the webview for loading of resources inside the webview.</p>
+<ul>
+<li>Note: For iOS 11+ WKWebView is used, but for iOS &lt;11 UIWebView is used</li>
+</ul>
+</li>
+<li><p>Adds support for capturing URLs.</p>
+<ul>
+<li>This allows the app to open external links in an external browser and handle tel-links</li>
+</ul>
+</li>
+<li><p>Added functions like:</p>
+<ul>
+<li><code>executeJavaScript(code: string)</code> for executing JavaScript-code and getting result.</li>
+<li><code>executePromise(code: string)</code> for calling promises and getting the result.</li>
+<li><code>getTitle()</code> returns document.title.</li>
+</ul>
+</li>
+<li><p>Adds functions to inject <code>css</code>- and <code>javascript</code>-files.</p>
+<ul>
+<li>Into the current page.</li>
+<li>Auto-injected on page load.</li>
+</ul>
+</li>
+<li><p>Supports:</p>
+<ul>
+<li>Android 19+</li>
+<li>iOS 9+</li>
+</ul>
+</li>
+</ul>
+<p><a href="#installation"></a></p>
+
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h2>Installation</h2>
+</a>
+<p>Describe your plugin installation steps. Ideally it would be something like:</p>
+<pre><code class="language-bash"><span class="hl-0">tns plugin add @nativescript-community/ui-webview</span>
+</code></pre>
+
+<a href="#angular-support" id="angular-support" style="color: inherit; text-decoration: none;">
+  <h3>Angular support</h3>
+</a>
+<p>Import <code>AWebViewModule</code> from <code>@nativescript-community/ui-webview/angular</code> and add it to your <code>NgModule</code>.</p>
+<p>This registers the element <code>AWebView</code>. Replace the <WebView> tag with <AWebView></p>
+
+<a href="#vue-support" id="vue-support" style="color: inherit; text-decoration: none;">
+  <h3>Vue support</h3>
+</a>
+<pre><code class="language-js"><span class="hl-1">import</span><span class="hl-0"> </span><span class="hl-2">Vue</span><span class="hl-0"> </span><span class="hl-1">from</span><span class="hl-0"> </span><span class="hl-3">&#39;nativescript-vue&#39;</span><span class="hl-0">;</span><br/><span class="hl-1">import</span><span class="hl-0"> </span><span class="hl-2">WebViewPlugin</span><span class="hl-0"> </span><span class="hl-1">from</span><span class="hl-0"> </span><span class="hl-3">&#39;@nativescript-community/ui-webview/vue&#39;</span><span class="hl-0">;</span><br/><br/><span class="hl-2">Vue</span><span class="hl-0">.</span><span class="hl-4">use</span><span class="hl-0">(</span><span class="hl-2">WebViewPlugin</span><span class="hl-0">);</span>
+</code></pre>
+<p>This registers the element <code>AWebView</code>. Replace the <WebView> tag with <AWebView></p>
+<p><a href="#usage"></a></p>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h2>Usage</h2>
+</a>
+<p><a href="#limitations"></a></p>
+
+<a href="#limitations" id="limitations" style="color: inherit; text-decoration: none;">
+  <h2>Limitations</h2>
+</a>
+<p>In order to intercept requests for the custom scheme, we use <code>UIWebView</code> for iOS 9 and 10 and <code>WKWebView</code> for iOS 11+.</p>
+<p>iOS 11 added support for setting a <code>WKURLSchemeHandler</code> on the <code>WKWebView</code>.
+Prior to iOS 11 there isn&#39;t support for intercepting the URL with <code>WKWebView</code>, so we use a custom <code>NSURLProtocol</code> + <code>UIWebView</code>.</p>
+
+<a href="#important" id="important" style="color: inherit; text-decoration: none;">
+  <h3>Important:</h3>
+</a>
+<p>The custom <code>NSURLProtocol</code> used with UIWebView is shared with all instances of the AWebView, so mapping <code>x-local://local-filename.js</code> =&gt; <code>file://app/full/path/local-filename.js</code> is shared between them.</p>
+<p><a href="#api"></a></p>
+
+<a href="#api" id="api" style="color: inherit; text-decoration: none;">
+  <h2>API</h2>
+</a>
+
+<a href="#nativescript-view" id="nativescript-view" style="color: inherit; text-decoration: none;">
+  <h3>NativeScript View</h3>
+</a>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>readonly isUIWebView</td>
+<td>true / false</td>
+<td>Is the native webview an UIWebView? True if <code>iOS &lt;11</code></td>
+</tr>
+<tr>
+<td>readonly isWkWebView</td>
+<td>true / false</td>
+<td>Is the native webview an WKWebView? True if <code>iOS &gt;=11</code></td>
+</tr>
+<tr>
+<td>src</td>
+<td></td>
+<td>Load src</td>
+</tr>
+<tr>
+<td>autoInjectJSBridge</td>
+<td>true / false</td>
+<td>Should the window.nsWebViewBridge be injected on <code>loadFinishedEvent</code>? Defaults to true</td>
+</tr>
+<tr>
+<td>builtInZoomControls</td>
+<td>true / false</td>
+<td>Android: Is the built-in zoom mechanisms being used</td>
+</tr>
+<tr>
+<td>cacheMode</td>
+<td>default / no_cache / cache_first / cache_only</td>
+<td>Android: Set caching mode.</td>
+</tr>
+<tr>
+<td>databaseStorage</td>
+<td>true / false</td>
+<td>Android: Enable/Disabled database storage API. Note: It affects all webviews in the process.</td>
+</tr>
+<tr>
+<td>debugMode</td>
+<td>true / false</td>
+<td>Android: Enable chrome debugger for webview on Android. Note: Applies to all webviews in App</td>
+</tr>
+<tr>
+<td>displayZoomControls</td>
+<td>true / false</td>
+<td>Android: displays on-screen zoom controls when using the built-in zoom mechanisms</td>
+</tr>
+<tr>
+<td>domStorage</td>
+<td>true / false</td>
+<td>Android: Enable/Disabled DOM Storage API. E.g localStorage</td>
+</tr>
+<tr>
+<td>scalesPageToFit</td>
+<td>UIWebView: Should webpage scale to fit the view? Defaults to false</td>
+<td></td>
+</tr>
+<tr>
+<td>scrollBounce</td>
+<td>true / false</td>
+<td>iOS: Should the scrollView bounce? Defaults to true.</td>
+</tr>
+<tr>
+<td>supportZoom</td>
+<td>true / false</td>
+<td>Android: should the webview support zoom</td>
+</tr>
+<tr>
+<td>viewPortSize</td>
+<td>false / view-port string / ViewPortProperties</td>
+<td>Set the viewport metadata on load finished. <strong>Note:</strong> WkWebView sets initial-scale=1.0 by default.</td>
+</tr>
+<tr>
+<td>limitsNavigationsToAppBoundDomains</td>
+<td>false</td>
+<td>iOS: allows to enable Service Workers <strong>Note:</strong> If set to true, WKAppBoundDomains also should be set in info.plist.</td>
+</tr>
+<tr>
+<td>scrollBarIndicatorVisible</td>
+<td>false</td>
+<td>Allow to hide scrollbars.</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>loadUrl(src: string): Promise<LoadFinishedEventData></td>
+<td>Open a URL and resolves a promise once it has finished loading.</td>
+</tr>
+<tr>
+<td>registerLocalResource(resourceName: string, path: string): void;</td>
+<td>Map the &quot;x-local://{resourceName}&quot; =&gt; &quot;{path}&quot;.</td>
+</tr>
+<tr>
+<td>unregisterLocalResource(resourceName: string): void;</td>
+<td>Removes the mapping from &quot;x-local://{resourceName}&quot; =&gt; &quot;{path}&quot;</td>
+</tr>
+<tr>
+<td>getRegisteredLocalResource(resourceName: string): void;</td>
+<td>Get the mapping from &quot;x-local://{resourceName}&quot; =&gt; &quot;{path}&quot;</td>
+</tr>
+<tr>
+<td>loadJavaScriptFile(scriptName: string, filepath: string)</td>
+<td>Inject a javascript-file into the webview. Should be called after the <code>loadFinishedEvent</code></td>
+</tr>
+<tr>
+<td>loadStyleSheetFile(stylesheetName: string, filepath: string, insertBefore: boolean)</td>
+<td>Loads a CSS-file into document.head. If before is true, it will be added to the top of document.head otherwise as the last element</td>
+</tr>
+<tr>
+<td>loadJavaScriptFiles(files: {resourceName: string, filepath: string}[])</td>
+<td>Inject multiple javascript-files into the webview. Should be called after the <code>loadFinishedEvent</code></td>
+</tr>
+<tr>
+<td>loadStyleSheetFiles(files: {resourceName: string, filepath: string, insertBefore: boolean}[])</td>
+<td>Loads multiple CSS-files into the document.head. If before is true, it will be added to the top of document.head otherwise as the last element</td>
+</tr>
+<tr>
+<td>autoLoadJavaScriptFile(resourceName: string, filepath: string)</td>
+<td>Register a JavaScript-file to be injected on <code>loadFinishedEvent</code>. If a page is already loaded, the script will be injected into the current page.</td>
+</tr>
+<tr>
+<td>autoLoadStyleSheetFile(resourceName: string, filepath: string, insertBefore?: boolean)</td>
+<td>Register a CSS-file to be injected on <code>loadFinishedEvent</code>. If a page is already loaded, the CSS-file will be injected into the current page.</td>
+</tr>
+<tr>
+<td>autoExecuteJavaScript(scriptCode: string, name: string)</td>
+<td>Execute a script on <code>loadFinishedEvent</code>. The script can be a promise</td>
+</tr>
+<tr>
+<td>executeJavaScript(scriptCode: string)</td>
+<td>Execute JavaScript in the webpage. <em>Note:</em> scriptCode should be ES5 compatible, or it might not work on &#39;iOS &lt; 11&#39;</td>
+</tr>
+<tr>
+<td>executePromise(scriptCode: string, timeout: number = 500)</td>
+<td>Run a promise inside the webview. <em>Note:</em> Executing scriptCode must return a promise.</td>
+</tr>
+<tr>
+<td>emitToWebView(eventName: string, data: any)</td>
+<td>Emit an event to the webview. Note: data must be stringify&#39;able with JSON.stringify or this throws an exception.</td>
+</tr>
+<tr>
+<td>getTitle()</td>
+<td>Returns a promise with the current document title.</td>
+</tr>
+</tbody></table>
+<p><a href="#events"></a></p>
+
+<a href="#events" id="events" style="color: inherit; text-decoration: none;">
+  <h2>Events</h2>
+</a>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>loadFinished</td>
+<td>Raised when a loadFinished event occurs. args is a <code>LoadFinishedEventData</code></td>
+</tr>
+<tr>
+<td>loadProgress</td>
+<td>Android only: Raised during page load to indicate the progress. args is a <code>LoadProgressEventData</code></td>
+</tr>
+<tr>
+<td>loadStarted</td>
+<td>Raised when a loadStarted event occurs. args is a <code>LoadStartedEventData</code></td>
+</tr>
+<tr>
+<td>shouldOverrideUrlLoading</td>
+<td>Raised before the webview requests an URL. Can cancelled by setting args.cancel = true in the <code>ShouldOverrideUrlLoadEventData</code></td>
+</tr>
+<tr>
+<td>titleChanged</td>
+<td>Document title changed</td>
+</tr>
+<tr>
+<td>webAlert</td>
+<td>Raised when <code>window.alert</code> is triggered inside the webview, needed to use customs dialogs for web alerts. args in a <code>WebAlertEventData</code>. <code>args.callback()</code> must be called to indicate alert is closed. <strong>NOTE:</strong> Not supported by UIWebView</td>
+</tr>
+<tr>
+<td>webConfirm</td>
+<td>Raised when <code>window.confirm</code> is triggered inside the webview, needed to use customs dialogs for web confirm boxes. args in a <code>webConfirmEvent</code>. <code>args.callback(boolean)</code> must be called to indicate confirm box is closed. <strong>NOTE:</strong> Not supported by UIWebView</td>
+</tr>
+<tr>
+<td>webConsole</td>
+<td>Android only: Raised when a line is added to the web console. args is a <code>WebConsoleEventData</code>.</td>
+</tr>
+<tr>
+<td>webPrompt</td>
+<td>Raised when <code>window.prompt</code> is triggered inside the webview, needed to use customs dialogs for web prompt boxes. args in a <code>webConfirmEvent</code>. `args.callback(string</td>
+</tr>
+<tr>
+<td>Events emitted from the webview</td>
+<td>Raised when nsWebViewBridge.emit(...) is called inside the webview. args in an <code>WebViewEventData</code></td>
+</tr>
+</tbody></table>
+
+<a href="#webview" id="webview" style="color: inherit; text-decoration: none;">
+  <h3>WebView</h3>
+</a>
+<p>Inside the WebView we have the <code>nsWebViewBridge</code> for sending events between the <code>NativeScript</code>-layer and the <code>WebView</code>.
+<strong>Note:</strong> The bridge will only be available <code>DOMContentLoaded</code> or <code>onload</code> inside the WebView.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>window.nsWebViewBridge.on(eventName: string, cb: (data: any) =&gt; void)</td>
+<td>Registers handlers for events from the native layer.</td>
+</tr>
+<tr>
+<td>window.nsWebViewBridge.off(eventName: string, cb?: (data: any) =&gt; void)</td>
+<td>Unregister handlers for events from the native layer.</td>
+</tr>
+<tr>
+<td>window.nsWebViewBridge.emit(eventName: string, data: any)</td>
+<td>Emits event to NativeScript layer. Will be emitted on the AWebView as any other event, data will be a part of the WebViewEventData-object</td>
+</tr>
+</tbody></table>
+<p><a href="#possible-features-to-come"></a></p>
+
+<a href="#possible-features-to-come" id="possible-features-to-come" style="color: inherit; text-decoration: none;">
+  <h2>Possible features to come:</h2>
+</a>
+<ul>
+<li>Cookie helpers?</li>
+<li>Setting view-port metadata?</li>
+<li>Share cache with native-layer?</li>
+</ul>
+
+<a href="#android" id="android" style="color: inherit; text-decoration: none;">
+  <h3>Android</h3>
+</a>
+<ul>
+<li>Settings<ul>
+<li>AppCache?</li>
+<li>User agent?</li>
+</ul>
+</li>
+</ul>
+
+<a href="#ios" id="ios" style="color: inherit; text-decoration: none;">
+  <h4>iOS</h4>
+</a>
+<ul>
+<li>Settings?</li>
+</ul>
+<p><a href="#demo-and-unit-tests"></a></p>
+
+<a href="#demo-and-unit-tests" id="demo-and-unit-tests" style="color: inherit; text-decoration: none;">
+  <h2>Demo and unit tests</h2>
+</a>
+
+<a href="#running-the-demo" id="running-the-demo" style="color: inherit; text-decoration: none;">
+  <h3>Running the demo</h3>
+</a>
+<p>To run the demo-project, the plugin must be build locally and a http-server must be running.</p>
+<p>The easiest way to run the demo is to follow these steps:</p>
+<ul>
+<li>Clone the git repository from <a href="https://github.com/nativescript-community/ui-webview.git">https://github.com/nativescript-community/ui-webview.git</a></li>
+<li>Go into the <code>src</code>-folder</li>
+<li>Use the npm-scripts:<ul>
+<li>npm run demo.ios</li>
+<li>npm run demo.android</li>
+</ul>
+</li>
+</ul>
+
+<a href="#running-the-unit-tests" id="running-the-unit-tests" style="color: inherit; text-decoration: none;">
+  <h3>Running the unit-tests</h3>
+</a>
+<ul>
+<li>Clone the git repository from <a href="https://github.com/nativescript-community/ui-webview.git">https://github.com/nativescript-community/ui-webview.git</a></li>
+<li>Go into the <code>src</code>-folder</li>
+<li>Use the npm-scripts:<ul>
+<li>npm run test.ios</li>
+<li>npm run test.android</li>
+</ul>
+</li>
+</ul>
+<p><a href="#license"></a></p>
+
+<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+  <h2>License</h2>
+</a>
+<p>Apache License Version 2.0, January 2004</p>
+<p><a href="#about-nota"></a></p>
+
+<a href="#about-nota" id="about-nota" style="color: inherit; text-decoration: none;">
+  <h2>About Nota</h2>
+</a>
+<p>Nota is the Danish Library and Expertise Center for people with print disabilities.
+To become a member of Nota you must be able to document that you cannot read ordinary printed text. Members of Nota are visually impaired, dyslexic or otherwise impaired.
+Our purpose is to ensure equal access to knowledge, community participation and experiences for people who&#39;re unable to read ordinary printed text.</p>
+</details><details>
+<summary><b>webview-rtc</b></summary>
+
+<p><a href="#nativescript-webview-rtc"></a></p>
+
+<a href="#nativescript-webview-rtc" id="nativescript-webview-rtc" style="color: inherit; text-decoration: none;">
+  <h1>NativeScript WebView RTC</h1>
+</a>
+<p><a href="https://www.npmjs.com/package/@nativescript-community/ui-webview-rtc"><img src="https://img.shields.io/npm/dm/@nativescript-community/ui-webview-rtc.svg" alt="npm downloads"></a>
+<a href="https://www.npmjs.com/package/@nativescript-community/ui-webview-rtc"><img src="https://img.shields.io/npm/dt/@nativescript-community/ui-webview-rtc.svg" alt="npm downloads"></a>
+<a href="https://www.npmjs.com/package/@nativescript-community/ui-webview-rtc"><img src="https://img.shields.io/npm/v/@nativescript-community/ui-webview-rtc.svg" alt="npm"></a></p>
+<p>A NativeScript Plugin to add webRTC support to <code>@nativescript-community/ui-webview</code></p>
+<p><a href="#installation"></a></p>
+
+<a href="#installation-1" id="installation-1" style="color: inherit; text-decoration: none;">
+  <h2>Installation</h2>
+</a>
+<p>Run the following command from the root of your project:</p>
+<p><code>tns plugin add @nativescript-community/ui-webview-rtc</code></p>
+<p>This command automatically installs the necessary files, as well as stores @nativescript-community/ui-webview-rtc as a dependency in your project&#39;s package.json file.</p>
+<p><a href="#configuration"></a></p>
+
+<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+  <h2>Configuration</h2>
+</a>
+<p>To install the plugin run </p>
+<pre><code class="language-typescript"><span class="hl-1">import</span><span class="hl-0"> </span><span class="hl-2">install</span><span class="hl-0"> </span><span class="hl-1">from</span><span class="hl-0"> </span><span class="hl-3">&#39;@nativescript-community/ui-webview-rtc&#39;</span><span class="hl-0">;</span><br/><span class="hl-4">install</span><span class="hl-0">();</span>
+</code></pre>
+<p>then simply use the <code>webRTC=&quot;true&quot;</code> as a webview property</p>
+</details></div></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li class="current selected"><a href="modules.html">@nativescript-<wbr/>community/ui-<wbr/>webview-<wbr/>root</a>
+<ul></ul></li></ul></div></details></nav>
+<nav class="tsd-navigation secondary menu-sticky"></nav></div></div>
+<div class="container tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div><script src="assets/main.js"></script></body></html>
