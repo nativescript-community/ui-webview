@@ -54,7 +54,7 @@
     },
     "dependencies": {
         "@nativescript-community/plugin-seed-tools": "file:tools",
-        "ts-node": "10.9.1"
+        "@nativescript-community/template-snippet": "file:demo-snippets"
     },
     "ntl": {
         "descriptions": {
