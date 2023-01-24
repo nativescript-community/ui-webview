@@ -1,15 +1,15 @@
 {
   "uses": [
-    "com.nativescript.webviewinterface:*",
-    "android.webkit:WebView*",
-    "android.webkit:WebViewClient*",
-    "android.webkit:WebChromeClient*",
-    "android.webkit:WebResourceRequest*",
-    "android.webkit:WebResourceResponse*",
-    "android.webkit:WebSettings*",
-    "android.webkit:JsResult*",
-    "android.webkit:ConsoleMessage*",
-    "android.webkit:ValueCallback*",
-    "android.webkit:PermissionRequest*"
+    "com.nativescript.webviewinterface:",
+    "android.webkit:WebView",
+    "android.webkit:WebViewClient",
+    "android.webkit:WebChromeClient",
+    "android.webkit:WebResourceRequest",
+    "android.webkit:WebResourceResponse",
+    "android.webkit:WebSettings",
+    "android.webkit:JsResult",
+    "android.webkit:ConsoleMessage",
+    "android.webkit:ValueCallback",
+    "android.webkit:PermissionRequest"
   ]
 }
