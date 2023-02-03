@@ -464,6 +464,10 @@ function initializeWebViewClient(): void {
             return false;
         }
         async _onPermissionsRequest(permissionRequest: android.webkit.PermissionRequest) {
+            const owner = this.owner?.get();
+            if (!owner) {
+                return;
+            }
             try {
                 const requests = permissionRequest.getResources();
                 const wantedPermissions = new Array();
@@ -485,7 +489,7 @@ function initializeWebViewClient(): void {
                 if (requestedPermissions.length === 0) {
                     permissionRequest.deny();
                 }
-                await this.owner.get()._onRequestPermissions(wantedPermissions);
+                await owner._onRequestPermissions(wantedPermissions);
 
                 permissionRequest.grant(requestedPermissions);
             } catch (err) {
