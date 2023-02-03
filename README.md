@@ -1,4 +1,7 @@
 <!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️-->This monorepo contains multiple packages:<br><br><details>
+<summary><b>ui-webview</b></summary>
+{{ load:packages/ui-webview/README.md }}
+</details><details>
 <summary><b>webview</b></summary>
 ﻿# @nativescript-community/ui-webview
 
