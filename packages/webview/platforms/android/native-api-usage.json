@@ -10,6 +10,7 @@
     "android.webkit:JsResult",
     "android.webkit:ConsoleMessage",
     "android.webkit:ValueCallback",
-    "android.webkit:PermissionRequest"
+    "android.webkit:PermissionRequest",
+    "android.webkit:ConsoleMessage.MessageLevel"
   ]
 }
