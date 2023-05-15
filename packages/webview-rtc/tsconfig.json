@@ -4,12 +4,10 @@
         "rootDir": "../../src/webview-rtc",
         "outDir": "./",
         "paths": {
-            "tns-core-modules": ["./node_modules/@nativescript/core"],
-            "tns-core-modules/*": ["./node_modules/@nativescript/core/*"],
             "@nativescript-community/ui-webview": ["packages/webview/index"],
             "@nativescript-community/ui-webview/*": ["packages/webview/*"]
         }
     },
-    "include": ["../../src/webview-rtc/**/*.ts", "../../references.d.ts", "../../src/references.d.ts"],
+    "include": ["../../src/webview-rtc/**/*.ts", "../../references.d.ts", "../../tools/references.d.ts", "../../src/references.d.ts"],
     "exclude": ["../../src/webview-rtc/angular/**"]
 }

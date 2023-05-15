@@ -13,7 +13,7 @@ export interface ViewPortProperties {
     userScalable?: boolean;
 }
 
-export const WebViewTraceCategory = 'NOTA';
+export const WebViewTraceCategory = 'AWebView';
 
 export type CacheMode = 'default' | 'cache_first' | 'no_cache' | 'cache_only' | 'normal';
 
@@ -111,6 +111,12 @@ export const normalizeUrlsProperty = new Property<WebViewExtBase, boolean>({
 
 export const limitsNavigationsToAppBoundDomainsProperty = new Property<WebViewExtBase, boolean>({
     name: 'limitsNavigationsToAppBoundDomains',
+    valueConverter: booleanConverter
+});
+
+export const scrollBarIndicatorVisibleProperty = new Property<WebViewExtBase, boolean>({
+    name: 'scrollBarIndicatorVisible',
+    defaultValue: true,
     valueConverter: booleanConverter
 });
 
@@ -399,15 +405,7 @@ export abstract class WebViewExtBase extends ContainerView {
      */
     public static isPromiseSupported: boolean;
 
-    /**
-     * Gets the native [android widget](http://developer.android.com/reference/android/webkit/WebView.html) that represents the user interface for this component. Valid only when running on Android OS.
-     */
-    public android: any /* android.webkit.WebView */;
-
-    /**
-     * Gets the native [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview/) that represents the user interface for this component. Valid only when running on iOS 11+.
-     */
-    public ios: any /* WKWebView */;
+    public scrollBarIndicatorVisible: boolean;
 
     public get interceptScheme() {
         return 'x-local';
@@ -554,6 +552,9 @@ export abstract class WebViewExtBase extends ContainerView {
      */
     public async _onLoadFinished(url: string, error?: string): Promise<LoadFinishedEventData> {
         url = this.normalizeURL(url);
+        if (Trace.isEnabled()) {
+            Trace.write(`WebViewExt._onLoadFinished("${url}", ${error || void 0} ${this.autoInjectJSBridge}) - > Injecting webview-bridge JS code`, WebViewTraceCategory, Trace.messageType.info);
+        }
 
         if (!error) {
             // When this is called without an error, update with this.src value without loading the url.
@@ -577,7 +578,6 @@ export abstract class WebViewExtBase extends ContainerView {
 
         if (error) {
             this.notify(args);
-
             throw args;
         }
 
@@ -599,6 +599,7 @@ export abstract class WebViewExtBase extends ContainerView {
                 -1
             );
         } catch (error) {
+            console.error(error);
             args.error = error;
         }
 
@@ -892,7 +893,7 @@ export abstract class WebViewExtBase extends ContainerView {
     public resolveLocalResourceFilePath(filepath: string): string | void {
         if (!filepath) {
             if (Trace.isEnabled()) {
-                Trace.write('WebViewExt.resolveLocalResourceFilePath() no filepath', 'Nota', Trace.messageType.error);
+                Trace.write('WebViewExt.resolveLocalResourceFilePath() no filepath', WebViewTraceCategory, Trace.messageType.error);
             }
 
             return;
@@ -908,7 +909,7 @@ export abstract class WebViewExtBase extends ContainerView {
 
         if (!File.exists(filepath)) {
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.resolveLocalResourceFilePath("${filepath}") - no such file`, 'Nota', Trace.messageType.error);
+                Trace.write(`WebViewExt.resolveLocalResourceFilePath("${filepath}") - no such file`, WebViewTraceCategory, Trace.messageType.error);
             }
             return;
         }
@@ -990,7 +991,11 @@ export abstract class WebViewExtBase extends ContainerView {
 
         if (promiseScriptCodes.length !== files.length) {
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.loadJavaScriptFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`, 'Nota', Trace.messageType.error);
+                Trace.write(
+                    `WebViewExt.loadJavaScriptFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
+                    WebViewTraceCategory,
+                    Trace.messageType.error
+                );
             }
         }
 
@@ -1039,7 +1044,11 @@ export abstract class WebViewExtBase extends ContainerView {
 
         if (promiseScriptCodes.length !== files.length) {
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewExt.loadStyleSheetFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`, 'Nota', Trace.messageType.error);
+                Trace.write(
+                    `WebViewExt.loadStyleSheetFiles() - > Num of generated scriptCodes ${promiseScriptCodes.length} differ from num files ${files.length}`,
+                    WebViewTraceCategory,
+                    Trace.messageType.error
+                );
             }
         }
 
@@ -1110,7 +1119,11 @@ export abstract class WebViewExtBase extends ContainerView {
         if (!url || !this.normalizeUrls || url.startsWith(this.interceptScheme)) {
             return url;
         }
-        return require('url').parse(url).format();
+        try {
+            return require('url').parse(url).format();
+        } catch (error) {
+            return url;
+        }
     }
 
     /**
@@ -1587,3 +1600,4 @@ scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
 appCachePathProperty.register(WebViewExtBase);
 limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
+scrollBarIndicatorVisibleProperty.register(WebViewExtBase);

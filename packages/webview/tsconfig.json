@@ -2,12 +2,8 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "rootDir": "../../src/webview",
-        "outDir": "./",
-        "paths": {
-            "tns-core-modules": ["./node_modules/@nativescript/core"],
-            "tns-core-modules/*": ["./node_modules/@nativescript/core/*"]
-        }
+        "outDir": "./"
     },
-    "include": ["../../src/webview/**/*.ts", "../../references.d.ts", "../../src/references.d.ts"],
+    "include": ["../../src/webview/**/*.ts", "../../references.d.ts", "../../tools/references.d.ts", "../../src/references.d.ts"],
     "exclude": ["../../src/webview/angular/**"]
 }

@@ -2,12 +2,14 @@ import { File, Trace, alert, confirm, knownFolders, profile, prompt } from '@nat
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import {
     NavigationType,
-    WebViewTraceCategory,
+    ViewPortProperties,
     WebViewExtBase,
+    WebViewTraceCategory,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
     limitsNavigationsToAppBoundDomainsProperty,
     mediaPlaybackRequiresUserActionProperty,
+    scrollBarIndicatorVisibleProperty,
     scrollBounceProperty,
     viewPortProperty
 } from './index.common';
@@ -25,7 +27,6 @@ export class AWebView extends WebViewExtBase {
         return false;
     }
     zoomBy(zoomFactor: number) {}
-    public ios: WKWebView;
     nativeViewProtected: WKWebView;
 
     public static supportXLocalScheme = typeof CustomUrlSchemeHandler !== 'undefined';
@@ -182,18 +183,12 @@ export class AWebView extends WebViewExtBase {
 
     public stopLoading() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.stopLoading();
     }
 
     public _loadUrl(src: string) {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         const nsURL = NSURL.URLWithString(src);
         if (src.startsWith('file:///')) {
@@ -214,9 +209,6 @@ export class AWebView extends WebViewExtBase {
 
     public _loadData(content: string) {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         const baseUrl = `file:///${knownFolders.currentApp().path}/`;
         const nsBaseUrl = NSURL.URLWithString(baseUrl);
@@ -241,27 +233,18 @@ export class AWebView extends WebViewExtBase {
 
     public goBack() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.goBack();
     }
 
     public goForward() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.goForward();
     }
 
     public reload() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.reload();
     }
@@ -307,7 +290,7 @@ export class AWebView extends WebViewExtBase {
 
         if (!this.supportXLocalScheme) {
             if (Trace.isEnabled()) {
-                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, 'Nota', Trace.messageType.error);
+                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, WebViewTraceCategory, Trace.messageType.error);
             }
             return;
         }
@@ -317,7 +300,7 @@ export class AWebView extends WebViewExtBase {
         const filepath = this.resolveLocalResourceFilePath(path);
         if (!filepath) {
             if (Trace.isEnabled()) {
-                Trace.write(`${cls} -> file doesn't exist`, 'Nota', Trace.messageType.error);
+                Trace.write(`${cls} -> file doesn't exist`, WebViewTraceCategory, Trace.messageType.error);
             }
 
             return;
@@ -334,7 +317,7 @@ export class AWebView extends WebViewExtBase {
         const cls = `WebViewExt<${this}.ios>.unregisterLocalResource("${resourceName}")`;
         if (!this.supportXLocalScheme) {
             if (Trace.isEnabled()) {
-                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, 'Nota', Trace.messageType.error);
+                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, WebViewTraceCategory, Trace.messageType.error);
             }
 
             return;
@@ -354,7 +337,7 @@ export class AWebView extends WebViewExtBase {
         const cls = `WebViewExt<${this}.ios>.getRegisteredLocalResource("${resourceName}")`;
         if (!this.supportXLocalScheme) {
             if (Trace.isEnabled()) {
-                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, 'Nota', Trace.messageType.error);
+                Trace.write(`${cls} -> custom schema isn't support on iOS <11`, WebViewTraceCategory, Trace.messageType.error);
             }
 
             return null;
@@ -423,18 +406,12 @@ export class AWebView extends WebViewExtBase {
 
     [scrollBounceProperty.getDefault]() {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return false;
-        }
 
         return nativeView.scrollView.bounces;
     }
 
     [scrollBounceProperty.setNative](enabled: boolean) {
         const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
-            return;
-        }
 
         nativeView.scrollView.bounces = !!enabled;
     }
@@ -453,11 +430,26 @@ export class AWebView extends WebViewExtBase {
         return false;
     }
 
-    [isEnabledProperty.setNative](enabled: boolean) {
-        const nativeView = this.nativeViewProtected;
-        if (!nativeView) {
+    [scrollBarIndicatorVisibleProperty.getDefault](): boolean {
+        return true;
+    }
+    [scrollBarIndicatorVisibleProperty.setNative](value: boolean) {
+        this.updateScrollBarVisibility(value);
+    }
+    protected updateScrollBarVisibility(value) {
+        if (!this.nativeViewProtected) {
             return;
         }
+        this.nativeViewProtected.scrollView.showsHorizontalScrollIndicator = value;
+        this.nativeViewProtected.scrollView.showsVerticalScrollIndicator = value;
+    }
+
+    public _onOrientationChanged() {
+        this.updateScrollBarVisibility(this.scrollBarIndicatorVisible);
+    }
+
+    [isEnabledProperty.setNative](enabled: boolean) {
+        const nativeView = this.nativeViewProtected;
 
         nativeView.userInteractionEnabled = !!enabled;
         nativeView.scrollView.userInteractionEnabled = !!enabled;

@@ -15,6 +15,7 @@ import {
     domStorageProperty,
     isScrollEnabledProperty,
     mediaPlaybackRequiresUserActionProperty,
+    scrollBarIndicatorVisibleProperty,
     supportZoomProperty,
     useWideViewPortProperty,
     webConsoleProperty
@@ -463,6 +464,10 @@ function initializeWebViewClient(): void {
             return false;
         }
         async _onPermissionsRequest(permissionRequest: android.webkit.PermissionRequest) {
+            const owner = this.owner?.get();
+            if (!owner) {
+                return;
+            }
             try {
                 const requests = permissionRequest.getResources();
                 const wantedPermissions = new Array();
@@ -484,7 +489,7 @@ function initializeWebViewClient(): void {
                 if (requestedPermissions.length === 0) {
                     permissionRequest.deny();
                 }
-                await this.owner.get()._onRequestPermissions(wantedPermissions);
+                await owner._onRequestPermissions(wantedPermissions);
 
                 permissionRequest.grant(requestedPermissions);
             } catch (err) {
@@ -803,18 +808,12 @@ export class AWebView extends WebViewExtBase {
 
     public zoomIn() {
         const androidWebView = this.nativeViewProtected;
-        if (!androidWebView) {
-            return false;
-        }
 
         return androidWebView.zoomIn();
     }
 
     public zoomOut() {
         const androidWebView = this.nativeViewProtected;
-        if (!androidWebView) {
-            return false;
-        }
 
         return androidWebView.zoomOut();
     }
@@ -856,7 +855,11 @@ export class AWebView extends WebViewExtBase {
     }
 
     [builtInZoomControlsProperty.getDefault]() {
-        return this.nativeViewProtected.getSettings().getBuiltInZoomControls();
+        const androidWebView = this.nativeViewProtected;
+
+        const settings = androidWebView.getSettings();
+
+        return settings.getBuiltInZoomControls();
     }
 
     [builtInZoomControlsProperty.setNative](enabled: boolean) {
@@ -870,11 +873,23 @@ export class AWebView extends WebViewExtBase {
     }
 
     [displayZoomControlsProperty.getDefault]() {
-        return this.nativeViewProtected.getSettings().getDisplayZoomControls();
+        const androidWebView = this.nativeViewProtected;
+        const settings = androidWebView.getSettings();
+
+        return settings.getDisplayZoomControls();
     }
 
     [displayZoomControlsProperty.setNative](enabled: boolean) {
         this.nativeViewProtected.getSettings().setDisplayZoomControls(!!enabled);
+    }
+
+    [scrollBarIndicatorVisibleProperty.getDefault](): boolean {
+        return true;
+    }
+    [scrollBarIndicatorVisibleProperty.setNative](value: boolean) {
+        const androidWebView = this.nativeViewProtected;
+        androidWebView.setHorizontalScrollBarEnabled(value);
+        androidWebView.setVerticalScrollBarEnabled(value);
     }
 
     [cacheModeProperty.getDefault](): CacheMode | null {
