@@ -647,21 +647,6 @@ export abstract class WebViewExtBase extends ContainerView {
             url
         } as ShouldOverrideUrlLoadEventData;
         this.notify(args);
-
-        const eventNameWithSpellingError = 'shouldOverideUrlLoading';
-        if (this.hasListeners(eventNameWithSpellingError)) {
-            console.error(`eventName '${eventNameWithSpellingError}' is deprecated due to spelling error:\nPlease use: ${WebViewExtBase.shouldOverrideUrlLoadingEvent}`);
-            const argsWithSpellingError = {
-                ...args,
-                eventName: eventNameWithSpellingError
-            };
-
-            this.notify(argsWithSpellingError);
-            if (argsWithSpellingError.cancel) {
-                return argsWithSpellingError.cancel;
-            }
-        }
-
         return args.cancel;
     }
 
