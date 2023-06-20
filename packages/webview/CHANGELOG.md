@@ -3,24 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.5](https://github.com/nativescript-community/ui-webview/compare/v1.4.4...v1.4.5) (2023-06-20)
+
+**Note:** Version bump only for package @nativescript-community/ui-webview
+
 ## [1.4.4](https://github.com/nativescript-community/ui-webview/compare/v1.4.3...v1.4.4) (2023-02-15)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview
 
-
-
-
-
 ## [1.4.3](https://github.com/nativescript-community/ui-webview/compare/v1.4.2...v1.4.3) (2023-01-24)
-
 
 ### Bug Fixes
 
 * **ui-webview:** android native-api-usage fix ([9343cc7](https://github.com/nativescript-community/ui-webview/commit/9343cc707295c8e1b970a5e068b37fde55359714))
-
-
-
-
 
 ## [1.4.2](https://github.com/nativescript-community/ui-webview/compare/v1.4.1...v1.4.2) (2022-09-02)
 
