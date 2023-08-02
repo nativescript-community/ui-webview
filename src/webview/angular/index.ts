@@ -9,6 +9,6 @@ if (!isKnownView(webviewElementName)) {
 }
 
 @NgModule()
-export class WebViewExtModule {
+export class AWebViewModule {
     imports: [NativeScriptCommonModule];
 }
