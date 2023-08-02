@@ -3318,11 +3318,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@nativescript-community/ui-webview-rtc@workspace:packages/webview-rtc"
   dependencies:
-    "@nativescript-community/ui-webview": ^1.4.4
+    "@nativescript-community/ui-webview": ^1.4.6
   languageName: unknown
   linkType: soft
 
-"@nativescript-community/ui-webview@^1.4.4, @nativescript-community/ui-webview@workspace:packages/webview":
+"@nativescript-community/ui-webview@^1.4.6, @nativescript-community/ui-webview@workspace:packages/webview":
   version: 0.0.0-use.local
   resolution: "@nativescript-community/ui-webview@workspace:packages/webview"
   dependencies:
