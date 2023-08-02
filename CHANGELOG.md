@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.7](https://github.com/nativescript-community/ui-webview/compare/v1.4.6...v1.4.7) (2023-08-02)
+
+### Bug Fixes
+
+* angular register fix ([2a373ec](https://github.com/nativescript-community/ui-webview/commit/2a373ec1e811e2364a07ad1ce5b290b5bd835117))
+
 ## [1.4.6](https://github.com/nativescript-community/ui-webview/compare/v1.4.5...v1.4.6) (2023-06-20)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview-root
