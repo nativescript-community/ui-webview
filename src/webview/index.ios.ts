@@ -455,10 +455,12 @@ export class AWebView extends WebViewExtBase {
         nativeView.scrollView.userInteractionEnabled = !!enabled;
     }
     [mediaPlaybackRequiresUserActionProperty.setNative](enabled: boolean) {
+        // this.nativeViewProtected.configuration.mediaTypesRequiringUserActionForPlayback = enabled ? WKAudiovisualMediaTypes.All : WKAudiovisualMediaTypes.None;
         this.nativeViewProtected.configuration.setValueForKey(enabled ? WKAudiovisualMediaTypes.All : WKAudiovisualMediaTypes.None, 'mediaTypesRequiringUserActionForPlayback');
     }
     [allowsInlineMediaPlaybackProperty.setNative](enabled: boolean) {
         this.nativeViewProtected.configuration.setValueForKey(enabled, 'allowsInlineMediaPlayback');
+        // this.nativeViewProtected.configuration.allowsInlineMediaPlayback = enabled;
     }
 
     /**
