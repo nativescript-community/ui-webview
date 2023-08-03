@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.9](https://github.com/nativescript-community/ui-webview/compare/v1.4.8...v1.4.9) (2023-08-03)
+
+### Bug Fixes
+
+* **webview:** ios ensure configuration is correctly set in view creation ([8fefa5e](https://github.com/nativescript-community/ui-webview/commit/8fefa5e9546419d3995b61292fd516b3e7ad1b83))
+
 ## [1.4.8](https://github.com/nativescript-community/ui-webview/compare/v1.4.7...v1.4.8) (2023-08-02)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview-root
