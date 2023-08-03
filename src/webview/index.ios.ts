@@ -47,6 +47,8 @@ export class AWebView extends WebViewExtBase {
 
     public viewPortSize = { initialScale: 1.0 };
     private limitsNavigationsToAppBoundDomains = false;
+    private allowsInlineMediaPlayback = false;
+    private mediaTypesRequiringUser = true;
 
     public createNativeView() {
         const configuration = WKWebViewConfiguration.new();
@@ -60,18 +62,18 @@ export class AWebView extends WebViewExtBase {
         configuration.preferences.setValueForKey(true, 'allowFileAccessFromFileURLs');
         configuration.setValueForKey(true, 'allowUniversalAccessFromFileURLs');
         configuration.limitsNavigationsToAppBoundDomains = this.limitsNavigationsToAppBoundDomains;
+        configuration.mediaTypesRequiringUserActionForPlayback = this.mediaTypesRequiringUser ? WKAudiovisualMediaTypes.All : WKAudiovisualMediaTypes.None;
+        configuration.allowsInlineMediaPlayback = this.allowsInlineMediaPlayback;
 
         if (this.supportXLocalScheme) {
             this.wkCustomUrlSchemeHandler = new CustomUrlSchemeHandler();
             configuration.setURLSchemeHandlerForURLScheme(this.wkCustomUrlSchemeHandler, this.interceptScheme);
         }
 
-        const webview = new WKWebView({
+        return new WKWebView({
             frame: CGRectZero,
             configuration
         });
-
-        return webview;
     }
 
     public initNativeView() {
@@ -455,12 +457,12 @@ export class AWebView extends WebViewExtBase {
         nativeView.scrollView.userInteractionEnabled = !!enabled;
     }
     [mediaPlaybackRequiresUserActionProperty.setNative](enabled: boolean) {
-        // this.nativeViewProtected.configuration.mediaTypesRequiringUserActionForPlayback = enabled ? WKAudiovisualMediaTypes.All : WKAudiovisualMediaTypes.None;
-        this.nativeViewProtected.configuration.setValueForKey(enabled ? WKAudiovisualMediaTypes.All : WKAudiovisualMediaTypes.None, 'mediaTypesRequiringUserActionForPlayback');
+        this.nativeViewProtected.configuration.mediaTypesRequiringUserActionForPlayback = enabled ? WKAudiovisualMediaTypes.All : WKAudiovisualMediaTypes.None;
+        // this.nativeViewProtected.configuration.setValueForKey(enabled ? WKAudiovisualMediaTypes.All : WKAudiovisualMediaTypes.None, 'mediaTypesRequiringUserActionForPlayback');
     }
     [allowsInlineMediaPlaybackProperty.setNative](enabled: boolean) {
-        this.nativeViewProtected.configuration.setValueForKey(enabled, 'allowsInlineMediaPlayback');
-        // this.nativeViewProtected.configuration.allowsInlineMediaPlayback = enabled;
+        // this.nativeViewProtected.configuration.setValueForKey(enabled, 'allowsInlineMediaPlayback');
+        this.nativeViewProtected.configuration.allowsInlineMediaPlayback = enabled;
     }
 
     /**
