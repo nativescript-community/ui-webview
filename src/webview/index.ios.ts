@@ -7,6 +7,7 @@ import {
     WebViewTraceCategory,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
+    debugModeProperty,
     limitsNavigationsToAppBoundDomainsProperty,
     mediaPlaybackRequiresUserActionProperty,
     scrollBarIndicatorVisibleProperty,
@@ -404,6 +405,16 @@ export class AWebView extends WebViewExtBase {
 
     [autoInjectJSBridgeProperty.setNative](enabled: boolean) {
         this.loadWKUserScripts(enabled);
+    }
+
+    [debugModeProperty.getDefault]() {
+        return false;
+    }
+
+    [debugModeProperty.setNative](enabled) {
+        const nativeView = this.nativeViewProtected;
+
+        nativeView.inspectable = !!enabled;
     }
 
     [scrollBounceProperty.getDefault]() {
