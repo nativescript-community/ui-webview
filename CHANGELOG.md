@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.10](https://github.com/nativescript-community/ui-webview/compare/v1.4.9...v1.4.10) (2023-12-13)
+
+### Bug Fixes
+
+* **android:** remove `appCachePath` as it was removed from android ([d696d4c](https://github.com/nativescript-community/ui-webview/commit/d696d4c393bcfd97a7eeb6d6daaea19471d68761))
+* **webview:** Fix emitting events without payload on iOS ([6cac60f](https://github.com/nativescript-community/ui-webview/commit/6cac60f8b3f43ceebb8f5089f469986f1abce9f8))
+* **webview:** Remove normalizeUrl method ([300f3bb](https://github.com/nativescript-community/ui-webview/commit/300f3bb70e616a376a65d0447dfd6cf281257d3d))
+
+### Features
+
+* **webview:** Add debugMode property to iOS, closes [#8](https://github.com/nativescript-community/ui-webview/issues/8) ([23816ee](https://github.com/nativescript-community/ui-webview/commit/23816ee5463c8242f7b31201e3b885a0401f2130))
+
 ## [1.4.9](https://github.com/nativescript-community/ui-webview/compare/v1.4.8...v1.4.9) (2023-08-03)
 
 ### Bug Fixes
