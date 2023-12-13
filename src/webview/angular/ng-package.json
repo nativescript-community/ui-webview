@@ -1,5 +1,5 @@
 {
-    "dest": "../../../packages/ui-webview/angular",
+    "dest": "../../../packages/webview/angular",
     "lib": {
       "entryFile": "index.ts"
     },

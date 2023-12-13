@@ -4,8 +4,8 @@
         "rootDir": "./",
         "plugins": [],
         "paths": {
-            "@nativescript-community/ui-webview": ["packages/ui-webview"],
-            "@nativescript-community/ui-webview/*": ["packages/ui-webview/*"]
+            "@nativescript-community/ui-webview": ["packages/webview"],
+            "@nativescript-community/ui-webview/*": ["packages/webview/*"]
         }
     },
     "include": ["./**/*.ts", "../../../references.d.ts", "../references.d.ts"],

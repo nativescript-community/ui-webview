@@ -1,7 +1,4 @@
 <!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️-->This monorepo contains multiple packages:<br><br><details>
-<summary><b>ui-webview</b></summary>
-{{ load:packages/ui-webview/README.md }}
-</details><details>
 <summary><b>webview</b></summary>
 ﻿# @nativescript-community/ui-webview
 
@@ -90,7 +87,7 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | builtInZoomControls | true / false | Android: Is the built-in zoom mechanisms being used |
 | cacheMode | default / no_cache / cache_first / cache_only | Android: Set caching mode. |
 | databaseStorage | true / false | Android: Enable/Disabled database storage API. Note: It affects all webviews in the process. |
-| debugMode | true / false | Android: Enable chrome debugger for webview on Android. Note: Applies to all webviews in App |
+| debugMode | true / false | Enable chrome debugger for webview on Android and Safari debugger for webview on iOS. Note: Applies to all webviews in App |
 | displayZoomControls | true / false | Android: displays on-screen zoom controls when using the built-in zoom mechanisms |
 | domStorage | true / false | Android: Enable/Disabled DOM Storage API. E.g localStorage |
 | scalesPageToFit | UIWebView: Should webpage scale to fit the view? Defaults to false |
@@ -239,3 +236,100 @@ install();
 then simply use the `webRTC="true"` as a webview property
 
 </details>
+
+[](#demos-and-development)
+
+## Demos and Development
+
+
+### Repo Setup
+
+The repo uses submodules. If you did not clone with ` --recursive` then you need to call
+```
+git submodule update --init
+```
+
+The package manager used to install and link dependencies must be `pnpm` or `yarn`. `npm` wont work.
+
+To develop and test:
+if you use `yarn` then run `yarn`
+if you use `pnpm` then run `pnpm i`
+
+**Interactive Menu:**
+
+To start the interactive menu, run `npm start` (or `yarn start` or `pnpm start`). This will list all of the commonly used scripts.
+
+### Build
+
+```bash
+npm run build.all
+```
+WARNING: it seems `yarn build.all` wont always work (not finding binaries in `node_modules/.bin`) which is why the doc explicitly uses `npm run`
+
+### Demos
+
+```bash
+npm run demo.[ng|react|svelte|vue].[ios|android]
+
+npm run demo.svelte.ios # Example
+```
+
+Demo setup is a bit special in the sense that if you want to modify/add demos you dont work directly in `demo-[ng|react|svelte|vue]`
+Instead you work in `demo-snippets/[ng|react|svelte|vue]`
+You can start from the `install.ts` of each flavor to see how to register new demos 
+
+
+[](#contributing)
+
+## Contributing
+
+### Update repo 
+
+You can update the repo files quite easily
+
+First update the submodules
+
+```bash
+npm run update
+```
+
+Then commit the changes
+Then update common files
+
+```bash
+npm run sync
+```
+Then you can run `yarn|pnpm`, commit changed files if any
+
+### Update readme 
+```bash
+npm run readme
+```
+
+### Update doc 
+```bash
+npm run doc
+```
+
+### Publish
+
+The publishing is completely handled by `lerna` (you can add `-- --bump major` to force a major release)
+Simply run 
+```shell
+npm run publish
+```
+
+### modifying submodules
+
+The repo uses https:// for submodules which means you won't be able to push directly into the submodules.
+One easy solution is t modify `~/.gitconfig` and add
+```
+[url "ssh://git@github.com/"]
+	pushInsteadOf = https://github.com/
+```
+
+[](#questions)
+
+## Questions
+
+If you have any questions/issues/comments please feel free to create an issue or start a conversation in the [NativeScript Community Discord](https://nativescript.org/discord).

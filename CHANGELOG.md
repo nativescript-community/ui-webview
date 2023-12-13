@@ -3,24 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.9](https://github.com/nativescript-community/ui-webview/compare/v1.4.8...v1.4.9) (2023-08-03)
+
+### Bug Fixes
+
+* **webview:** ios ensure configuration is correctly set in view creation ([8fefa5e](https://github.com/nativescript-community/ui-webview/commit/8fefa5e9546419d3995b61292fd516b3e7ad1b83))
+
+## [1.4.8](https://github.com/nativescript-community/ui-webview/compare/v1.4.7...v1.4.8) (2023-08-02)
+
+**Note:** Version bump only for package @nativescript-community/ui-webview-root
+
+## [1.4.7](https://github.com/nativescript-community/ui-webview/compare/v1.4.6...v1.4.7) (2023-08-02)
+
+### Bug Fixes
+
+* angular register fix ([2a373ec](https://github.com/nativescript-community/ui-webview/commit/2a373ec1e811e2364a07ad1ce5b290b5bd835117))
+
+## [1.4.6](https://github.com/nativescript-community/ui-webview/compare/v1.4.5...v1.4.6) (2023-06-20)
+
+**Note:** Version bump only for package @nativescript-community/ui-webview-root
+
+## [1.4.5](https://github.com/nativescript-community/ui-webview/compare/v1.4.4...v1.4.5) (2023-06-20)
+
+### Bug Fixes
+
+* angular build fix ([5552ca4](https://github.com/nativescript-community/ui-webview/commit/5552ca4b55240963d0317a34be8b8c4e62b2b155))
+
 ## [1.4.4](https://github.com/nativescript-community/ui-webview/compare/v1.4.3...v1.4.4) (2023-02-15)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview-root
 
-
-
-
-
 ## [1.4.3](https://github.com/nativescript-community/ui-webview/compare/v1.4.2...v1.4.3) (2023-01-24)
-
 
 ### Bug Fixes
 
 * **ui-webview:** android native-api-usage fix ([9343cc7](https://github.com/nativescript-community/ui-webview/commit/9343cc707295c8e1b970a5e068b37fde55359714))
-
-
-
-
 
 ## [1.4.2](https://github.com/nativescript-community/ui-webview/compare/v1.4.1...v1.4.2) (2022-09-02)
 
