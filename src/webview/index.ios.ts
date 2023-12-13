@@ -7,6 +7,7 @@ import {
     WebViewTraceCategory,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
+    debugModeProperty,
     limitsNavigationsToAppBoundDomainsProperty,
     mediaPlaybackRequiresUserActionProperty,
     scrollBarIndicatorVisibleProperty,
@@ -406,6 +407,16 @@ export class AWebView extends WebViewExtBase {
         this.loadWKUserScripts(enabled);
     }
 
+    [debugModeProperty.getDefault]() {
+        return false;
+    }
+
+    [debugModeProperty.setNative](enabled) {
+        const nativeView = this.nativeViewProtected;
+
+        nativeView.inspectable = !!enabled;
+    }
+
     [scrollBounceProperty.getDefault]() {
         const nativeView = this.nativeViewProtected;
 
@@ -747,7 +758,13 @@ export class WKScriptMessageHandlerNotaImpl extends NSObject implements WKScript
 
         try {
             const message = JSON.parse(webViewMessage.body as string);
-            owner.onWebViewEvent(message.eventName, JSON.parse(message.data));
+
+            try {
+                owner.onWebViewEvent(message.eventName, JSON.parse(message.data));
+            } catch (err) {
+                owner.writeTrace(`userContentControllerDidReceiveScriptMessage(${userContentController}, ${webViewMessage}) - couldn't parse data: ${message.data}`, Trace.messageType.error);
+                owner.onWebViewEvent(message.eventName, message.data);
+            }
         } catch (err) {
             owner.writeTrace(`userContentControllerDidReceiveScriptMessage(${userContentController}, ${webViewMessage}) - bad message: ${webViewMessage.body}`, Trace.messageType.error);
         }
