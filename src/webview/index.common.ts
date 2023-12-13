@@ -103,12 +103,6 @@ export const isScrollEnabledProperty = new Property<WebViewExtBase, boolean>({
     valueConverter: booleanConverter
 });
 
-export const normalizeUrlsProperty = new Property<WebViewExtBase, boolean>({
-    name: 'normalizeUrls',
-    defaultValue: true,
-    valueConverter: booleanConverter
-});
-
 export const limitsNavigationsToAppBoundDomainsProperty = new Property<WebViewExtBase, boolean>({
     name: 'limitsNavigationsToAppBoundDomains',
     valueConverter: booleanConverter
@@ -389,7 +383,6 @@ export class UnsupportedSDKError extends Error {
 @CSSType('WebView')
 export abstract class WebViewExtBase extends ContainerView {
     public webConsoleEnabled: boolean;
-    public normalizeUrls: boolean;
 
     public static readonly supportXLocalScheme: boolean;
 
@@ -551,7 +544,6 @@ export abstract class WebViewExtBase extends ContainerView {
      * Callback for the loadFinished-event. Called from the native-webview
      */
     public async _onLoadFinished(url: string, error?: string): Promise<LoadFinishedEventData> {
-        url = this.normalizeURL(url);
         if (Trace.isEnabled()) {
             Trace.write(`WebViewExt._onLoadFinished("${url}", ${error || void 0} ${this.autoInjectJSBridge}) - > Injecting webview-bridge JS code`, WebViewTraceCategory, Trace.messageType.info);
         }
@@ -857,8 +849,6 @@ export abstract class WebViewExtBase extends ContainerView {
         }
 
         if (lcSrc.startsWith(this.interceptScheme) || lcSrc.startsWith('http://') || lcSrc.startsWith('https://') || lcSrc.startsWith('file:///')) {
-            src = this.normalizeURL(src);
-
             if (originSrc !== src) {
                 // Make sure the src-property reflects the actual value.
                 try {
@@ -1113,17 +1103,6 @@ export abstract class WebViewExtBase extends ContainerView {
 
     public removeAutoExecuteJavaScript(name: string) {
         this.autoInjectJavaScriptBlocks = this.autoInjectJavaScriptBlocks.filter((data) => data.name !== name);
-    }
-
-    public normalizeURL(url: string): string {
-        if (!url || !this.normalizeUrls || url.startsWith(this.interceptScheme)) {
-            return url;
-        }
-        try {
-            return require('url').parse(url).format();
-        } catch (error) {
-            return url;
-        }
     }
 
     /**
@@ -1588,7 +1567,6 @@ cacheModeProperty.register(WebViewExtBase);
 databaseStorageProperty.register(WebViewExtBase);
 debugModeProperty.register(WebViewExtBase);
 webConsoleProperty.register(WebViewExtBase);
-normalizeUrlsProperty.register(WebViewExtBase);
 displayZoomControlsProperty.register(WebViewExtBase);
 domStorageProperty.register(WebViewExtBase);
 srcProperty.register(WebViewExtBase);
