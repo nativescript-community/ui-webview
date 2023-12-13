@@ -190,7 +190,7 @@ function initializeWebViewClient(): void {
 
             const javaFile = new java.io.File(tnsFile.path);
             const stream = new java.io.FileInputStream(javaFile);
-            const ext = tnsFile.extension.substr(1).toLowerCase();
+            const ext = tnsFile.extension.substring(1).toLowerCase();
             const mimeType = extToMimeType.get(ext) || 'application/octet-stream';
             const encoding = extToBinaryEncoding.has(ext) || mimeType === 'application/octet-stream' ? 'binary' : 'UTF-8';
 
