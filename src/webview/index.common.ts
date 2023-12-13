@@ -82,9 +82,6 @@ export const allowsInlineMediaPlaybackProperty = new Property<WebViewExtBase, bo
 export const srcProperty = new Property<WebViewExtBase, string>({
     name: 'src'
 });
-export const appCachePathProperty = new Property<WebViewExtBase, string>({
-    name: 'appCachePath'
-});
 
 export const scrollBounceProperty = new Property<WebViewExtBase, boolean>({
     name: 'scrollBounce',
@@ -825,7 +822,7 @@ export abstract class WebViewExtBase extends ContainerView {
         // Add file:/// prefix for local files.
         // They should be loaded with _loadUrl() method as it handles query params.
         if (src.startsWith('~/')) {
-            src = `file://${knownFolders.currentApp().path}/${src.substr(2)}`;
+            src = `file://${knownFolders.currentApp().path}/${src.substring(2)}`;
             if (Trace.isEnabled()) {
                 Trace.write(`WebViewExt.src = "${originSrc}" startsWith ~/ resolved to "${src}"`, WebViewTraceCategory, Trace.messageType.info);
             }
@@ -890,7 +887,7 @@ export abstract class WebViewExtBase extends ContainerView {
         }
 
         if (filepath.startsWith('~')) {
-            filepath = path.normalize(knownFolders.currentApp().path + filepath.substr(1));
+            filepath = path.normalize(knownFolders.currentApp().path + filepath.substring(1));
         }
 
         if (filepath.startsWith('file://')) {
@@ -1453,7 +1450,7 @@ export abstract class WebViewExtBase extends ContainerView {
      */
     public fixLocalResourceName(resourceName: string) {
         if (resourceName.startsWith(this.interceptScheme)) {
-            return resourceName.substr(this.interceptScheme.length + 3);
+            return resourceName.substring(this.interceptScheme.length + 3);
         }
 
         return resourceName;
@@ -1576,6 +1573,5 @@ viewPortProperty.register(WebViewExtBase);
 isScrollEnabledProperty.register(WebViewExtBase);
 scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
-appCachePathProperty.register(WebViewExtBase);
 limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
 scrollBarIndicatorVisibleProperty.register(WebViewExtBase);

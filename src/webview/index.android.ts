@@ -20,7 +20,6 @@ import {
     useWideViewPortProperty,
     webConsoleProperty
 } from './index.common';
-import { appCachePathProperty } from '.';
 
 export * from './index.common';
 
@@ -865,13 +864,6 @@ export class AWebView extends WebViewExtBase {
     [builtInZoomControlsProperty.setNative](enabled: boolean) {
         this.nativeViewProtected.getSettings().setBuiltInZoomControls(!!enabled);
     }
-    [appCachePathProperty.setNative](pth: string) {
-        const androidWebView = this.nativeViewProtected;
-        const settings = androidWebView.getSettings();
-        settings.setAppCachePath(pth);
-        settings.setAppCacheEnabled(!!pth);
-    }
-
     [displayZoomControlsProperty.getDefault]() {
         const androidWebView = this.nativeViewProtected;
         const settings = androidWebView.getSettings();
