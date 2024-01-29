@@ -87,7 +87,7 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | builtInZoomControls | true / false | Android: Is the built-in zoom mechanisms being used |
 | cacheMode | default / no_cache / cache_first / cache_only | Android: Set caching mode. |
 | databaseStorage | true / false | Android: Enable/Disabled database storage API. Note: It affects all webviews in the process. |
-| debugMode | true / false | Android: Enable chrome debugger for webview on Android. Note: Applies to all webviews in App |
+| debugMode | true / false | Enable chrome debugger for webview on Android and Safari debugger for webview on iOS. Note: Applies to all webviews in App |
 | displayZoomControls | true / false | Android: displays on-screen zoom controls when using the built-in zoom mechanisms |
 | domStorage | true / false | Android: Enable/Disabled DOM Storage API. E.g localStorage |
 | scalesPageToFit | UIWebView: Should webpage scale to fit the view? Defaults to false |
