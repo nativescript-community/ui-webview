@@ -82,9 +82,6 @@ export const allowsInlineMediaPlaybackProperty = new Property<WebViewExtBase, bo
 export const srcProperty = new Property<WebViewExtBase, string>({
     name: 'src'
 });
-export const appCachePathProperty = new Property<WebViewExtBase, string>({
-    name: 'appCachePath'
-});
 
 export const scrollBounceProperty = new Property<WebViewExtBase, boolean>({
     name: 'scrollBounce',
@@ -99,12 +96,6 @@ export const scalesPageToFitProperty = new Property<WebViewExtBase, boolean>({
 
 export const isScrollEnabledProperty = new Property<WebViewExtBase, boolean>({
     name: 'isScrollEnabled',
-    defaultValue: true,
-    valueConverter: booleanConverter
-});
-
-export const normalizeUrlsProperty = new Property<WebViewExtBase, boolean>({
-    name: 'normalizeUrls',
     defaultValue: true,
     valueConverter: booleanConverter
 });
@@ -389,7 +380,6 @@ export class UnsupportedSDKError extends Error {
 @CSSType('WebView')
 export abstract class WebViewExtBase extends ContainerView {
     public webConsoleEnabled: boolean;
-    public normalizeUrls: boolean;
 
     public static readonly supportXLocalScheme: boolean;
 
@@ -551,7 +541,6 @@ export abstract class WebViewExtBase extends ContainerView {
      * Callback for the loadFinished-event. Called from the native-webview
      */
     public async _onLoadFinished(url: string, error?: string): Promise<LoadFinishedEventData> {
-        url = this.normalizeURL(url);
         if (Trace.isEnabled()) {
             Trace.write(`WebViewExt._onLoadFinished("${url}", ${error || void 0} ${this.autoInjectJSBridge}) - > Injecting webview-bridge JS code`, WebViewTraceCategory, Trace.messageType.info);
         }
@@ -833,7 +822,7 @@ export abstract class WebViewExtBase extends ContainerView {
         // Add file:/// prefix for local files.
         // They should be loaded with _loadUrl() method as it handles query params.
         if (src.startsWith('~/')) {
-            src = `file://${knownFolders.currentApp().path}/${src.substr(2)}`;
+            src = `file://${knownFolders.currentApp().path}/${src.substring(2)}`;
             if (Trace.isEnabled()) {
                 Trace.write(`WebViewExt.src = "${originSrc}" startsWith ~/ resolved to "${src}"`, WebViewTraceCategory, Trace.messageType.info);
             }
@@ -857,8 +846,6 @@ export abstract class WebViewExtBase extends ContainerView {
         }
 
         if (lcSrc.startsWith(this.interceptScheme) || lcSrc.startsWith('http://') || lcSrc.startsWith('https://') || lcSrc.startsWith('file:///')) {
-            src = this.normalizeURL(src);
-
             if (originSrc !== src) {
                 // Make sure the src-property reflects the actual value.
                 try {
@@ -900,7 +887,7 @@ export abstract class WebViewExtBase extends ContainerView {
         }
 
         if (filepath.startsWith('~')) {
-            filepath = path.normalize(knownFolders.currentApp().path + filepath.substr(1));
+            filepath = path.normalize(knownFolders.currentApp().path + filepath.substring(1));
         }
 
         if (filepath.startsWith('file://')) {
@@ -1113,17 +1100,6 @@ export abstract class WebViewExtBase extends ContainerView {
 
     public removeAutoExecuteJavaScript(name: string) {
         this.autoInjectJavaScriptBlocks = this.autoInjectJavaScriptBlocks.filter((data) => data.name !== name);
-    }
-
-    public normalizeURL(url: string): string {
-        if (!url || !this.normalizeUrls || url.startsWith(this.interceptScheme)) {
-            return url;
-        }
-        try {
-            return require('url').parse(url).format();
-        } catch (error) {
-            return url;
-        }
     }
 
     /**
@@ -1474,7 +1450,7 @@ export abstract class WebViewExtBase extends ContainerView {
      */
     public fixLocalResourceName(resourceName: string) {
         if (resourceName.startsWith(this.interceptScheme)) {
-            return resourceName.substr(this.interceptScheme.length + 3);
+            return resourceName.substring(this.interceptScheme.length + 3);
         }
 
         return resourceName;
@@ -1588,7 +1564,6 @@ cacheModeProperty.register(WebViewExtBase);
 databaseStorageProperty.register(WebViewExtBase);
 debugModeProperty.register(WebViewExtBase);
 webConsoleProperty.register(WebViewExtBase);
-normalizeUrlsProperty.register(WebViewExtBase);
 displayZoomControlsProperty.register(WebViewExtBase);
 domStorageProperty.register(WebViewExtBase);
 srcProperty.register(WebViewExtBase);
@@ -1598,6 +1573,5 @@ viewPortProperty.register(WebViewExtBase);
 isScrollEnabledProperty.register(WebViewExtBase);
 scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
-appCachePathProperty.register(WebViewExtBase);
 limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
 scrollBarIndicatorVisibleProperty.register(WebViewExtBase);

@@ -20,7 +20,6 @@ import {
     useWideViewPortProperty,
     webConsoleProperty
 } from './index.common';
-import { appCachePathProperty } from '.';
 
 export * from './index.common';
 
@@ -190,7 +189,7 @@ function initializeWebViewClient(): void {
 
             const javaFile = new java.io.File(tnsFile.path);
             const stream = new java.io.FileInputStream(javaFile);
-            const ext = tnsFile.extension.substr(1).toLowerCase();
+            const ext = tnsFile.extension.substring(1).toLowerCase();
             const mimeType = extToMimeType.get(ext) || 'application/octet-stream';
             const encoding = extToBinaryEncoding.has(ext) || mimeType === 'application/octet-stream' ? 'binary' : 'UTF-8';
 
@@ -865,13 +864,6 @@ export class AWebView extends WebViewExtBase {
     [builtInZoomControlsProperty.setNative](enabled: boolean) {
         this.nativeViewProtected.getSettings().setBuiltInZoomControls(!!enabled);
     }
-    [appCachePathProperty.setNative](pth: string) {
-        const androidWebView = this.nativeViewProtected;
-        const settings = androidWebView.getSettings();
-        settings.setAppCachePath(pth);
-        settings.setAppCacheEnabled(!!pth);
-    }
-
     [displayZoomControlsProperty.getDefault]() {
         const androidWebView = this.nativeViewProtected;
         const settings = androidWebView.getSettings();
