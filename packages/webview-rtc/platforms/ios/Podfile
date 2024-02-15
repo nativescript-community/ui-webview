@@ -1,1 +1,1 @@
-pod "CollectionViewWaterfallLayout"
+pod 'WKWebViewRTC', :git => 'https://github.com/farfromrefug/WKWebViewRTC.git', :branch => 'dev'
