@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.11](https://github.com/nativescript-community/ui-collectionview/compare/v1.4.10...v1.4.11) (2024-02-15)
+
+### Bug Fixes
+
+* **webview-rtc:** ios build fix ([1171644](https://github.com/nativescript-community/ui-collectionview/commit/1171644b27e30a7617842839c5fe7c49180a414d))
+
 ## [1.4.10](https://github.com/nativescript-community/ui-collectionview/compare/v1.4.9...v1.4.10) (2023-12-13)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview-rtc
