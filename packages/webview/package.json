@@ -9,7 +9,7 @@
         "build": "npm run build.www && npm run tsc",
         "build.www": " cd ../../www-src && rollup -c && cd .. && ts-node make-bridge-loader",
         "build.all": "npm run build && npm run build.angular",
-        "build.angular": "ng-packagr -p ../../src/webview/angular/ng-package.json -c ../../src/webview/angular/tsconfig.json",
+        "build.angular": "ng-packagr -p ../../src/webview/angular/ng-package.json -c ../../src/webview/angular/tsconfig.json && rm angular/.npmignore",
         "tsc": "cpy '**/*.d.ts' '../../packages/webview' --parents --cwd=../../src/webview && tsc -skipLibCheck -d",
         "clean": "rimraf ./*.d.ts ./*.js ./*.js.map"
     },
