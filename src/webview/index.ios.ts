@@ -414,7 +414,7 @@ export class AWebView extends WebViewExtBase {
     [debugModeProperty.setNative](enabled) {
         const nativeView = this.nativeViewProtected;
 
-        nativeView.inspectable = !!enabled;
+        nativeView['inspectable'] = !!enabled;
     }
 
     [scrollBounceProperty.getDefault]() {
@@ -675,7 +675,10 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
         if (shouldOverrideUrlLoading === true) {
             if (Trace.isEnabled()) {
                 Trace.write(
-                `WKNavigationDelegateClass.webViewDecidePolicyForNavigationActionDecisionHandler("${url}", "${navigationAction.navigationType}") -> method:${httpMethod} "${navType}" -> cancel`, WebViewTraceCategory, Trace.messageType.info);
+                    `WKNavigationDelegateClass.webViewDecidePolicyForNavigationActionDecisionHandler("${url}", "${navigationAction.navigationType}") -> method:${httpMethod} "${navType}" -> cancel`,
+                    WebViewTraceCategory,
+                    Trace.messageType.info
+                );
                 decisionHandler(WKNavigationActionPolicy.Cancel);
             }
             return;
@@ -683,7 +686,11 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
         decisionHandler(WKNavigationActionPolicy.Allow);
 
         if (Trace.isEnabled()) {
-            Trace.write(`WKNavigationDelegateClass.webViewDecidePolicyForNavigationActionDecisionHandler("${url}", "${navigationAction.navigationType}") -> method:${httpMethod} "${navType}"`, WebViewTraceCategory, Trace.messageType.info);
+            Trace.write(
+                `WKNavigationDelegateClass.webViewDecidePolicyForNavigationActionDecisionHandler("${url}", "${navigationAction.navigationType}") -> method:${httpMethod} "${navType}"`,
+                WebViewTraceCategory,
+                Trace.messageType.info
+            );
         }
         owner._onLoadStarted(url, navType);
     }
@@ -779,7 +786,11 @@ export class WKScriptMessageHandlerNotaImpl extends NSObject implements WKScript
             }
         } catch (err) {
             if (Trace.isEnabled()) {
-                Trace.write(`userContentControllerDidReceiveScriptMessage(${userContentController}, ${webViewMessage}) - bad message: ${webViewMessage.body}`, WebViewTraceCategory, Trace.messageType.error);
+                Trace.write(
+                    `userContentControllerDidReceiveScriptMessage(${userContentController}, ${webViewMessage}) - bad message: ${webViewMessage.body}`,
+                    WebViewTraceCategory,
+                    Trace.messageType.error
+                );
             }
         }
     }
@@ -877,5 +888,57 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
         }
 
         return null;
+    }
+    async webViewRequestDeviceOrientationAndMotionPermissionForOriginInitiatedByFrameDecisionHandler?(
+        webView: WKWebView,
+        origin: WKSecurityOrigin,
+        frame: WKFrameInfo,
+        decisionHandler: (p1: WKPermissionDecision) => void
+    ) {
+        const owner = this.owner.get();
+        if (!owner) {
+            decisionHandler(WKPermissionDecision.Deny);
+            return;
+        }
+        try {
+            await owner._onRequestPermissions(['motion']);
+            decisionHandler(WKPermissionDecision.Grant);
+        } catch (error) {
+            decisionHandler(WKPermissionDecision.Deny);
+            owner.notify({ eventName: 'error', error });
+        }
+    }
+
+    async webViewRequestMediaCapturePermissionForOriginInitiatedByFrameTypeDecisionHandler?(
+        webView: WKWebView,
+        origin: WKSecurityOrigin,
+        frame: WKFrameInfo,
+        type: WKMediaCaptureType,
+        decisionHandler: (p1: WKPermissionDecision) => void
+    ) {
+        const owner = this.owner.get();
+        if (!owner) {
+            decisionHandler(WKPermissionDecision.Deny);
+            return;
+        }
+        try {
+            const permissions = [];
+            switch (type) {
+                case WKMediaCaptureType.Camera:
+                    permissions.push('camera');
+                    break;
+                case WKMediaCaptureType.Microphone:
+                    permissions.push('microphone');
+                    break;
+                case WKMediaCaptureType.CameraAndMicrophone:
+                    permissions.push('camera', 'microphone');
+                    break;
+            }
+            await owner._onRequestPermissions(permissions);
+            decisionHandler(WKPermissionDecision.Grant);
+        } catch (error) {
+            decisionHandler(WKPermissionDecision.Deny);
+            owner.notify({ eventName: 'error', error });
+        }
     }
 }

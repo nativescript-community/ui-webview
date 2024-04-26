@@ -363,8 +363,9 @@ function initializeWebViewClient(): void {
             if (!owner) {
                 return;
             }
-
-            owner._titleChanged(title);
+            if (owner.hasListeners(WebViewExtBase.titleChangedEvent)) {
+                owner._titleChanged(title);
+            }
         }
 
         public onJsAlert(view: AndroidWebView, url: string, message: string, result: android.webkit.JsResult): boolean {
@@ -465,6 +466,7 @@ function initializeWebViewClient(): void {
         async _onPermissionsRequest(permissionRequest: android.webkit.PermissionRequest) {
             const owner = this.owner?.get();
             if (!owner) {
+                permissionRequest.deny();
                 return;
             }
             try {
@@ -491,13 +493,74 @@ function initializeWebViewClient(): void {
                 await owner._onRequestPermissions(wantedPermissions);
 
                 permissionRequest.grant(requestedPermissions);
-            } catch (err) {
-                console.error(err);
+            } catch (error) {
                 permissionRequest.deny();
+                owner.notify({ eventName: 'error', error });
             }
         }
         onPermissionRequest(permissionRequest: android.webkit.PermissionRequest) {
             this._onPermissionsRequest(permissionRequest);
+        }
+        async onGeolocationPermissionsShowPrompt(origin: string, callback: globalAndroid.webkit.GeolocationPermissions.Callback) {
+            const owner = this.owner?.get();
+            if (!owner) {
+                callback.invoke(origin, false, false);
+                return;
+            }
+            try {
+                await owner._onRequestPermissions(['location']);
+                callback.invoke(origin, true, true);
+            } catch (error) {
+                callback.invoke(origin, false, false);
+                owner.notify({ eventName: 'error', error });
+            }
+        }
+        public onReceivedIcon(webView: globalAndroid.webkit.WebView, icon: globalAndroid.graphics.Bitmap): void {
+            const owner = this.owner?.get();
+            if (!owner) {
+                return;
+            }
+            if (owner.hasListeners('favicon')) {
+                owner.notify({ eventName: 'favicon', icon });
+            }
+        }
+        public onReceivedTouchIconUrl(webView: globalAndroid.webkit.WebView, url: string, precomposed: boolean): void {
+            const owner = this.owner?.get();
+            if (!owner) {
+                return;
+            }
+            if (owner.hasListeners('touchicon')) {
+                owner.notify({ eventName: 'touchicon', url, precomposed });
+            }
+        }
+        public onShowFileChooser(
+            webView: globalAndroid.webkit.WebView,
+            filePathCallback: globalAndroid.webkit.ValueCallback<androidNative.Array<globalAndroid.net.Uri>>,
+            fileChooserParams: globalAndroid.webkit.WebChromeClient.FileChooserParams
+        ): boolean {
+            const owner = this.owner?.get();
+            if (!owner) {
+                return false;
+            }
+            if (owner.hasListeners('fileChooser')) {
+                owner.notify({
+                    eventName: 'fileChooser',
+                    callback: (files: string[]) => {
+                        if (!files || files.length === 0) {
+                            filePathCallback.onReceiveValue(null);
+                        } else {
+                            const res = Array.create(android.net.Uri, files.length);
+                            files.forEach((filePath, index) => {
+                                const file = File.fromPath(filePath);
+                                res[index] = android.net.Uri.parse(`file://${file.path}`);
+                            });
+                        }
+                    },
+                    fileChooserParams
+                });
+                return true;
+            }
+            return false;
         }
         // onPermissionRequestCanceled (permissionRequest: android.webkit.PermissionRequest) {
         //     console.log("onPermissionRequestCanceled", permissionRequest);

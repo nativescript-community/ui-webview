@@ -560,8 +560,6 @@ export abstract class WebViewExtBase extends ContainerView {
         const args = {
             error,
             eventName: WebViewExtBase.loadFinishedEvent,
-            navigationType: undefined,
-            object: this,
             url
         } as LoadFinishedEventData;
 
@@ -613,7 +611,6 @@ export abstract class WebViewExtBase extends ContainerView {
         const args = {
             eventName: WebViewExtBase.loadStartedEvent,
             navigationType,
-            object: this,
             url
         } as LoadStartedEventData;
 
@@ -633,7 +630,6 @@ export abstract class WebViewExtBase extends ContainerView {
             eventName: WebViewExtBase.shouldOverrideUrlLoadingEvent,
             httpMethod,
             navigationType,
-            object: this,
             url
         } as ShouldOverrideUrlLoadEventData;
         this.notify(args);
@@ -643,7 +639,6 @@ export abstract class WebViewExtBase extends ContainerView {
     public _loadProgress(progress: number) {
         const args = {
             eventName: WebViewExtBase.loadProgressEvent,
-            object: this,
             progress,
             url: this.src
         } as LoadProgressEventData;
@@ -652,14 +647,11 @@ export abstract class WebViewExtBase extends ContainerView {
     }
 
     public _titleChanged(title: string) {
-        const args = {
+        this.notify({
             eventName: WebViewExtBase.titleChangedEvent,
-            object: this,
             title,
             url: this.src
-        } as TitleChangedEventData;
-
-        this.notify(args);
+        } as TitleChangedEventData);
     }
 
     public _webAlert(message: string, callback: () => void) {
@@ -669,7 +661,6 @@ export abstract class WebViewExtBase extends ContainerView {
 
         const args = {
             eventName: WebViewExtBase.webAlertEvent,
-            object: this,
             message,
             url: this.src,
             callback
@@ -687,7 +678,6 @@ export abstract class WebViewExtBase extends ContainerView {
 
         const args = {
             eventName: WebViewExtBase.webConfirmEvent,
-            object: this,
             message,
             url: this.src,
             callback
@@ -705,7 +695,6 @@ export abstract class WebViewExtBase extends ContainerView {
 
         const args = {
             eventName: WebViewExtBase.webPromptEvent,
-            object: this,
             message,
             defaultText,
             url: this.src,
@@ -724,7 +713,6 @@ export abstract class WebViewExtBase extends ContainerView {
 
         const args = {
             eventName: WebViewExtBase.webConsoleEvent,
-            object: this,
             data: {
                 message,
                 lineNo,
@@ -745,7 +733,6 @@ export abstract class WebViewExtBase extends ContainerView {
 
         const args = {
             eventName: WebViewExtBase.enterFullscreenEvent,
-            object: this,
             exitFullscreen,
             url: this.src
         } as EnterFullscreenEventData;
@@ -758,7 +745,6 @@ export abstract class WebViewExtBase extends ContainerView {
     public _onExitFullscreen() {
         const args = {
             eventName: WebViewExtBase.exitFullscreenEvent,
-            object: this,
             url: this.src
         } as ExitFullscreenEventData;
 
@@ -1428,7 +1414,6 @@ export abstract class WebViewExtBase extends ContainerView {
     public onWebViewEvent(eventName: string, data: any) {
         this.notify({
             eventName,
-            object: this,
             data
         });
     }
@@ -1467,7 +1452,6 @@ export abstract class WebViewExtBase extends ContainerView {
         return new Promise<void>((resolve, reject) => {
             const args = {
                 eventName: EventNames.RequestPermissions,
-                object: this,
                 url: this.src,
                 permissions,
                 callback(allow) {
