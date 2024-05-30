@@ -8,7 +8,7 @@ if (!isKnownView(webviewElementName)) {
     registerElement(webviewElementName, () => AWebView);
 }
 
-@NgModule()
-export class AWebViewModule {
-    imports: [NativeScriptCommonModule];
-}
+@NgModule({
+    imports: [NativeScriptCommonModule]
+})
+export class AWebViewModule {}
