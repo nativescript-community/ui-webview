@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.0](https://github.com/nativescript-community/ui-webview/compare/v1.4.11...v1.5.0) (2024-08-29)
+
+### Features
+
+* added support for more js events like new permissions, 'fileChooser', `favIcon`, `touchIcon` ([9b75f36](https://github.com/nativescript-community/ui-webview/commit/9b75f361f157904c380f222268717672d4b0a632))
+* **webview:** implement nested scroll on Android ([07a51cd](https://github.com/nativescript-community/ui-webview/commit/07a51cdbf434d8bd0d776e3ba87ff9fc466c1521))
+
 ## [1.4.11](https://github.com/nativescript-community/ui-webview/compare/v1.4.10...v1.4.11) (2024-02-15)
 
 ### Bug Fixes
