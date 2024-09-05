@@ -4,19 +4,17 @@ interface EventListenerMap {
     [eventName: string]: WebEventListener[];
 }
 
-if (!Object.entries) {
-    Object.entries = function (this: null, obj: any) {
-        const ownProps = Object.keys(obj);
-        let i = ownProps.length;
-        const resArray = new Array(i); // preallocate the Array
-
-        while (i--) {
-            resArray[i] = [ownProps[i], obj[ownProps[i]]];
-        }
-
-        return resArray;
-    };
-}
+// if (!Object.entries) {
+//     Object.entries = function (this: null, obj: any) {
+//         const ownProps = Object.keys(obj);
+//         let i = ownProps.length;
+//         const resArray = new Array(i); // preallocate the Array
+//         while (i--) {
+//             resArray[i] = [ownProps[i], obj[ownProps[i]]];
+//         }
+//         return resArray;
+//     };
+// }
 
 // Forked from nativescript-webview-interface@1.4.2
 export abstract class NSWebViewBridgeBase {
@@ -35,7 +33,7 @@ export abstract class NSWebViewBridgeBase {
         }
 
         for (const listener of events) {
-            const res = listener && listener(data);
+            const res = listener?.(data);
             // if any handler return false, not executing any further handlers for that event.
             if (res === false) {
                 break;
@@ -55,12 +53,12 @@ export abstract class NSWebViewBridgeBase {
         if (!callback) {
             return;
         }
-
-        if (!this.mEventListenerMap[eventName]) {
-            this.mEventListenerMap[eventName] = [];
+        let list = this.mEventListenerMap[eventName];
+        if (!list) {
+            list = this.mEventListenerMap[eventName] = [];
         }
 
-        this.mEventListenerMap[eventName].push(callback);
+        list.push(callback);
     }
 
     /**
@@ -77,23 +75,22 @@ export abstract class NSWebViewBridgeBase {
     public off(eventName?: string, callback?: WebEventListener) {
         if (!eventName) {
             this.mEventListenerMap = {};
-
             return;
         }
 
-        if (!this.mEventListenerMap[eventName]) {
+        let list = this.mEventListenerMap[eventName];
+        if (!list) {
             return;
         }
 
         if (!callback) {
             delete this.mEventListenerMap[eventName];
-
             return;
         }
 
-        this.mEventListenerMap[eventName] = this.mEventListenerMap[eventName].filter((oldCallback) => oldCallback !== callback);
+        list = this.mEventListenerMap[eventName] = list.filter((oldCallback) => oldCallback !== callback);
 
-        if (this.mEventListenerMap[eventName].length === 0) {
+        if (list.length === 0) {
             delete this.mEventListenerMap[eventName];
         }
     }
@@ -117,13 +114,11 @@ export abstract class NSWebViewBridgeBase {
      * Injects a javascript file.
      * This is usually called from WebViewExt.loadJavaScriptFiles(...)
      */
-    public injectJavaScriptFile(href: string): Promise<void> {
+    public async injectJavaScriptFile(href: string): Promise<void> {
         const elId = this.elementIdFromHref(href);
 
         if (document.getElementById(elId)) {
-            console.log(`${elId} already exists`);
-
-            return Promise.resolve();
+            return;
         }
 
         return new Promise<void>((resolve, reject) => {
@@ -131,7 +126,6 @@ export abstract class NSWebViewBridgeBase {
             scriptElement.async = true;
             scriptElement.setAttribute('id', elId);
             scriptElement.addEventListener('error', (error) => {
-                console.error(`Failed to load ${href} - error: ${error}`);
                 reject(this.serializeError(error));
 
                 if (scriptElement.parentElement) {
@@ -139,7 +133,6 @@ export abstract class NSWebViewBridgeBase {
                 }
             });
             scriptElement.addEventListener('load', function () {
-                console.info(`Loaded ${href}`);
                 window.requestAnimationFrame(() => {
                     resolve();
                 });
@@ -157,18 +150,15 @@ export abstract class NSWebViewBridgeBase {
     /**
      * Used to inject javascript-files on iOS<11 where we cannot support x-local
      */
-    public injectJavaScript(elId: string, scriptCode: string): Promise<void> {
+    public async injectJavaScript(elId: string, scriptCode: string) {
         if (document.getElementById(elId)) {
-            console.log(`${elId} already exists`);
-
-            return Promise.resolve();
+            return;
         }
 
         return new Promise<void>((resolve, reject) => {
             const scriptElement = document.createElement('script');
             scriptElement.setAttribute('id', elId);
             scriptElement.addEventListener('error', function (error) {
-                console.error(`Failed to inject javascript- error: ${error}`);
                 reject(error);
 
                 if (scriptElement.parentElement) {
@@ -187,27 +177,22 @@ export abstract class NSWebViewBridgeBase {
      * Injects a StyleSheet file.
      * This is usually called from WebViewExt.loadStyleSheetFiles(...)
      */
-    public injectStyleSheetFile(href: string, insertBefore?: boolean): Promise<void> {
+    public async injectStyleSheetFile(href: string, insertBefore?: boolean): Promise<void> {
         const elId = this.elementIdFromHref(href);
 
         if (document.getElementById(elId)) {
-            console.log(`${elId} already exists`);
-
-            return Promise.resolve();
+            return ;
         }
 
         return new Promise((resolve, reject) => {
             const linkElement = document.createElement('link');
             linkElement.addEventListener('error', (error) => {
-                console.error(`Failed to load ${href} - error: ${error}`);
                 reject(error);
-
                 if (linkElement.parentElement) {
                     linkElement.parentElement.removeChild(linkElement);
                 }
             });
             linkElement.addEventListener('load', () => {
-                console.info(`Loaded ${href}`);
                 window.requestAnimationFrame(() => {
                     resolve();
                 });
@@ -229,11 +214,9 @@ export abstract class NSWebViewBridgeBase {
     /**
      * Inject stylesheets into the page without using x-local. This is needed for iOS<11
      */
-    public injectStyleSheet(elId: string, stylesheet: string, insertBefore?: boolean): Promise<void> {
+    public async injectStyleSheet(elId: string, stylesheet: string, insertBefore?: boolean) {
         if (document.getElementById(elId)) {
-            console.log(`${elId} already exists`);
-
-            return Promise.resolve();
+            return;
         }
 
         return new Promise<void>((resolve, reject) => {
@@ -249,13 +232,10 @@ export abstract class NSWebViewBridgeBase {
                 } else {
                     document.head.appendChild(styleElement);
                 }
+                resolve();
             } else {
                 reject(new Error("Couldn't find parent element"));
-
-                return;
             }
-
-            resolve();
         });
     }
 
@@ -299,24 +279,16 @@ export abstract class NSWebViewBridgeBase {
      * Error objects cannot be serialized properly.
      */
     private serializeError(error: any) {
-        const { name, message, stack } = error;
-        const res = {
-            name,
+        const { name, message, stack, ...others } = error;
+
+        return Object.keys(others).reduce((acc, key)=>{
+            const value = others[key]
+            if (!(value instanceof HTMLElement)) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {name,
             message,
-            stack,
-        };
-
-        for (const [key, value] of Object.entries(error)) {
-            if (value instanceof HTMLElement) {
-                continue;
-            }
-
-            if (!(key in res)) {
-                //@ts-ignore
-                res[key] = value;
-            }
-        }
-
-        return res;
+            stack})
     }
 }

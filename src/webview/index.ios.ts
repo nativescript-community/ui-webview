@@ -719,7 +719,7 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
         if (webView.URL) {
             src = webView.URL.absoluteString;
         }
-        owner._onLoadFinished(src).catch(() => void 0);
+        owner._onLoadFinished(src);
     }
 
     public webViewDidFailNavigationWithError(webView: WKWebView, navigation: WKNavigation, error: NSError): void {
@@ -735,7 +735,7 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
         if (Trace.isEnabled()) {
             Trace.write(`WKNavigationDelegateClass.webViewDidFailNavigationWithError("${error.localizedDescription}")`, WebViewTraceCategory, Trace.messageType.info);
         }
-        owner._onLoadFinished(src, error.localizedDescription).catch(() => void 0);
+        owner._onLoadFinished(src, error.localizedDescription);
     }
 
     public webViewDidFailProvisionalNavigationWithError(webView: WKWebView, navigation: WKNavigation, error: NSError): void {
@@ -752,7 +752,7 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
         if (Trace.isEnabled()) {
             Trace.write(`WKNavigationDelegateClass.webViewDidFailProvisionalNavigationWithError(${error.localizedDescription}`, WebViewTraceCategory, Trace.messageType.info);
         }
-        owner._onLoadFinished(src, error.localizedDescription).catch(() => void 0);
+        owner._onLoadFinished(src, error.localizedDescription);
     }
 }
 

@@ -541,10 +541,6 @@ export abstract class WebViewExtBase extends ContainerView {
      * Callback for the loadFinished-event. Called from the native-webview
      */
     public async _onLoadFinished(url: string, error?: string): Promise<LoadFinishedEventData> {
-        if (Trace.isEnabled()) {
-            Trace.write(`WebViewExt._onLoadFinished("${url}", ${error || void 0} ${this.autoInjectJSBridge}) - > Injecting webview-bridge JS code`, WebViewTraceCategory, Trace.messageType.info);
-        }
-
         if (!error) {
             // When this is called without an error, update with this.src value without loading the url.
             // This is needed to keep src up-to-date when linked are clicked inside the webview.
@@ -593,9 +589,7 @@ export abstract class WebViewExtBase extends ContainerView {
         this.notify(args);
 
         if (this.hasListeners(WebViewExtBase.titleChangedEvent)) {
-            this.getTitle()
-                .then((title) => title && this._titleChanged(title))
-                .catch(() => void 0);
+            this.getTitle().then((title) => title && this._titleChanged(title));
         }
 
         return args;
@@ -1041,7 +1035,7 @@ export abstract class WebViewExtBase extends ContainerView {
      */
     public autoLoadJavaScriptFile(resourceName: string, filepath: string) {
         if (this.src) {
-            this.loadJavaScriptFile(resourceName, filepath).catch(() => void 0);
+            this.loadJavaScriptFile(resourceName, filepath);
         }
 
         this.autoInjectScriptFiles.push({ resourceName, filepath });
@@ -1056,7 +1050,7 @@ export abstract class WebViewExtBase extends ContainerView {
      */
     public autoLoadStyleSheetFile(resourceName: string, filepath: string, insertBefore?: boolean) {
         if (this.src) {
-            this.loadStyleSheetFile(resourceName, filepath, insertBefore).catch(() => void 0);
+            this.loadStyleSheetFile(resourceName, filepath, insertBefore);
         }
 
         this.autoInjectStyleSheetFiles.push({
@@ -1072,7 +1066,7 @@ export abstract class WebViewExtBase extends ContainerView {
 
     public autoExecuteJavaScript(scriptCode: string, name: string) {
         if (this.src) {
-            this.executePromise(scriptCode).catch(() => void 0);
+            this.executePromise(scriptCode);
         }
 
         this.removeAutoExecuteJavaScript(name);
@@ -1185,59 +1179,40 @@ export abstract class WebViewExtBase extends ContainerView {
         if (scriptCodes.length === 0) {
             return;
         }
-
-        const reqId = `${Math.round(Math.random() * 1000)}`;
-        const eventName = `tmp-promise-event-${reqId}`;
-
-        const scriptHeader = `
-            var promises = [];
-            var p = Promise.resolve();
-        `.trim();
+        if (Trace.isEnabled()) {
+            Trace.write(`WebViewExt.executePromises: ${scriptCodes}`, WebViewTraceCategory, Trace.messageType.info);
+        }
 
         const scriptBody = [] as string[];
 
         for (const scriptCode of scriptCodes) {
-            if (!scriptCode) {
-                continue;
-            }
-
             if (typeof scriptCode !== 'string') {
                 if (Trace.isEnabled()) {
                     Trace.write('WebViewExt.executePromises() - scriptCode is not a string', WebViewTraceCategory, Trace.messageType.info);
                 }
                 continue;
             }
-
             // Wrapped in a Promise.then to delay executing scriptCode till the previous promise have finished
-            scriptBody.push(
-                `
-                p = p.then(function() {
-                    return ${scriptCode.trim()};
-                });
-
-                promises.push(p);
-            `.trim()
-            );
+            scriptBody.push(`p = p.then(() => {${scriptCode.trim()}});promises.push(p);`);
         }
 
-        const scriptFooter = `
-            return Promise.all(promises);
-        `.trim();
-
-        const scriptCode = `(function() {
-            ${scriptHeader}
+        const scriptCode = `(() => {
+            var promises = [];
+            var p = Promise.resolve();
             ${scriptBody.join(';')}
-            ${scriptFooter}
+            return Promise.all(promises);
         })()`.trim();
 
+        const reqId = `${Math.round(Math.random() * 1000)}`;
+        const eventName = `tmp-promise-event-${reqId}`;
         const promiseScriptCode = `
-            (function() {
-                var eventName = ${JSON.stringify(eventName)};
+            (() => {
+                var n = ${JSON.stringify(eventName)};
                 try {
-                    var promise = (function() {return ${scriptCode}})();
-                    window.nsWebViewBridge.executePromise(promise, eventName);
+                    window.nsWebViewBridge.executePromise(${scriptCode}, n);
                 } catch (err) {
-                    window.nsWebViewBridge.emitError(err, eventName);
+                    console.error(err, err.stack);
+                    window.nsWebViewBridge.emitError(err, n);
                 }
             })();
         `.trim();
@@ -1246,18 +1221,16 @@ export abstract class WebViewExtBase extends ContainerView {
             let timer: any;
             const tmpPromiseEvent = (args: any) => {
                 clearTimeout(timer);
-
                 const { data, err } = args.data || ({} as any);
 
                 // Was it a success? No 'err' received.
-                if (typeof err === 'undefined') {
+                if (!err) {
                     resolve(data);
-
                     return;
                 }
 
                 // Rejected promise.
-                if (err && typeof err === 'object') {
+                if (typeof err === 'object') {
                     // err is an object. Might be a serialized Error-object.
                     const error = new Error(err.message || err.name || err);
                     if (err.stack) {
@@ -1269,16 +1242,12 @@ export abstract class WebViewExtBase extends ContainerView {
                         if (key in error) {
                             continue;
                         }
-
                         error[key] = value;
                     }
-
                     reject(error);
-
-                    return;
+                } else {
+                    reject(new Error(err));
                 }
-
-                reject(new Error(err));
             };
 
             this.once(eventName, tmpPromiseEvent);
@@ -1287,7 +1256,6 @@ export abstract class WebViewExtBase extends ContainerView {
             if (timeout > 0) {
                 timer = setTimeout(() => {
                     reject(new Error(`Timed out after: ${timeout}`));
-
                     this.off(eventName);
                 }, timeout);
             }

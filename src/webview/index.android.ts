@@ -96,8 +96,9 @@ function initializeWebViewClient(): void {
         public shouldOverrideUrlLoading(view: android.webkit.WebView, request: string | android.webkit.WebResourceRequest) {
             const owner = this.owner.get();
             if (!owner) {
-                console.warn('WebViewExtClientImpl.shouldOverrideUrlLoading(...) - no owner');
-
+                if (Trace.isEnabled()) {
+                    Trace.write('WebViewExtClientImpl.shouldOverrideUrlLoading(...) - no owner', WebViewTraceCategory, Trace.messageType.warn);
+                }
                 return true;
             }
 
@@ -147,8 +148,9 @@ function initializeWebViewClient(): void {
         public shouldInterceptRequest(view: android.webkit.WebView, request: string | android.webkit.WebResourceRequest) {
             const owner = this.owner.get();
             if (!owner) {
-                console.warn('WebViewExtClientImpl.shouldInterceptRequest(...) - no owner');
-
+                if (Trace.isEnabled()) {
+                    Trace.write('WebViewExtClientImpl.shouldInterceptRequest() - no owner', WebViewTraceCategory, Trace.messageType.warn);
+                }
                 return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
             }
 
@@ -216,13 +218,14 @@ function initializeWebViewClient(): void {
             super.onPageStarted(view, url, favicon);
             const owner = this.owner.get();
             if (!owner) {
-                console.warn(`WebViewExtClientImpl.onPageStarted("${view}", "${url}", "${favicon}") - no owner`);
-
+                if (Trace.isEnabled()) {
+                    Trace.write(`WebViewExtClientImpl.onPageStarted("${view}", "${url}", "${favicon}") - no owner`, WebViewTraceCategory, Trace.messageType.warn);
+                }
                 return;
             }
 
             if (Trace.isEnabled()) {
-                Trace.write(`WebViewClientClass.onPageStarted("${view}", "${url}", "${favicon}")`, WebViewTraceCategory, Trace.messageType.info);
+                Trace.write(`WebViewClientClass.onPageStarted("${view}", "${url}", "${favicon}")`, WebViewTraceCategory, Trace.messageType.log);
             }
             owner._onLoadStarted(url);
         }
@@ -232,15 +235,16 @@ function initializeWebViewClient(): void {
 
             const owner = this.owner.get();
             if (!owner) {
-                console.warn(`WebViewExtClientImpl.onPageFinished("${view}", ${url}") - no owner`);
-
+                if (Trace.isEnabled()) {
+                    Trace.write(`WebViewExtClientImpl.onPageFinished("${view}", ${url}") - no owner`, WebViewTraceCategory, Trace.messageType.warn);
+                }
                 return;
             }
 
             if (Trace.isEnabled()) {
                 Trace.write(`WebViewClientClass.onPageFinished("${view}", ${url}")`, WebViewTraceCategory, Trace.messageType.info);
             }
-            owner._onLoadFinished(url).catch(() => void 0);
+            owner._onLoadFinished(url);
         }
 
         public onReceivedError(...args: any[]) {
@@ -258,8 +262,9 @@ function initializeWebViewClient(): void {
 
             const owner = this.owner.get();
             if (!owner) {
-                console.warn('WebViewExtClientImpl.onReceivedErrorAPI23(...) - no owner');
-
+                if (Trace.isEnabled()) {
+                    Trace.write('WebViewExtClientImpl.onReceivedErrorAPI23(...) - no owner', WebViewTraceCategory, Trace.messageType.warn);
+                }
                 return;
             }
 
@@ -272,7 +277,7 @@ function initializeWebViewClient(): void {
                 Trace.write(`WebViewClientClass.onReceivedErrorAPI23(${error.getErrorCode()}, ${error.getDescription()}, ${url})`, WebViewTraceCategory, Trace.messageType.info);
             }
 
-            owner._onLoadFinished(url, `${error.getDescription()}(${error.getErrorCode()})`).catch(() => void 0);
+            owner._onLoadFinished(url, `${error.getDescription()}(${error.getErrorCode()})`);
         }
 
         private onReceivedErrorBeforeAPI23(view: android.webkit.WebView, errorCode: number, description: string, failingUrl: string) {
@@ -280,7 +285,9 @@ function initializeWebViewClient(): void {
 
             const owner = this.owner.get();
             if (!owner) {
-                console.warn('WebViewExtClientImpl.onReceivedErrorBeforeAPI23(...) - no owner');
+                if (Trace.isEnabled()) {
+                    Trace.write('WebViewExtClientImpl.onReceivedErrorBeforeAPI23(...) - no owner', WebViewTraceCategory, Trace.messageType.warn);
+                }
 
                 return;
             }
@@ -288,7 +295,7 @@ function initializeWebViewClient(): void {
             if (Trace.isEnabled()) {
                 Trace.write(`WebViewClientClass.onReceivedErrorBeforeAPI23(${errorCode}, "${description}", "${failingUrl}")`, WebViewTraceCategory, Trace.messageType.info);
             }
-            owner._onLoadFinished(failingUrl, `${description}(${errorCode})`).catch(() => void 0);
+            owner._onLoadFinished(failingUrl, `${description}(${errorCode})`);
         }
     }
 
@@ -584,14 +591,14 @@ function initializeWebViewClient(): void {
         public emitEventToNativeScript(eventName: string, data: string) {
             const owner = this.owner.get();
             if (!owner) {
-                console.warn(`WebViewExtClientImpl.emitEventToNativeScript("${eventName}") - no owner`);
+                if (Trace.isEnabled()) {
+                    Trace.write(`WebViewExtClientImpl.emitEventToNativeScript("${eventName}") - no owner`, WebViewTraceCategory, Trace.messageType.warn);
+                }
                 return;
             }
 
             try {
-                owner.onWebViewEvent(eventName, JSON.parse(data));
-
-                return;
+                return owner.onWebViewEvent(eventName, JSON.parse(data));
             } catch (err) {
                 if (Trace.isEnabled()) {
                     Trace.write(`WebViewExtClientImpl.emitEventToNativeScript("${eventName}") - couldn't parse data: ${data} err: ${err}`, WebViewTraceCategory, Trace.messageType.info);
