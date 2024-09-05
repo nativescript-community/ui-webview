@@ -5,7 +5,6 @@
     "lib": ["es5", "es6", "dom"], "target": "es2019",
     "sourceMap": false,
     "removeComments": true,
-    "noImplicitUseStrict":true,
     "noEmitHelpers": false,
     "importHelpers": false,
     "baseUrl": ".",
