@@ -1,6 +1,8 @@
-<!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️-->This monorepo contains multiple packages:<br><br><details>
+<!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️-->This monorepo contains multiple packages:<br><br>
+<details open>
 <summary><b>webview</b></summary>
-﻿# @nativescript-community/ui-webview
+
+## @nativescript-community/ui-webview
 
 Extended WebView for NativeScript which adds many options.
 The code is originally based on [nativescript-webview-ext](https://github.com/m-abs/nativescript-webview-ext)
