@@ -2,7 +2,7 @@
 <details open>
 <summary><b>webview</b></summary>
 
-## @nativescript-community/ui-webview
+﻿# @nativescript-community/ui-webview
 
 Extended WebView for NativeScript which adds many options.
 The code is originally based on [nativescript-webview-ext](https://github.com/m-abs/nativescript-webview-ext)
@@ -202,8 +202,10 @@ Nota is the Danish Library and Expertise Center for people with print disabiliti
 To become a member of Nota you must be able to document that you cannot read ordinary printed text. Members of Nota are visually impaired, dyslexic or otherwise impaired.
 Our purpose is to ensure equal access to knowledge, community participation and experiences for people who're unable to read ordinary printed text.
 
-</details><details>
+</details>
+<details open>
 <summary><b>webview-rtc</b></summary>
+
 
 [](#nativescript-webview-rtc)
 
