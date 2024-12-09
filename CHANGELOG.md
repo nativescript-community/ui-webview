@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1](https://github.com/nativescript-community/ui-webview/compare/v1.5.0...v1.5.1) (2024-12-09)
+
+### Bug Fixes
+
+* **android:** `nestedScrollView` is now a setting defaulting to false ([2a2069d](https://github.com/nativescript-community/ui-webview/commit/2a2069d44586d1a07148c2443fd850b4f4938078))
+* cleanup and optimisations ([0534b87](https://github.com/nativescript-community/ui-webview/commit/0534b870ecba59417c87271fff2996888dd7f69f))
+
 ## [1.5.0](https://github.com/nativescript-community/ui-webview/compare/v1.4.11...v1.5.0) (2024-08-29)
 
 ### Features
