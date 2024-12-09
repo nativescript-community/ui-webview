@@ -1,7 +1,7 @@
 {
     "name": "@nativescript-community/ui-webview",
     "version": "1.5.1",
-    "description": "Image caching plugin for NativeScript",
+    "description": "Advanced WebView plugin for NativeScript",
     "main": "./index",
     "sideEffects": false,
     "typings": "./index.d.ts",
