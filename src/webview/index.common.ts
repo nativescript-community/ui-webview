@@ -379,6 +379,13 @@ export class UnsupportedSDKError extends Error {
 
 @CSSType('WebView')
 export abstract class WebViewExtBase extends ContainerView {
+    /**
+     * ANDROID: should the webview support nested scroll. Default to true
+     *
+     * Note: This can break some web views like maps pinch to zoom.
+     */
+    public nestedScrollView: boolean;
+
     public webConsoleEnabled: boolean;
 
     public static readonly supportXLocalScheme: boolean;

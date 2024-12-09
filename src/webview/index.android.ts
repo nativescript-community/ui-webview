@@ -630,7 +630,7 @@ export class AWebView extends WebViewExtBase {
     public android: AndroidWebView;
 
     public createNativeView() {
-        const nativeView = new com.nativescript.webviewinterface.WebView(this._context);
+        const nativeView = this.nestedScrollView === true ? new com.nativescript.webviewinterface.WebView(this._context, null) : new android.webkit.WebView(this._context, null);
         const settings = nativeView.getSettings();
 
         // Needed for the bridge library
