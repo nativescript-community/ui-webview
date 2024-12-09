@@ -7,6 +7,7 @@ import {
     WebViewTraceCategory,
     allowsInlineMediaPlaybackProperty,
     autoInjectJSBridgeProperty,
+    customUserAgentProperty,
     debugModeProperty,
     limitsNavigationsToAppBoundDomainsProperty,
     mediaPlaybackRequiresUserActionProperty,
@@ -448,6 +449,9 @@ export class AWebView extends WebViewExtBase {
     }
     [scrollBarIndicatorVisibleProperty.setNative](value: boolean) {
         this.updateScrollBarVisibility(value);
+    }
+    [customUserAgentProperty.setNative](value) {
+        this.nativeViewProtected.customUserAgent = value;
     }
     protected updateScrollBarVisibility(value) {
         if (!this.nativeViewProtected) {

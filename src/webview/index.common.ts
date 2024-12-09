@@ -116,6 +116,9 @@ export const useWideViewPortProperty = new Property<WebViewExtBase, boolean>({
     defaultValue: true,
     valueConverter: booleanConverter
 });
+export const customUserAgentProperty = new Property<WebViewExtBase, string>({
+    name: 'userAgent'
+});
 
 export type ViewPortValue = boolean | ViewPortProperties;
 export const viewPortProperty = new Property<WebViewExtBase, ViewPortValue>({
@@ -1517,6 +1520,7 @@ export interface WebViewExtBase {
     once(event: EventNames.RequestPermissions, callback: (args: WebConsoleEventData) => void, thisArg?: any);
 }
 
+customUserAgentProperty.register(WebViewExtBase);
 autoInjectJSBridgeProperty.register(WebViewExtBase);
 builtInZoomControlsProperty.register(WebViewExtBase);
 cacheModeProperty.register(WebViewExtBase);

@@ -9,6 +9,7 @@ import {
     allowsInlineMediaPlaybackProperty,
     builtInZoomControlsProperty,
     cacheModeProperty,
+    customUserAgentProperty,
     databaseStorageProperty,
     debugModeProperty,
     displayZoomControlsProperty,
@@ -1029,5 +1030,9 @@ export class AWebView extends WebViewExtBase {
     }
     [allowsInlineMediaPlaybackProperty.setNative](enabled: boolean) {
         // not supported
+    }
+
+    [customUserAgentProperty.setNative](value) {
+        this.nativeViewProtected.getSettings().setUserAgentString(value);
     }
 }
