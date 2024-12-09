@@ -1,6 +1,6 @@
 {
     "name": "@nativescript-community/ui-webview",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "description": "Advanced WebView plugin for NativeScript",
     "main": "./index",
     "sideEffects": false,

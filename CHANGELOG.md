@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.2](https://github.com/nativescript-community/ui-webview/compare/v1.5.1...v1.5.2) (2024-12-09)
+
+### Features
+
+* `userAgent` property ([fc696e7](https://github.com/nativescript-community/ui-webview/commit/fc696e7a1242acc975643ea8a0b110bbf2e1e1b1))
+
 ## [1.5.1](https://github.com/nativescript-community/ui-webview/compare/v1.5.0...v1.5.1) (2024-12-09)
 
 ### Bug Fixes
