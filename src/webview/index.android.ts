@@ -662,20 +662,16 @@ export class AWebView extends WebViewExtBase {
             const client = this.createWebViewClient(this, WebViewExtClient);
 
             nativeView.setWebViewClient(client);
-            nativeView.client = client;
         } else {
             const client = new WebViewExtClient(this);
             nativeView.setWebViewClient(client);
-            nativeView.client = client;
         }
         const chromeClient = new WebChromeViewExtClient(this);
 
         nativeView.setWebChromeClient(chromeClient);
-        nativeView.chromeClient = chromeClient;
 
         const bridgeInterface = new WebViewBridgeInterface(this);
         nativeView.addJavascriptInterface(bridgeInterface, 'androidWebViewBridge');
-        nativeView.bridgeInterface = bridgeInterface;
     }
 
     public disposeNativeView() {
