@@ -79,6 +79,12 @@ export const allowsInlineMediaPlaybackProperty = new Property<WebViewExtBase, bo
     valueConverter: booleanConverter
 });
 
+export const supportPopupsProperty = new Property<WebViewExtBase, boolean>({
+    name: 'supportPopups',
+    defaultValue: true,
+    valueConverter: booleanConverter
+});
+
 export const srcProperty = new Property<WebViewExtBase, string>({
     name: 'src'
 });
@@ -406,6 +412,8 @@ export abstract class WebViewExtBase extends ContainerView {
     public static isPromiseSupported: boolean;
 
     public scrollBarIndicatorVisible: boolean;
+
+    public supportPopups: boolean;
 
     public get interceptScheme() {
         return 'x-local';
@@ -1536,5 +1544,6 @@ viewPortProperty.register(WebViewExtBase);
 isScrollEnabledProperty.register(WebViewExtBase);
 scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
+supportPopupsProperty.register(WebViewExtBase);
 limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
 scrollBarIndicatorVisibleProperty.register(WebViewExtBase);
