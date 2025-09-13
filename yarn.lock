@@ -3462,11 +3462,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@nativescript-community/ui-webview-rtc@workspace:packages/webview-rtc"
   dependencies:
-    "@nativescript-community/ui-webview": "npm:^1.5.0"
+    "@nativescript-community/ui-webview": "npm:^1.5.2"
   languageName: unknown
   linkType: soft
 
-"@nativescript-community/ui-webview@npm:*, @nativescript-community/ui-webview@npm:^1.5.0, @nativescript-community/ui-webview@workspace:packages/webview":
+"@nativescript-community/ui-webview@npm:*, @nativescript-community/ui-webview@npm:^1.5.2, @nativescript-community/ui-webview@workspace:packages/webview":
   version: 0.0.0-use.local
   resolution: "@nativescript-community/ui-webview@workspace:packages/webview"
   dependencies:
