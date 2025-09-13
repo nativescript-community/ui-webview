@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.0](https://github.com/nativescript-community/ui-webview/compare/v1.5.3...v1.6.0) (2025-09-13)
+
+### Features
+
+* **ios:** add `supportPopups` property ([8a5d9f7](https://github.com/nativescript-community/ui-webview/commit/8a5d9f7b51c9300850ed07df66a0451974f456b2))
+
+### Bug Fixes
+
+* avoid global variable conflicts in bridge-loader scripts ([3e42ade](https://github.com/nativescript-community/ui-webview/commit/3e42ade8b0933c5253013ceeb8d1ffa7064668dc))
+
 ## [1.5.3](https://github.com/nativescript-community/ui-webview/compare/v1.5.2...v1.5.3) (2025-09-13)
 
 ### Bug Fixes

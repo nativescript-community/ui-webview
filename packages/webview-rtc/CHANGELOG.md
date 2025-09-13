@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.0](https://github.com/nativescript-community/ui-collectionview/compare/v1.5.3...v1.6.0) (2025-09-13)
+
+**Note:** Version bump only for package @nativescript-community/ui-webview-rtc
+
 ## [1.5.3](https://github.com/nativescript-community/ui-collectionview/compare/v1.5.2...v1.5.3) (2025-09-13)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview-rtc
