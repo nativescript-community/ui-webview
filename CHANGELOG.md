@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.3](https://github.com/nativescript-community/ui-webview/compare/v1.5.2...v1.5.3) (2025-09-13)
+
+### Bug Fixes
+
+* **android:** trying to fix runtime exception ([0bea13f](https://github.com/nativescript-community/ui-webview/commit/0bea13f165c9bcc03d946b6eaf261029694bf921))
+
 ## [1.5.2](https://github.com/nativescript-community/ui-webview/compare/v1.5.1...v1.5.2) (2024-12-09)
 
 ### Features
