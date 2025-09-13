@@ -886,8 +886,95 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
         navigationAction: WKNavigationAction,
         windowFeatures: WKWindowFeatures
     ): WKWebView {
-        // Handle links that open in a new window / frame (via target="_blank" or window.open())
-        if (navigationAction && (!navigationAction.targetFrame || (navigationAction.targetFrame && !navigationAction.targetFrame.mainFrame))) {
+        const owner = this.owner.get();
+
+        // Handle popup window requests (window.open() or target="_blank")
+        if (navigationAction && navigationAction.request && navigationAction.request.URL && (!navigationAction.targetFrame || !navigationAction.targetFrame.mainFrame)) {
+            const supportPopups = owner?.supportPopups ?? true;
+
+            if (supportPopups) {
+                try {
+                    const popupConfig = configuration;
+                    popupConfig.userContentController.removeAllUserScripts();
+
+                    let popupWebView = WKWebView.alloc().initWithFrameConfiguration(CGRectZero, popupConfig);
+
+                    if (webView.customUserAgent) {
+                        popupWebView.customUserAgent = webView.customUserAgent;
+                    }
+
+                    let currentVC = UIApplication.sharedApplication.keyWindow.rootViewController;
+                    while (currentVC && currentVC.presentedViewController) {
+                        currentVC = currentVC.presentedViewController;
+                    }
+
+                    if (currentVC) {
+                        const popupVC = UIViewController.alloc().init();
+                        popupVC.view.backgroundColor = UIColor.whiteColor;
+
+                        popupVC.view.addSubview(popupWebView);
+                        popupWebView.translatesAutoresizingMaskIntoConstraints = false;
+
+                        NSLayoutConstraint.activateConstraints([
+                            popupWebView.topAnchor.constraintEqualToAnchor(popupVC.view.safeAreaLayoutGuide.topAnchor),
+                            popupWebView.bottomAnchor.constraintEqualToAnchor(popupVC.view.bottomAnchor),
+                            popupWebView.leadingAnchor.constraintEqualToAnchor(popupVC.view.leadingAnchor),
+                            popupWebView.trailingAnchor.constraintEqualToAnchor(popupVC.view.trailingAnchor)
+                        ]);
+
+                        let navController = UINavigationController.alloc().initWithRootViewController(popupVC);
+
+                        // Create close button handler
+                        const CloseHandler = (NSObject as any).extend(
+                            {
+                                'onCloseButtonTap:'(sender) {
+                                    navController.dismissViewControllerAnimatedCompletion(true, null);
+                                }
+                            },
+                            {
+                                name: 'CloseHandler',
+                                exposedMethods: {
+                                    'onCloseButtonTap:': {
+                                        returns: interop.types.void,
+                                        params: [interop.types.id]
+                                    }
+                                }
+                            }
+                        );
+
+                        const handler = CloseHandler.alloc().init();
+                        const closeButton = UIBarButtonItem.alloc().initWithBarButtonSystemItemTargetAction(UIBarButtonSystemItem.Done, handler, 'onCloseButtonTap:');
+                        popupVC.navigationItem.leftBarButtonItem = closeButton;
+
+                        let simpleUIDelegate = (NSObject as any)
+                            .extend(
+                                {
+                                    webViewDidClose(webView) {
+                                        navController.dismissViewControllerAnimatedCompletion(true, function () {
+                                            popupWebView = null;
+                                            navController = null;
+                                            simpleUIDelegate = null;
+                                        });
+                                    }
+                                },
+                                {
+                                    protocols: [WKUIDelegate]
+                                }
+                            )
+                            .alloc()
+                            .init();
+
+                        popupWebView.UIDelegate = simpleUIDelegate;
+
+                        currentVC.presentViewControllerAnimatedCompletion(navController, true, null);
+                        return popupWebView;
+                    }
+                } catch (error) {
+                    console.error('[ui-webview] Error creating popup:', error);
+                }
+            }
+
+            // Load in main WebView (fallback or when popups disabled)
             webView.loadRequest(navigationAction.request);
         }
 
