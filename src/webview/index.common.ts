@@ -388,6 +388,8 @@ export class UnsupportedSDKError extends Error {
 
 @CSSType('WebView')
 export abstract class WebViewExtBase extends ContainerView {
+    //TODO: remove as it needs to be added after TS 5.7 change https://github.com/microsoft/TypeScript/pull/59860
+    [key: symbol]: (...args: any[]) => any | void;
     /**
      * ANDROID: should the webview support nested scroll. Default to true
      *
