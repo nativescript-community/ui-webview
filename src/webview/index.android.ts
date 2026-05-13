@@ -648,7 +648,8 @@ export class AWebView extends WebViewExtBase {
 
         return nativeView;
     }
-
+    nativeWebClient: android.webkit.WebViewClient;
+    nativeChromeClient: android.webkit.WebChromeClient;
     public initNativeView() {
         super.initNativeView();
 
@@ -659,23 +660,23 @@ export class AWebView extends WebViewExtBase {
             return;
         }
         if (this.createWebViewClient) {
-            const client = this.createWebViewClient(this, WebViewExtClient);
+            this.nativeWebClient = this.createWebViewClient(this, WebViewExtClient);
 
-            nativeView.setWebViewClient(client);
-           // nativeView.client = client;
+            nativeView.setWebViewClient(this.nativeWebClient);
+            // nativeView.client = client;
         } else {
-            const client = new WebViewExtClient(this);
-            nativeView.setWebViewClient(client);
-           // nativeView.client = client;
+            this.nativeWebClient = new WebViewExtClient(this);
+            nativeView.setWebViewClient(this.nativeWebClient);
+            // nativeView.client = client;
         }
-        const chromeClient = new WebChromeViewExtClient(this);
+        this.nativeChromeClient = new WebChromeViewExtClient(this);
 
-        nativeView.setWebChromeClient(chromeClient);
-       // nativeView.chromeClient = chromeClient;
+        nativeView.setWebChromeClient(this.nativeChromeClient);
+        // nativeView.chromeClient = chromeClient;
 
         const bridgeInterface = new WebViewBridgeInterface(this);
         nativeView.addJavascriptInterface(bridgeInterface, 'androidWebViewBridge');
-       // nativeView.bridgeInterface = bridgeInterface;
+        // nativeView.bridgeInterface = bridgeInterface;
     }
 
     public disposeNativeView() {
@@ -684,11 +685,13 @@ export class AWebView extends WebViewExtBase {
             nativeView.setWebViewClient(null);
             nativeView.setWebChromeClient(null);
             nativeView.removeJavascriptInterface('androidWebViewBridge');
-            nativeView.client = null;
-            nativeView.chromeClient = null;
-            nativeView.bridgeInterface = null;
+            // nativeView.client = null;
+            // nativeView.chromeClient = null;
+            // nativeView.bridgeInterface = null;
             nativeView.destroy();
         }
+        this.nativeWebClient = null;
+        this.nativeChromeClient = null;
 
         super.disposeNativeView();
     }
