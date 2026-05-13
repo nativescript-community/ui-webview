@@ -9,10 +9,11 @@
         "url": "git+https://github.com/nativescript-community/ui-collectionview.git"
     },
     "scripts": {
-        "build": "npm run tsc",
+        "build": "npm run tsc && npm run readme",
         "build.all": "npm run build",
-        "tsc": "cpy '**/*.d.ts' '../../packages/webview-rtc' --parents --cwd=../../src/webview-rtc && tsc -skipLibCheck -d",
-        "clean": "rimraf ./*.d.ts ./*.js ./*.js.map"
+        "tsc": "cpy '**/*.d.ts' '../../packages/webview-rtc' --parents --cwd=../../src/webview-rtc && tsc  --build",
+        "clean": "bin/rimraf ./*.d.ts ./*.js ./*.js.map ./*.tsbuildinfo ./*.mjs ./*.mjs.map ./angular ./svelte ./vue* ./react",
+        "readme": "readme generate -c ../../tools/readme/blueprint.json"
     },
     "nativescript": {
         "platforms": {
