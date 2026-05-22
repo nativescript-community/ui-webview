@@ -602,15 +602,19 @@ function initializeWebViewClient(): void {
                 return;
             }
 
-            try {
-                return owner.onWebViewEvent(eventName, JSON.parse(data));
-            } catch (err) {
-                if (Trace.isEnabled()) {
-                    Trace.write(`WebViewExtClientImpl.emitEventToNativeScript("${eventName}") - couldn't parse data: ${data} err: ${err}`, WebViewTraceCategory, Trace.messageType.info);
+            // Dispatch asynchronously so the JavaBridge thread returns immediately,
+            // unblocking the WebView's JS thread without waiting for NativeScript to
+            // finish processing the event
+            setTimeout(() => {
+                try {
+                    owner.onWebViewEvent(eventName, JSON.parse(data));
+                } catch (err) {
+                    if (Trace.isEnabled()) {
+                        Trace.write(`WebViewExtClientImpl.emitEventToNativeScript("${eventName}") - couldn't parse data: ${data} err: ${err}`, WebViewTraceCategory, Trace.messageType.info);
+                    }
+                    owner.onWebViewEvent(eventName, data);
                 }
-            }
-
-            owner.onWebViewEvent(eventName, data);
+            }, 0);
         }
     }
 
