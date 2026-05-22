@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1](https://github.com/nativescript-community/ui-webview/compare/v1.6.0...v1.6.1) (2026-05-22)
+
+### Bug Fixes
+
+* **android:** unblock WebView JS thread during bridge event dispatch ([aaaacbf](https://github.com/nativescript-community/ui-webview/commit/aaaacbfba5d25e2ed6565cb43ecac603cd758ac2))
+* **android:** wrap shouldInterceptRequest in try/catch to prevent ([86bba55](https://github.com/nativescript-community/ui-webview/commit/86bba55a6641ae1aee4d15d3e4a5d9c956f4b02d))
+* **ios:** isolate popup webviews from parent userContentController ([d2babcb](https://github.com/nativescript-community/ui-webview/commit/d2babcbab29ab12a76a356ed453c78c3ea5f96b2))
+
 ## [1.6.0](https://github.com/nativescript-community/ui-webview/compare/v1.5.3...v1.6.0) (2025-09-13)
 
 ### Features
