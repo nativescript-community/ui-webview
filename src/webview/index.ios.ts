@@ -895,7 +895,9 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
             if (supportPopups) {
                 try {
                     const popupConfig = configuration;
-                    popupConfig.userContentController.removeAllUserScripts();
+                    // iOS shares WKUserContentController between parent and popup webviews by default.
+                    // Create a fresh controller to prevent user scripts from being injected into popups.
+                    popupConfig.userContentController = WKUserContentController.alloc().init();
 
                     let popupWebView = WKWebView.alloc().initWithFrameConfiguration(CGRectZero, popupConfig);
 
