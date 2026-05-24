@@ -235,6 +235,7 @@ export enum EventNames {
     LoadProgress = 'loadProgress',
     LoadStarted = 'loadStarted',
     ShouldOverrideUrlLoading = 'shouldOverrideUrlLoading',
+    PopupNavigate = 'popupNavigate',
     TitleChanged = 'titleChanged',
     WebAlert = 'webAlert',
     WebConfirm = 'webConfirm',
@@ -440,6 +441,10 @@ export abstract class WebViewExtBase extends ContainerView {
         return EventNames.ShouldOverrideUrlLoading;
     }
 
+    public static get popupNavigateEvent() {
+        return EventNames.PopupNavigate;
+    }
+
     public static get loadProgressEvent() {
         return EventNames.LoadProgress;
     }
@@ -639,6 +644,16 @@ export abstract class WebViewExtBase extends ContainerView {
      * @param httpMethod GET, POST etc
      * @param navigationType Type of navigation (iOS-only)
      */
+    public _onPopupNavigate(url: string): boolean {
+        const args = {
+            eventName: WebViewExtBase.popupNavigateEvent,
+            url,
+            cancel: false
+        };
+        this.notify(args);
+        return args.cancel === true;
+    }
+
     public _onShouldOverrideUrlLoading(url: string, httpMethod: string, navigationType?: NavigationType) {
         const args = {
             eventName: WebViewExtBase.shouldOverrideUrlLoadingEvent,

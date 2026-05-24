@@ -956,6 +956,7 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
                                             popupWebView = null;
                                             navController = null;
                                             simpleUIDelegate = null;
+                                            popupNavDelegate = null;
                                         });
                                     }
                                 },
@@ -966,7 +967,32 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
                             .alloc()
                             .init();
 
+                        let popupNavDelegate: NSObject;
                         popupWebView.UIDelegate = simpleUIDelegate;
+
+                        const PopupNavDelegate = (NSObject as any).extend(
+                            {
+                                webViewDecidePolicyForNavigationActionDecisionHandler(
+                                    wkWebView: WKWebView,
+                                    navigationAction: WKNavigationAction,
+                                    decisionHandler: (policy: WKNavigationActionPolicy) => void
+                                ) {
+                                    const url = navigationAction.request.URL?.absoluteString;
+                                    if (url && owner) {
+                                        const cancelled = owner._onPopupNavigate(url);
+                                        if (cancelled) {
+                                            decisionHandler(WKNavigationActionPolicy.Cancel);
+                                            navController?.dismissViewControllerAnimatedCompletion(true, null);
+                                            return;
+                                        }
+                                    }
+                                    decisionHandler(WKNavigationActionPolicy.Allow);
+                                }
+                            },
+                            { protocols: [WKNavigationDelegate] }
+                        );
+                        popupNavDelegate = PopupNavDelegate.alloc().init();
+                        popupWebView.navigationDelegate = popupNavDelegate;
 
                         currentVC.presentViewControllerAnimatedCompletion(navController, true, null);
                         return popupWebView;

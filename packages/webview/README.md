@@ -78,7 +78,9 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | supportZoom | true / false | Android: should the webview support zoom |
 | viewPortSize | false / view-port string / ViewPortProperties | Set the viewport metadata on load finished. **Note:** WkWebView sets initial-scale=1.0 by default. |
 | limitsNavigationsToAppBoundDomains | false | iOS: allows to enable Service Workers **Note:** If set to true, WKAppBoundDomains also should be set in info.plist. |
-| supportPopups | true / false | iOS: should the webview support popup windows (window.open, target="_blank"). Defaults to true |
+| supportPopups | true / false | Should the webview support popup windows (`window.open`, `target="_blank"`). Defaults to true. Android: shows popup in a bottom sheet dialog. iOS: opens in a modal view controller. |
+| createWebViewClient | `(webview, clientClass) => WebViewClient` | Android: optional factory to provide a custom `WebViewClient`. Receives the AWebView instance and the default client class; return your subclass instance. |
+| createWebChromeClient | `(webview, clientClass) => WebChromeClient` | Android: optional factory to provide a custom `WebChromeClient`. Same API pattern as `createWebViewClient`. |
 | scrollBarIndicatorVisible | false | Allow to hide scrollbars. |
 
 | Function | Description |
@@ -111,6 +113,7 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | webConfirm | Raised when `window.confirm` is triggered inside the webview, needed to use customs dialogs for web confirm boxes. args in a `webConfirmEvent`. `args.callback(boolean)` must be called to indicate confirm box is closed. **NOTE:** Not supported by UIWebView |
 | webConsole | Android only: Raised when a line is added to the web console. args is a `WebConsoleEventData`. |
 | webPrompt | Raised when `window.prompt` is triggered inside the webview, needed to use customs dialogs for web prompt boxes. args in a `webConfirmEvent`. `args.callback(string | null)` must be called to indicate prompt box is closed. **NOTE:** Not supported by UIWebView |
+| popupNavigate | Raised when a popup window (`window.open`, `target="_blank"`) navigates to a URL. `args.url` contains the URL. Set `args.cancel = true` to close the popup and handle the URL in the app. If not cancelled, the popup navigates freely. |
 | Events emitted from the webview | Raised when nsWebViewBridge.emit(...) is called inside the webview. args in an `WebViewEventData` |
 
 ### WebView
