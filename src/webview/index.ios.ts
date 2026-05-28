@@ -675,6 +675,11 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
             }
         }
 
+        const isMainFrame = !navigationAction.targetFrame || navigationAction.targetFrame.mainFrame;
+        if (!isMainFrame) {
+            decisionHandler(WKNavigationActionPolicy.Allow);
+            return;
+        }
         const shouldOverrideUrlLoading = owner._onShouldOverrideUrlLoading(url, httpMethod, navType);
         if (shouldOverrideUrlLoading === true) {
             if (Trace.isEnabled()) {
@@ -683,8 +688,8 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
                     WebViewTraceCategory,
                     Trace.messageType.info
                 );
-                decisionHandler(WKNavigationActionPolicy.Cancel);
             }
+            decisionHandler(WKNavigationActionPolicy.Cancel);
             return;
         }
         decisionHandler(WKNavigationActionPolicy.Allow);
@@ -905,7 +910,7 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
                         popupWebView.customUserAgent = webView.customUserAgent;
                     }
 
-                    let currentVC = UIApplication.sharedApplication.keyWindow.rootViewController;
+                    let currentVC = webView.window ? webView.window.rootViewController : null;
                     while (currentVC && currentVC.presentedViewController) {
                         currentVC = currentVC.presentedViewController;
                     }
