@@ -952,6 +952,7 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
                             .extend(
                                 {
                                     webViewDidClose(webView) {
+                                        if (!navController) return;
                                         navController.dismissViewControllerAnimatedCompletion(true, function () {
                                             popupWebView = null;
                                             navController = null;
