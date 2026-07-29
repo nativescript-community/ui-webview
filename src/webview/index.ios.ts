@@ -643,6 +643,8 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
             Trace.write(`webViewDecidePolicyForNavigationActionDecisionHandler: "${url}"`, WebViewTraceCategory, Trace.messageType.info);
         }
         if (!url) {
+            decisionHandler(WKNavigationActionPolicy.Cancel);
+
             return;
         }
 
@@ -683,8 +685,11 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
                     WebViewTraceCategory,
                     Trace.messageType.info
                 );
-                decisionHandler(WKNavigationActionPolicy.Cancel);
             }
+            // WebKit raises an ObjC exception when an unused decision handler is deallocated,
+            // so every code path must call it exactly once regardless of tracing.
+            decisionHandler(WKNavigationActionPolicy.Cancel);
+
             return;
         }
         decisionHandler(WKNavigationActionPolicy.Allow);
@@ -817,18 +822,20 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
      */
     public webViewRunJavaScriptAlertPanelWithMessageInitiatedByFrameCompletionHandler(webView: WKWebView, message: string, frame: WKFrameInfo, completionHandler: () => void): void {
         const owner = this.owner.get();
-        if (!owner) {
-            return;
-        }
 
         let gotResponse = false;
-        owner._webAlert(message, () => {
+        const respond = () => {
             if (!gotResponse) {
+                gotResponse = true;
                 completionHandler();
             }
+        };
 
-            gotResponse = true;
-        });
+        // _webAlert returns false when nothing is listening, so respond ourselves
+        // rather than leaving the handler uncalled.
+        if (!owner || !owner._webAlert(message, respond)) {
+            respond();
+        }
     }
 
     /**
@@ -841,18 +848,18 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
         completionHandler: (confirmed: boolean) => void
     ): void {
         const owner = this.owner.get();
-        if (!owner) {
-            return;
-        }
 
         let gotResponse = false;
-        owner._webConfirm(message, (confirmed: boolean) => {
+        const respond = (confirmed = false) => {
             if (!gotResponse) {
+                gotResponse = true;
                 completionHandler(confirmed);
             }
+        };
 
-            gotResponse = true;
-        });
+        if (!owner || !owner._webConfirm(message, respond)) {
+            respond();
+        }
     }
 
     /**
@@ -866,18 +873,18 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
         completionHandler: (response: string) => void
     ): void {
         const owner = this.owner.get();
-        if (!owner) {
-            return;
-        }
 
         let gotResponse = false;
-        owner._webPrompt(message, defaultText, (response: string) => {
+        const respond = (response: string = null) => {
             if (!gotResponse) {
+                gotResponse = true;
                 completionHandler(response);
             }
+        };
 
-            gotResponse = true;
-        });
+        if (!owner || !owner._webPrompt(message, defaultText, respond)) {
+            respond();
+        }
     }
 
     webViewCreateWebViewWithConfigurationForNavigationActionWindowFeatures(
