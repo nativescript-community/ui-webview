@@ -683,8 +683,9 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
                     WebViewTraceCategory,
                     Trace.messageType.info
                 );
-                decisionHandler(WKNavigationActionPolicy.Cancel);
             }
+            decisionHandler(WKNavigationActionPolicy.Cancel);
+
             return;
         }
         decisionHandler(WKNavigationActionPolicy.Allow);
