@@ -34,7 +34,9 @@ export class AWebView extends WebViewExtBase {
     public static supportXLocalScheme = typeof CustomUrlSchemeHandler !== 'undefined';
 
     protected wkWebViewConfiguration: WKWebViewConfiguration;
-    protected wkNavigationDelegate: WKNavigationDelegateNotaImpl;
+    // public so popup webviews created by the UI delegate can reuse it, see
+    // `webViewCreateWebViewWithConfigurationForNavigationActionWindowFeatures`
+    public wkNavigationDelegate: WKNavigationDelegateNotaImpl;
     protected wkUIDelegate: WKUIDelegateNotaImpl;
     protected wkCustomUrlSchemeHandler: CustomUrlSchemeHandler | void;
     protected wkUserContentController: WKUserContentController;
@@ -968,6 +970,11 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
                             .init();
 
                         popupWebView.UIDelegate = simpleUIDelegate;
+                        // Without a navigation delegate the popup is a blind spot: `shouldOverrideUrlLoading`,
+                        // `loadStarted` and `loadFinished` would never fire for anything loaded in it.
+                        if (owner) {
+                            popupWebView.navigationDelegate = owner.wkNavigationDelegate;
+                        }
 
                         currentVC.presentViewControllerAnimatedCompletion(navController, true, null);
                         return popupWebView;
