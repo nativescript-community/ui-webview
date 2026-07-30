@@ -34,7 +34,9 @@ export class AWebView extends WebViewExtBase {
     public static supportXLocalScheme = typeof CustomUrlSchemeHandler !== 'undefined';
 
     protected wkWebViewConfiguration: WKWebViewConfiguration;
-    protected wkNavigationDelegate: WKNavigationDelegateNotaImpl;
+    // public so popup webviews created by the UI delegate can reuse it, see
+    // `webViewCreateWebViewWithConfigurationForNavigationActionWindowFeatures`
+    public wkNavigationDelegate: WKNavigationDelegateNotaImpl;
     protected wkUIDelegate: WKUIDelegateNotaImpl;
     protected wkCustomUrlSchemeHandler: CustomUrlSchemeHandler | void;
     protected wkUserContentController: WKUserContentController;
@@ -683,8 +685,9 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
                     WebViewTraceCategory,
                     Trace.messageType.info
                 );
-                decisionHandler(WKNavigationActionPolicy.Cancel);
             }
+            decisionHandler(WKNavigationActionPolicy.Cancel);
+
             return;
         }
         decisionHandler(WKNavigationActionPolicy.Allow);
@@ -708,6 +711,25 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
         if (Trace.isEnabled()) {
             Trace.write(`WKNavigationDelegateClass.webViewDidStartProvisionalNavigation("${webView.URL}")`, WebViewTraceCategory, Trace.messageType.info);
         }
+    }
+
+    /**
+     * A server-side redirect does not go through `decidePolicyForNavigationAction`, so without this the
+     * url the navigation was redirected to would never be reported. Android reports it through
+     * `onPageStarted`, this keeps `loadStarted` consistent across platforms.
+     */
+    public webViewDidReceiveServerRedirectForProvisionalNavigation(webView: WKWebView, navigation: WKNavigation): void {
+        const owner = this.owner.get();
+        const url = webView.URL?.absoluteString;
+        if (!owner || !url) {
+            return;
+        }
+
+        if (Trace.isEnabled()) {
+            Trace.write(`WKNavigationDelegateClass.webViewDidReceiveServerRedirectForProvisionalNavigation("${url}")`, WebViewTraceCategory, Trace.messageType.info);
+        }
+
+        owner._onLoadStarted(url, 'other');
     }
 
     public webViewDidFinishNavigation(webView: WKWebView, navigation: WKNavigation): void {
@@ -967,6 +989,11 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
                             .init();
 
                         popupWebView.UIDelegate = simpleUIDelegate;
+                        // Without a navigation delegate the popup is a blind spot: `shouldOverrideUrlLoading`,
+                        // `loadStarted` and `loadFinished` would never fire for anything loaded in it.
+                        if (owner) {
+                            popupWebView.navigationDelegate = owner.wkNavigationDelegate;
+                        }
 
                         currentVC.presentViewControllerAnimatedCompletion(navController, true, null);
                         return popupWebView;
