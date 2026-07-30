@@ -713,6 +713,25 @@ export class WKNavigationDelegateNotaImpl extends NSObject implements WKNavigati
         }
     }
 
+    /**
+     * A server-side redirect does not go through `decidePolicyForNavigationAction`, so without this the
+     * url the navigation was redirected to would never be reported. Android reports it through
+     * `onPageStarted`, this keeps `loadStarted` consistent across platforms.
+     */
+    public webViewDidReceiveServerRedirectForProvisionalNavigation(webView: WKWebView, navigation: WKNavigation): void {
+        const owner = this.owner.get();
+        const url = webView.URL?.absoluteString;
+        if (!owner || !url) {
+            return;
+        }
+
+        if (Trace.isEnabled()) {
+            Trace.write(`WKNavigationDelegateClass.webViewDidReceiveServerRedirectForProvisionalNavigation("${url}")`, WebViewTraceCategory, Trace.messageType.info);
+        }
+
+        owner._onLoadStarted(url, 'other');
+    }
+
     public webViewDidFinishNavigation(webView: WKWebView, navigation: WKNavigation): void {
         const owner = this.owner.get();
         if (!owner) {
