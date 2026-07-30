@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2](https://github.com/nativescript-community/ui-webview/compare/v1.6.1...v1.6.2) (2026-07-30)
+
+### Features
+
+* **ios:** emit loadStarted on server-side redirects ([f2d6927](https://github.com/nativescript-community/ui-webview/commit/f2d6927dc25be2735db137e3b0f86fe6d657b4c4))
+
+### Bug Fixes
+
+* **ios:** always call the navigation decision handler when cancelling ([4d3afbd](https://github.com/nativescript-community/ui-webview/commit/4d3afbd0a49ad8032ee07ad199e76b43b7cbf565))
+* **ios:** set the navigation delegate on popup webviews ([814d42a](https://github.com/nativescript-community/ui-webview/commit/814d42a8e841c674e41c17967c0a9b1664de02ba))
+
 ## [1.6.1](https://github.com/nativescript-community/ui-webview/compare/v1.6.0...v1.6.1) (2026-05-22)
 
 ### Bug Fixes
