@@ -1,1 +1,1 @@
-pod 'WKWebViewRTC', :git => 'https://github.com/farfromrefug/WKWebViewRTC.git', :branch => 'dev'
+pod 'WKWebViewRTC', :git => 'https://github.com/farfromrefug/WKWebViewRTC.git', :commit => 'd8170ad6be379a9db8c8bd4426bf1edcda27e9f2'
