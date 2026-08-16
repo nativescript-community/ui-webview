@@ -80,6 +80,8 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | limitsNavigationsToAppBoundDomains | false | iOS: allows to enable Service Workers **Note:** If set to true, WKAppBoundDomains also should be set in info.plist. |
 | supportPopups | true / false | iOS: should the webview support popup windows (window.open, target="_blank"). Defaults to true |
 | scrollBarIndicatorVisible | false | Allow to hide scrollbars. |
+| userAgent | string | Set a custom User-Agent string |
+
 
 | Function | Description |
 | --- | --- |
@@ -133,7 +135,6 @@ Inside the WebView we have the `nsWebViewBridge` for sending events between the 
 ### Android
 * Settings
     * AppCache?
-    * User agent?
 
 #### iOS
 * Settings?
