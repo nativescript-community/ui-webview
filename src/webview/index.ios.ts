@@ -974,10 +974,12 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
                             .extend(
                                 {
                                     webViewDidClose(webView) {
+                                        if (!navController) return;
                                         navController.dismissViewControllerAnimatedCompletion(true, function () {
                                             popupWebView = null;
                                             navController = null;
                                             simpleUIDelegate = null;
+                                            popupNavDelegate = null;
                                         });
                                     }
                                 },
@@ -988,12 +990,37 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
                             .alloc()
                             .init();
 
+                        let popupNavDelegate: NSObject;
                         popupWebView.UIDelegate = simpleUIDelegate;
                         // Without a navigation delegate the popup is a blind spot: `shouldOverrideUrlLoading`,
                         // `loadStarted` and `loadFinished` would never fire for anything loaded in it.
                         if (owner) {
                             popupWebView.navigationDelegate = owner.wkNavigationDelegate;
                         }
+
+                        const PopupNavDelegate = (NSObject as any).extend(
+                            {
+                                webViewDecidePolicyForNavigationActionDecisionHandler(
+                                    wkWebView: WKWebView,
+                                    navigationAction: WKNavigationAction,
+                                    decisionHandler: (policy: WKNavigationActionPolicy) => void
+                                ) {
+                                    const url = navigationAction.request.URL?.absoluteString;
+                                    if (url && owner) {
+                                        const cancelled = owner._onPopupNavigate(url);
+                                        if (cancelled) {
+                                            decisionHandler(WKNavigationActionPolicy.Cancel);
+                                            navController?.dismissViewControllerAnimatedCompletion(true, null);
+                                            return;
+                                        }
+                                    }
+                                    decisionHandler(WKNavigationActionPolicy.Allow);
+                                }
+                            },
+                            { protocols: [WKNavigationDelegate] }
+                        );
+                        popupNavDelegate = PopupNavDelegate.alloc().init();
+                        popupWebView.navigationDelegate = popupNavDelegate;
 
                         currentVC.presentViewControllerAnimatedCompletion(navController, true, null);
                         return popupWebView;
