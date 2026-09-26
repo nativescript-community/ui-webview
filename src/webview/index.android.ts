@@ -714,9 +714,7 @@ export class AWebView extends WebViewExtBase {
         nativeView.setWebChromeClient(this._popupClient || this.nativeChromeClient);
 
         // required for onCreateWindow to fire when window.open() or target="_blank" is used
-        const settings = nativeView.getSettings();
-        settings.setJavaScriptCanOpenWindowsAutomatically(enabled);
-        settings.setSupportMultipleWindows(enabled);
+        nativeView.getSettings().setSupportMultipleWindows(enabled);
     }
 
     public disposeNativeView() {
