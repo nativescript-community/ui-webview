@@ -637,12 +637,11 @@ export abstract class WebViewExtBase extends ContainerView {
     }
 
     /**
-     * Callback for should override url loading.
+     * Callback for navigations inside a popup window.
      * Called from the native-webview
      *
      * @param url
-     * @param httpMethod GET, POST etc
-     * @param navigationType Type of navigation (iOS-only)
+     * @returns true if the app cancelled the navigation and the popup should be closed
      */
     public _onPopupNavigate(url: string): boolean {
         const args = {
@@ -654,6 +653,14 @@ export abstract class WebViewExtBase extends ContainerView {
         return args.cancel === true;
     }
 
+    /**
+     * Callback for should override url loading.
+     * Called from the native-webview
+     *
+     * @param url
+     * @param httpMethod GET, POST etc
+     * @param navigationType Type of navigation (iOS-only)
+     */
     public _onShouldOverrideUrlLoading(url: string, httpMethod: string, navigationType?: NavigationType) {
         const args = {
             eventName: WebViewExtBase.shouldOverrideUrlLoadingEvent,

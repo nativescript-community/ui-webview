@@ -52,19 +52,13 @@ public class PopupWebChromeClient extends WebChromeClient {
     }
 
     private final WebChromeClient delegate;
-    private volatile boolean supportPopups;
     private final WeakReference<Context> activityContextRef;
     private final Map<WebView, Dialog> popupDialogs = new HashMap<>();
     private PopupUrlInterceptor urlInterceptor;
 
-    public PopupWebChromeClient(WebChromeClient delegate, boolean supportPopups, Context activityContext) {
+    public PopupWebChromeClient(WebChromeClient delegate, Context activityContext) {
         this.delegate = delegate;
-        this.supportPopups = supportPopups;
         this.activityContextRef = new WeakReference<>(activityContext);
-    }
-
-    public void setSupportPopups(boolean value) {
-        this.supportPopups = value;
     }
 
     public void setUrlInterceptor(PopupUrlInterceptor interceptor) {
@@ -73,8 +67,6 @@ public class PopupWebChromeClient extends WebChromeClient {
 
     @Override
     public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-        if (!supportPopups) return false;
-
         Context context = activityContextRef.get();
         if (context == null) return false;
 

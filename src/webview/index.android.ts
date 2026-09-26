@@ -635,13 +635,13 @@ export class AWebView extends WebViewExtBase {
 
     public createWebViewClient?: (AWebView, clientClass: typeof WebViewExtClient) => android.webkit.WebViewClient;
 
-    public createWebChromeClient?: (AWebView, clientClass: typeof WebChromeViewExtClient) => globalAndroid.webkit.WebChromeClient;
+    public createWebChromeClient?: (AWebView, clientClass: typeof WebChromeViewExtClient) => android.webkit.WebChromeClient;
 
     // public readonly instance = ++instanceNo;
 
     public android: AndroidWebView;
 
-    private _popupClient: com.nativescript.webviewinterface.PopupWebChromeClient | null = null;
+    private _popupClient: com.nativescript.webviewinterface.PopupWebChromeClient;
 
     public createNativeView() {
         const nativeView = this.nestedScrollView === true ? new com.nativescript.webviewinterface.WebView(this._context, null) : new android.webkit.WebView(this._context, null);
@@ -685,25 +685,38 @@ export class AWebView extends WebViewExtBase {
         this.nativeChromeClient = this.createWebChromeClient
             ? this.createWebChromeClient(this, WebChromeViewExtClient)
             : new WebChromeViewExtClient(this);
-
-        const popupClient = new com.nativescript.webviewinterface.PopupWebChromeClient(this.nativeChromeClient, true, this._context);
-        const interceptor = new com.nativescript.webviewinterface.PopupWebChromeClient.PopupUrlInterceptor({
-            shouldHandleExternally: (url: string) => {
-                return this._onPopupNavigate(url != null ? ('' + url) : '');
-            }
-        });
-        popupClient.setUrlInterceptor(interceptor);
-        nativeView.setWebChromeClient(popupClient);
-        this._popupClient = popupClient;
-
-        // required for onCreateWindow to fire when window.open() or target="_blank" is used
-        const settings = nativeView.getSettings();
-        settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        settings.setSupportMultipleWindows(true);
+        this.applySupportPopups(this.supportPopups);
 
         const bridgeInterface = new WebViewBridgeInterface(this);
         nativeView.addJavascriptInterface(bridgeInterface, 'androidWebViewBridge');
         // nativeView.bridgeInterface = bridgeInterface;
+    }
+
+    /**
+     * Popups need the PopupWebChromeClient wrapper and multiple windows support.
+     * Without them target="_blank" and window.open() load in this webview, same as on iOS.
+     */
+    private applySupportPopups(enabled: boolean) {
+        const nativeView = this.nativeViewProtected;
+        if (!nativeView || !this.nativeChromeClient) {
+            return;
+        }
+        if (enabled && !this._popupClient) {
+            this._popupClient = new com.nativescript.webviewinterface.PopupWebChromeClient(this.nativeChromeClient, this._context);
+            this._popupClient.setUrlInterceptor(
+                new com.nativescript.webviewinterface.PopupWebChromeClient.PopupUrlInterceptor({
+                    shouldHandleExternally: (url: string) => this._onPopupNavigate(url != null ? '' + url : '')
+                })
+            );
+        } else if (!enabled) {
+            this._popupClient = null;
+        }
+        nativeView.setWebChromeClient(this._popupClient || this.nativeChromeClient);
+
+        // required for onCreateWindow to fire when window.open() or target="_blank" is used
+        const settings = nativeView.getSettings();
+        settings.setJavaScriptCanOpenWindowsAutomatically(enabled);
+        settings.setSupportMultipleWindows(enabled);
     }
 
     public disposeNativeView() {
@@ -940,8 +953,7 @@ export class AWebView extends WebViewExtBase {
     }
 
     [supportPopupsProperty.setNative](value: boolean) {
-        if (!this._popupClient) return;
-        this._popupClient.setSupportPopups(value);
+        this.applySupportPopups(value);
     }
 
     [debugModeProperty.getDefault]() {

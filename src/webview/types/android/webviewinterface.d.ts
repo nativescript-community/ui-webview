@@ -12,8 +12,7 @@ declare namespace com {
                 public handleConsoleMessage(message: android.webkit.ConsoleMessage): boolean;
             }
             export class PopupWebChromeClient extends globalAndroid.webkit.WebChromeClient {
-                public constructor(delegate: globalAndroid.webkit.WebChromeClient, supportPopups: boolean, activityContext: globalAndroid.content.Context);
-                public setSupportPopups(value: boolean): void;
+                public constructor(delegate: globalAndroid.webkit.WebChromeClient, activityContext: globalAndroid.content.Context);
                 public setUrlInterceptor(interceptor: PopupWebChromeClient.PopupUrlInterceptor): void;
             }
             export namespace PopupWebChromeClient {
