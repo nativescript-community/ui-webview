@@ -86,6 +86,9 @@ public class PopupWebChromeClient extends WebChromeClient {
         transport.setWebView(popupWebView);
         resultMsg.sendToTarget();
 
+        // TODO: allow the app to provide its own popup presenter (e.g. a custom dialog from the TS side
+        // using ui-material-dialogs) instead of the built-in bottom sheet. It also needs a dismiss path
+        // for onCloseWindow and popupNavigate cancel.
         Dialog dialog = showPopupDialog(activity, popupWebView);
         popupDialogs.put(popupWebView, dialog);
 
