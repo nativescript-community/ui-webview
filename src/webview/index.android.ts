@@ -17,6 +17,7 @@ import {
     isScrollEnabledProperty,
     mediaPlaybackRequiresUserActionProperty,
     scrollBarIndicatorVisibleProperty,
+    supportPopupsProperty,
     supportZoomProperty,
     useWideViewPortProperty,
     webConsoleProperty
@@ -634,9 +635,13 @@ export class AWebView extends WebViewExtBase {
 
     public createWebViewClient?: (AWebView, clientClass: typeof WebViewExtClient) => android.webkit.WebViewClient;
 
+    public createWebChromeClient?: (AWebView, clientClass: typeof WebChromeViewExtClient) => android.webkit.WebChromeClient;
+
     // public readonly instance = ++instanceNo;
 
     public android: AndroidWebView;
+
+    private _popupClient: com.nativescript.webviewinterface.PopupWebChromeClient;
 
     public createNativeView() {
         const nativeView = this.nestedScrollView === true ? new com.nativescript.webviewinterface.WebView(this._context, null) : new android.webkit.WebView(this._context, null);
@@ -677,17 +682,43 @@ export class AWebView extends WebViewExtBase {
             nativeView.setWebViewClient(this.nativeWebClient);
             // nativeView.client = client;
         }
-        this.nativeChromeClient = new WebChromeViewExtClient(this);
-
-        nativeView.setWebChromeClient(this.nativeChromeClient);
-        // nativeView.chromeClient = chromeClient;
+        this.nativeChromeClient = this.createWebChromeClient
+            ? this.createWebChromeClient(this, WebChromeViewExtClient)
+            : new WebChromeViewExtClient(this);
+        this.applySupportPopups(this.supportPopups);
 
         const bridgeInterface = new WebViewBridgeInterface(this);
         nativeView.addJavascriptInterface(bridgeInterface, 'androidWebViewBridge');
         // nativeView.bridgeInterface = bridgeInterface;
     }
 
+    /**
+     * Popups need the PopupWebChromeClient wrapper and multiple windows support.
+     * Without them target="_blank" and window.open() load in this webview, same as on iOS.
+     */
+    private applySupportPopups(enabled: boolean) {
+        const nativeView = this.nativeViewProtected;
+        if (!nativeView || !this.nativeChromeClient) {
+            return;
+        }
+        if (enabled && !this._popupClient) {
+            this._popupClient = new com.nativescript.webviewinterface.PopupWebChromeClient(this.nativeChromeClient, this._context);
+            this._popupClient.setUrlInterceptor(
+                new com.nativescript.webviewinterface.PopupWebChromeClient.PopupUrlInterceptor({
+                    shouldHandleExternally: (url: string) => this._onPopupNavigate(url != null ? '' + url : '')
+                })
+            );
+        } else if (!enabled) {
+            this._popupClient = null;
+        }
+        nativeView.setWebChromeClient(this._popupClient || this.nativeChromeClient);
+
+        // required for onCreateWindow to fire when window.open() or target="_blank" is used
+        nativeView.getSettings().setSupportMultipleWindows(enabled);
+    }
+
     public disposeNativeView() {
+        this._popupClient = null;
         const nativeView = this.nativeViewProtected;
         if (nativeView) {
             nativeView.setWebViewClient(null);
@@ -917,6 +948,10 @@ export class AWebView extends WebViewExtBase {
         }
 
         throw new Error('ZoomBy only accepts values between 0.01 and 100 both inclusive');
+    }
+
+    [supportPopupsProperty.setNative](value: boolean) {
+        this.applySupportPopups(value);
     }
 
     [debugModeProperty.getDefault]() {

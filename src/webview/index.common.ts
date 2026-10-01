@@ -235,6 +235,7 @@ export enum EventNames {
     LoadProgress = 'loadProgress',
     LoadStarted = 'loadStarted',
     ShouldOverrideUrlLoading = 'shouldOverrideUrlLoading',
+    PopupNavigate = 'popupNavigate',
     TitleChanged = 'titleChanged',
     WebAlert = 'webAlert',
     WebConfirm = 'webConfirm',
@@ -440,6 +441,10 @@ export abstract class WebViewExtBase extends ContainerView {
         return EventNames.ShouldOverrideUrlLoading;
     }
 
+    public static get popupNavigateEvent() {
+        return EventNames.PopupNavigate;
+    }
+
     public static get loadProgressEvent() {
         return EventNames.LoadProgress;
     }
@@ -629,6 +634,23 @@ export abstract class WebViewExtBase extends ContainerView {
         } as LoadStartedEventData;
 
         this.notify(args);
+    }
+
+    /**
+     * Callback for navigations inside a popup window.
+     * Called from the native-webview
+     *
+     * @param url
+     * @returns true if the app cancelled the navigation and the popup should be closed
+     */
+    public _onPopupNavigate(url: string): boolean {
+        const args = {
+            eventName: WebViewExtBase.popupNavigateEvent,
+            url,
+            cancel: false
+        };
+        this.notify(args);
+        return args.cancel === true;
     }
 
     /**
