@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.0](https://github.com/nativescript-community/ui-webview/compare/v1.6.2...v1.7.0) (2026-11-02)
+
+### Features
+
+* android popup support ([fd9d498](https://github.com/nativescript-community/ui-webview/commit/fd9d498779f12e7ba8b8952e4084b3065655e55c))
+* **android:** add keepNightMode to restore activity night mode after WebView creation ([e1dab77](https://github.com/nativescript-community/ui-webview/commit/e1dab77dab54717f4a1507d438112b2f0d833940))
+
+### Bug Fixes
+
+* **android:** allow popups only from user gestures, as on iOS ([731312a](https://github.com/nativescript-community/ui-webview/commit/731312ad196cea702ae09ef4fba65849a9258ac3))
+* **android:** enable popup client and multi-window only with supportPopups ([345ac41](https://github.com/nativescript-community/ui-webview/commit/345ac4182bdc70ebf67b3ed3b2ad3ca5612a8c7e))
+* **ios:** guard against double webViewDidClose on popup dismiss ([acaa8dd](https://github.com/nativescript-community/ui-webview/commit/acaa8dd5a59c985b3ad858095383f96cf24337bc))
+* **ios:** skip subframe intercepts, improve auth popup support ([7e0ebe3](https://github.com/nativescript-community/ui-webview/commit/7e0ebe364726c77af02724d3858a70bb20d40157))
+* **webview-rtc:** pin WKWebViewRTC to a WebRTC-lib build ([328ddab](https://github.com/nativescript-community/ui-webview/commit/328ddabe2718e771799d5a5f2650889f3364804f))
+
 ## [1.6.2](https://github.com/nativescript-community/ui-webview/compare/v1.6.1...v1.6.2) (2026-07-30)
 
 ### Features

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.0](https://github.com/nativescript-community/ui-webview/compare/v1.6.2...v1.7.0) (2026-11-02)
+
+### Features
+
+* android popup support ([fd9d498](https://github.com/nativescript-community/ui-webview/commit/fd9d498779f12e7ba8b8952e4084b3065655e55c))
+
+### Bug Fixes
+
+* **android:** enable popup client and multi-window only with supportPopups ([345ac41](https://github.com/nativescript-community/ui-webview/commit/345ac4182bdc70ebf67b3ed3b2ad3ca5612a8c7e))
+
 ## [1.6.2](https://github.com/nativescript-community/ui-webview/compare/v1.6.1...v1.6.2) (2026-07-30)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview

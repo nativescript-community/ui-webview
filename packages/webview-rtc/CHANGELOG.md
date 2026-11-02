@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.0](https://github.com/nativescript-community/ui-collectionview/compare/v1.6.2...v1.7.0) (2026-11-02)
+
+### Bug Fixes
+
+* **webview-rtc:** pin WKWebViewRTC to a WebRTC-lib build ([328ddab](https://github.com/nativescript-community/ui-collectionview/commit/328ddabe2718e771799d5a5f2650889f3364804f))
+
 ## [1.6.2](https://github.com/nativescript-community/ui-collectionview/compare/v1.6.1...v1.6.2) (2026-07-30)
 
 **Note:** Version bump only for package @nativescript-community/ui-webview-rtc
