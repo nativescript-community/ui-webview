@@ -99,6 +99,7 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | limitsNavigationsToAppBoundDomains | false | iOS: allows to enable Service Workers **Note:** If set to true, WKAppBoundDomains also should be set in info.plist. |
 | supportPopups | true / false | iOS: should the webview support popup windows (window.open, target="_blank"). Defaults to true |
 | scrollBarIndicatorVisible | false | Allow to hide scrollbars. |
+| keepNightMode | true / false | Android: keep the activity night mode when the native WebView is created (best effort). Defaults to true. |
 
 | Function | Description |
 | --- | --- |

@@ -644,7 +644,22 @@ export class AWebView extends WebViewExtBase {
     private _popupClient: com.nativescript.webviewinterface.PopupWebChromeClient;
 
     public createNativeView() {
+        // The first WebView created resets the activity night mode to the system one: put it back.
+        const keepNightMode = this.keepNightMode !== false;
+        const resources = keepNightMode ? this._context.getResources() : null;
+        const nightMask = android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+        const nightBefore = resources ? resources.getConfiguration().uiMode & nightMask : 0;
+
         const nativeView = this.nestedScrollView === true ? new com.nativescript.webviewinterface.WebView(this._context, null) : new android.webkit.WebView(this._context, null);
+
+        if (resources) {
+            const currentConfiguration = resources.getConfiguration();
+            if ((currentConfiguration.uiMode & nightMask) !== nightBefore) {
+                const newConfiguration = new android.content.res.Configuration(currentConfiguration);
+                newConfiguration.uiMode = (newConfiguration.uiMode & ~nightMask) | nightBefore;
+                resources.updateConfiguration(newConfiguration, resources.getDisplayMetrics());
+            }
+        }
         const settings = nativeView.getSettings();
 
         // Needed for the bridge library

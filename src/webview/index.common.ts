@@ -85,6 +85,12 @@ export const supportPopupsProperty = new Property<WebViewExtBase, boolean>({
     valueConverter: booleanConverter
 });
 
+export const keepNightModeProperty = new Property<WebViewExtBase, boolean>({
+    name: 'keepNightMode',
+    defaultValue: true,
+    valueConverter: booleanConverter
+});
+
 export const srcProperty = new Property<WebViewExtBase, string>({
     name: 'src'
 });
@@ -417,6 +423,13 @@ export abstract class WebViewExtBase extends ContainerView {
     public scrollBarIndicatorVisible: boolean;
 
     public supportPopups: boolean;
+
+    /**
+     * ANDROID: keep the activity night mode when the native WebView is created. Default to true
+     *
+     * Note: best effort, native defaults (e.g. text colors) can still be light. Set colors explicitly.
+     */
+    public keepNightMode: boolean;
 
     public get interceptScheme() {
         return 'x-local';
@@ -1569,5 +1582,6 @@ isScrollEnabledProperty.register(WebViewExtBase);
 scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
 supportPopupsProperty.register(WebViewExtBase);
+keepNightModeProperty.register(WebViewExtBase);
 limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
 scrollBarIndicatorVisibleProperty.register(WebViewExtBase);
