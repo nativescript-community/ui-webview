@@ -99,6 +99,7 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | limitsNavigationsToAppBoundDomains | false | iOS: allows to enable Service Workers **Note:** If set to true, WKAppBoundDomains also should be set in info.plist. |
 | supportPopups | true / false | iOS: should the webview support popup windows (window.open, target="_blank"). Defaults to true |
 | scrollBarIndicatorVisible | false | Allow to hide scrollbars. |
+| keepNightMode | true / false | Android: keep the night mode of the activity resources when the native WebView is created. Defaults to true. The first WebView created in the process can reset it to the system one (e.g. app theme forced dark while the system is light); the previous night bits are put back afterwards. **Note:** best effort to keep `Resources` consistent, not a guarantee for every native default (e.g. text colors of views created later can still be the light ones), so also set colors explicitly where it matters. |
 
 | Function | Description |
 | --- | --- |

@@ -85,6 +85,12 @@ export const supportPopupsProperty = new Property<WebViewExtBase, boolean>({
     valueConverter: booleanConverter
 });
 
+export const keepNightModeProperty = new Property<WebViewExtBase, boolean>({
+    name: 'keepNightMode',
+    defaultValue: true,
+    valueConverter: booleanConverter
+});
+
 export const srcProperty = new Property<WebViewExtBase, string>({
     name: 'src'
 });
@@ -417,6 +423,18 @@ export abstract class WebViewExtBase extends ContainerView {
     public scrollBarIndicatorVisible: boolean;
 
     public supportPopups: boolean;
+
+    /**
+     * ANDROID: keep the night mode (`uiMode` night bits) of the activity resources when the native WebView is created. Default to true
+     *
+     * The first `android.webkit.WebView` created in the process initializes the WebView provider, which can reset the night mode of the
+     * activity `Resources` configuration to the system one (e.g. app theme forced dark while the system is light).
+     * When true, the night bits read before the creation are put back afterwards.
+     *
+     * Note: This is a best effort to keep `Resources` consistent, not a guarantee for every native default
+     * (e.g. text colors of views created later can still be the light ones). Set colors explicitly where it matters.
+     */
+    public keepNightMode: boolean;
 
     public get interceptScheme() {
         return 'x-local';
@@ -1569,5 +1587,6 @@ isScrollEnabledProperty.register(WebViewExtBase);
 scalesPageToFitProperty.register(WebViewExtBase);
 mediaPlaybackRequiresUserActionProperty.register(WebViewExtBase);
 supportPopupsProperty.register(WebViewExtBase);
+keepNightModeProperty.register(WebViewExtBase);
 limitsNavigationsToAppBoundDomainsProperty.register(WebViewExtBase);
 scrollBarIndicatorVisibleProperty.register(WebViewExtBase);
