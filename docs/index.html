@@ -146,12 +146,27 @@ Prior to iOS 11 there isn't support for intercepting the URL with <code>WKWebVie
 <tr>
 <td>supportPopups</td>
 <td>true / false</td>
-<td>iOS: should the webview support popup windows (window.open, target=&quot;_blank&quot;). Defaults to true</td>
+<td>Should the webview support popup windows (<code>window.open</code>, <code>target=&quot;_blank&quot;</code>). Defaults to true. Android: shows popup in a bottom sheet dialog. iOS: opens in a modal view controller.</td>
+</tr>
+<tr>
+<td>createWebViewClient</td>
+<td><code>(webview, clientClass) =&gt; WebViewClient</code></td>
+<td>Android: optional factory to provide a custom <code>WebViewClient</code>. Receives the AWebView instance and the default client class; return your subclass instance.</td>
+</tr>
+<tr>
+<td>createWebChromeClient</td>
+<td><code>(webview, clientClass) =&gt; WebChromeClient</code></td>
+<td>Android: optional factory to provide a custom <code>WebChromeClient</code>. Same API pattern as <code>createWebViewClient</code>.</td>
 </tr>
 <tr>
 <td>scrollBarIndicatorVisible</td>
 <td>false</td>
 <td>Allow to hide scrollbars.</td>
+</tr>
+<tr>
+<td>userAgent</td>
+<td>string</td>
+<td>Set a custom User-Agent string</td>
 </tr>
 </tbody>
 </table>
@@ -271,6 +286,10 @@ Prior to iOS 11 there isn't support for intercepting the URL with <code>WKWebVie
 <td>Raised when <code>window.prompt</code> is triggered inside the webview, needed to use customs dialogs for web prompt boxes. args in a <code>webConfirmEvent</code>. `args.callback(string</td>
 </tr>
 <tr>
+<td>popupNavigate</td>
+<td>Raised when a popup window (<code>window.open</code>, <code>target=&quot;_blank&quot;</code>) navigates to a URL. <code>args.url</code> contains the URL. Set <code>args.cancel = true</code> to close the popup and handle the URL in the app. If not cancelled, the popup navigates freely.</td>
+</tr>
+<tr>
 <td>Events emitted from the webview</td>
 <td>Raised when nsWebViewBridge.emit(...) is called inside the webview. args in an <code>WebViewEventData</code></td>
 </tr>
@@ -310,7 +329,6 @@ Prior to iOS 11 there isn't support for intercepting the URL with <code>WKWebVie
 <li>Settings
 <ul>
 <li>AppCache?</li>
-<li>User agent?</li>
 </ul>
 </li>
 </ul>
