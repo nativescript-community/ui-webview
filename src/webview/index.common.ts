@@ -425,14 +425,9 @@ export abstract class WebViewExtBase extends ContainerView {
     public supportPopups: boolean;
 
     /**
-     * ANDROID: keep the night mode (`uiMode` night bits) of the activity resources when the native WebView is created. Default to true
+     * ANDROID: keep the activity night mode when the native WebView is created. Default to true
      *
-     * The first `android.webkit.WebView` created in the process initializes the WebView provider, which can reset the night mode of the
-     * activity `Resources` configuration to the system one (e.g. app theme forced dark while the system is light).
-     * When true, the night bits read before the creation are put back afterwards.
-     *
-     * Note: This is a best effort to keep `Resources` consistent, not a guarantee for every native default
-     * (e.g. text colors of views created later can still be the light ones). Set colors explicitly where it matters.
+     * Note: best effort, native defaults (e.g. text colors) can still be light. Set colors explicitly.
      */
     public keepNightMode: boolean;
 
