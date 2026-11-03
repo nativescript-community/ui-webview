@@ -920,6 +920,13 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
             const supportPopups = owner?.supportPopups ?? true;
 
             if (supportPopups) {
+                // Decide on a known URL before presenting anything. A blank window is decided at its first navigation.
+                let firstUrl = navigationAction.request.URL.absoluteString;
+                if (!firstUrl || firstUrl === 'about:blank') {
+                    firstUrl = null;
+                } else if (owner && owner._onPopupNavigate(firstUrl)) {
+                    return null;
+                }
                 try {
                     const popupConfig = configuration;
                     // iOS shares WKUserContentController between parent and popup webviews by default.
@@ -1011,6 +1018,12 @@ export class WKUIDelegateNotaImpl extends NSObject implements WKUIDelegate {
                                     decisionHandler: (policy: WKNavigationActionPolicy) => void
                                 ) {
                                     const url = navigationAction.request.URL?.absoluteString;
+                                    // Already decided above
+                                    if (url && url === firstUrl) {
+                                        firstUrl = null;
+                                        decisionHandler(WKNavigationActionPolicy.Allow);
+                                        return;
+                                    }
                                     if (url && owner) {
                                         const cancelled = owner._onPopupNavigate(url);
                                         if (cancelled) {

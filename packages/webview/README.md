@@ -115,7 +115,7 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | webConfirm | Raised when `window.confirm` is triggered inside the webview, needed to use customs dialogs for web confirm boxes. args in a `webConfirmEvent`. `args.callback(boolean)` must be called to indicate confirm box is closed. **NOTE:** Not supported by UIWebView |
 | webConsole | Android only: Raised when a line is added to the web console. args is a `WebConsoleEventData`. |
 | webPrompt | Raised when `window.prompt` is triggered inside the webview, needed to use customs dialogs for web prompt boxes. args in a `webConfirmEvent`. `args.callback(string | null)` must be called to indicate prompt box is closed. **NOTE:** Not supported by UIWebView |
-| popupNavigate | Raised when a popup window (`window.open`, `target="_blank"`) navigates to a URL. `args.url` contains the URL. Set `args.cancel = true` to close the popup and handle the URL in the app. If not cancelled, the popup navigates freely. |
+| popupNavigate | Raised when a popup window (`window.open`, `target="_blank"`) navigates to a URL. `args.url` contains the URL. Set `args.cancel = true` to close the popup and handle the URL in the app. A popup cancelled at its first URL is never shown, unless it opens blank and navigates later. If not cancelled, the popup navigates freely. |
 | Events emitted from the webview | Raised when nsWebViewBridge.emit(...) is called inside the webview. args in an `WebViewEventData` |
 
 ### WebView
