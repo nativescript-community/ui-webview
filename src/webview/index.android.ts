@@ -7,6 +7,7 @@ import {
     WebViewExtBase,
     WebViewTraceCategory,
     allowsInlineMediaPlaybackProperty,
+    autoInjectJSBridgeProperty,
     builtInZoomControlsProperty,
     cacheModeProperty,
     customUserAgentProperty,
@@ -22,6 +23,7 @@ import {
     useWideViewPortProperty,
     webConsoleProperty
 } from './index.common';
+import { webViewBridge } from './nativescript-webview-bridge-loader';
 
 export * from './index.common';
 
@@ -42,6 +44,25 @@ const extToMimeType = new Map<string, string>([
 ]);
 
 const extToBinaryEncoding = new Set<string>(['gif', 'jpeg', 'jpg', 'otf', 'png', 'ttf']);
+
+let documentStartScriptSupported: boolean;
+// Android System WebView 101+, whatever the Android version
+function isDocumentStartScriptSupported() {
+    if (documentStartScriptSupported === undefined) {
+        try {
+            documentStartScriptSupported = androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.DOCUMENT_START_SCRIPT);
+        } catch (error) {
+            documentStartScriptSupported = false;
+        }
+    }
+    return documentStartScriptSupported;
+}
+
+// Runs the code as a WKUserScript does on iOS: in the main frame only (document-start scripts run in every frame)
+// and at DOMContentLoaded, so the page's own listeners for it and for ns-bridge-ready still fire after it
+function asWKUserScript(scriptCode: string) {
+    return `if (window === window.top) document.addEventListener('DOMContentLoaded', function () {\n${scriptCode}\n}, { once: true });`;
+}
 
 //#region android_native_classes
 const cacheModeMap = {
@@ -643,6 +664,11 @@ export class AWebView extends WebViewExtBase {
 
     private _popupClient: com.nativescript.webviewinterface.PopupWebChromeClient;
 
+    // autoLoadJavaScriptFile scripts when the WebView supports document-start scripts
+    private documentStartScripts: { resourceName: string; scriptCode: string; handler?: androidx.webkit.ScriptHandler }[] = [];
+
+    private bridgeScriptHandler: androidx.webkit.ScriptHandler;
+
     public createNativeView() {
         // The first WebView created resets the activity night mode to the system one: put it back.
         const keepNightMode = this.keepNightMode !== false;
@@ -705,6 +731,8 @@ export class AWebView extends WebViewExtBase {
         const bridgeInterface = new WebViewBridgeInterface(this);
         nativeView.addJavascriptInterface(bridgeInterface, 'androidWebViewBridge');
         // nativeView.bridgeInterface = bridgeInterface;
+
+        this.loadDocumentStartScripts();
     }
 
     /**
@@ -734,6 +762,11 @@ export class AWebView extends WebViewExtBase {
 
     public disposeNativeView() {
         this._popupClient = null;
+        // The handlers belong to the destroyed WebView
+        this.bridgeScriptHandler = null;
+        for (const script of this.documentStartScripts) {
+            script.handler = null;
+        }
         const nativeView = this.nativeViewProtected;
         if (nativeView) {
             nativeView.setWebViewClient(null);
@@ -963,6 +996,84 @@ export class AWebView extends WebViewExtBase {
         }
 
         throw new Error('ZoomBy only accepts values between 0.01 and 100 both inclusive');
+    }
+
+    /**
+     * Where the WebView supports document-start scripts, the bridge and these scripts run on every page
+     * at DOMContentLoaded, as WKUserScripts do on iOS, and not in the page already open.
+     * Otherwise they are injected after the page has loaded.
+     */
+    public autoLoadJavaScriptFile(resourceName: string, filepath: string) {
+        if (!isDocumentStartScriptSupported()) {
+            return super.autoLoadJavaScriptFile(resourceName, filepath);
+        }
+
+        const path = this.resolveLocalResourceFilePath(filepath);
+        if (!path) {
+            if (Trace.isEnabled()) {
+                Trace.write(`WebViewExt<android>.autoLoadJavaScriptFile("${resourceName}", "${filepath}") - couldn't resolve filepath`, WebViewTraceCategory, Trace.messageType.info);
+            }
+
+            return;
+        }
+
+        this.removeAutoLoadJavaScriptFile(resourceName);
+
+        const script = { resourceName, scriptCode: asWKUserScript(File.fromPath(path).readTextSync()) };
+        this.documentStartScripts.push(script);
+        this.addDocumentStartScript(script);
+    }
+
+    public removeAutoLoadJavaScriptFile(resourceName: string) {
+        super.removeAutoLoadJavaScriptFile(resourceName);
+
+        const idx = this.documentStartScripts.findIndex((script) => script.resourceName === resourceName);
+        if (idx !== -1) {
+            this.documentStartScripts[idx].handler?.remove();
+            this.documentStartScripts.splice(idx, 1);
+        }
+    }
+
+    /**
+     * (Re)adds the bridge and then the scripts in the order they were added. Like on iOS, nothing is added without autoInjectJSBridge.
+     */
+    protected loadDocumentStartScripts() {
+        this.bridgeScriptHandler?.remove();
+        this.bridgeScriptHandler = null;
+        for (const script of this.documentStartScripts) {
+            script.handler?.remove();
+            script.handler = null;
+        }
+
+        const nativeView = this.nativeViewProtected;
+        if (!nativeView || !this.autoInjectJSBridge || !isDocumentStartScriptSupported()) {
+            return;
+        }
+
+        this.bridgeScriptHandler = androidx.webkit.WebViewCompat.addDocumentStartJavaScript(nativeView, asWKUserScript(webViewBridge), this.allOrigins());
+        for (const script of this.documentStartScripts) {
+            this.addDocumentStartScript(script);
+        }
+    }
+
+    private addDocumentStartScript(script: { scriptCode: string; handler?: androidx.webkit.ScriptHandler }) {
+        const nativeView = this.nativeViewProtected;
+        if (!nativeView || !this.autoInjectJSBridge) {
+            return;
+        }
+
+        script.handler = androidx.webkit.WebViewCompat.addDocumentStartJavaScript(nativeView, script.scriptCode, this.allOrigins());
+    }
+
+    private allOrigins() {
+        const origins = new java.util.HashSet<string>();
+        origins.add('*');
+
+        return origins;
+    }
+
+    [autoInjectJSBridgeProperty.setNative](enabled: boolean) {
+        this.loadDocumentStartScripts();
     }
 
     [supportPopupsProperty.setNative](value: boolean) {

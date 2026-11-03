@@ -66,7 +66,7 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | readonly isUIWebView | true / false | Is the native webview an UIWebView? True if `iOS <11` |
 | readonly isWkWebView | true / false | Is the native webview an WKWebView? True if `iOS >=11` |
 | src | | Load src |
-| autoInjectJSBridge | true / false | Should the window.nsWebViewBridge be injected on `loadFinishedEvent`? Defaults to true |
+| autoInjectJSBridge | true / false | Should the window.nsWebViewBridge be injected? Defaults to true. Like `autoLoadJavaScriptFile`: at `DOMContentLoaded` on iOS and on Android with Android System WebView 101 or newer, otherwise on `loadFinishedEvent` |
 | builtInZoomControls | true / false | Android: Is the built-in zoom mechanisms being used |
 | cacheMode | default / no_cache / cache_first / cache_only | Android: Set caching mode. |
 | databaseStorage | true / false | Android: Enable/Disabled database storage API. Note: It affects all webviews in the process. |
@@ -95,7 +95,7 @@ The custom `NSURLProtocol` used with UIWebView is shared with all instances of t
 | loadStyleSheetFile(stylesheetName: string, filepath: string, insertBefore: boolean) | Loads a CSS-file into document.head. If before is true, it will be added to the top of document.head otherwise as the last element |
 | loadJavaScriptFiles(files: {resourceName: string, filepath: string}[]) | Inject multiple javascript-files into the webview. Should be called after the `loadFinishedEvent` |
 | loadStyleSheetFiles(files: {resourceName: string, filepath: string, insertBefore: boolean}[]) | Loads multiple CSS-files into the document.head. If before is true, it will be added to the top of document.head otherwise as the last element |
-| autoLoadJavaScriptFile(resourceName: string, filepath: string) | Register a JavaScript-file to be injected on `loadFinishedEvent`. If a page is already loaded, the script will be injected into the current page. |
+| autoLoadJavaScriptFile(resourceName: string, filepath: string) | Register a JavaScript-file to be injected into every page. On iOS, and on Android with Android System WebView 101 or newer, it runs at `DOMContentLoaded` in the main frame only, starting from the next page. With an older Android WebView it is injected on `loadFinishedEvent`, and into the current page if one is already loaded. |
 | autoLoadStyleSheetFile(resourceName: string, filepath: string, insertBefore?: boolean) | Register a CSS-file to be injected on `loadFinishedEvent`. If a page is already loaded, the CSS-file will be injected into the current page. |
 | autoExecuteJavaScript(scriptCode: string, name: string) | Execute a script on `loadFinishedEvent`. The script can be a promise |
 | executeJavaScript(scriptCode: string) | Execute JavaScript in the webpage. *Note:* scriptCode should be ES5 compatible, or it might not work on 'iOS < 11' |
