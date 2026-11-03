@@ -25,24 +25,6 @@ import {
 
 export * from './index.common';
 
-const extToMimeType = new Map<string, string>([
-    ['html', 'text/html'],
-    ['htm', 'text/html'],
-    ['xhtml', 'text/html'],
-    ['xhtm', 'text/html'],
-    ['css', 'text/css'],
-    ['gif', 'image/gif'],
-    ['jpeg', 'image/jpeg'],
-    ['jpg', 'image/jpeg'],
-    ['js', 'text/javascript'],
-    ['otf', 'application/vnd.ms-opentype'],
-    ['png', 'image/png'],
-    ['svg', 'image/svg+xml'],
-    ['ttf', 'application/x-font-ttf']
-]);
-
-const extToBinaryEncoding = new Set<string>(['gif', 'jpeg', 'jpg', 'otf', 'png', 'ttf']);
-
 //#region android_native_classes
 const cacheModeMap = {
     get cache_first() {
@@ -82,7 +64,7 @@ function initializeWebViewClient(): void {
     }
 
     @NativeClass()
-    class WebViewExtClientImpl extends android.webkit.WebViewClient {
+    class WebViewExtClientImpl extends com.nativescript.webviewinterface.WebViewClient {
         private owner: WeakRef<AWebView>;
         constructor(owner: AWebView) {
             super();
@@ -145,79 +127,6 @@ function initializeWebViewClient(): void {
             }
 
             return false;
-        }
-
-        public shouldInterceptRequest(view: android.webkit.WebView, request: string | android.webkit.WebResourceRequest) {
-            try {
-                const owner = this.owner.get();
-                if (!owner) {
-                    if (Trace.isEnabled()) {
-                        Trace.write('WebViewExtClientImpl.shouldInterceptRequest() - no owner', WebViewTraceCategory, Trace.messageType.warn);
-                    }
-                    return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
-                }
-
-                let url: string | void;
-                if (typeof request === 'string') {
-                    url = request;
-                } else if (typeof request === 'object') {
-                    url = request.getUrl().toString();
-                }
-
-                if (typeof url !== 'string') {
-                    if (Trace.isEnabled()) {
-                        Trace.write(`WebViewClientClass.shouldInterceptRequest("${url}") - is not a string`, WebViewTraceCategory, Trace.messageType.info);
-                    }
-                    return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
-                }
-
-                if (!url.startsWith(owner.interceptScheme)) {
-                    return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
-                }
-
-                const filepath = owner.getRegisteredLocalResource(url);
-                if (!filepath) {
-                    if (Trace.isEnabled()) {
-                        Trace.write(`WebViewClientClass.shouldInterceptRequest("${url}") - no matching file`, WebViewTraceCategory, Trace.messageType.info);
-                    }
-                    return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
-                }
-
-                if (!File.exists(filepath)) {
-                    if (Trace.isEnabled()) {
-                        Trace.write(`WebViewClientClass.shouldInterceptRequest("${url}") - file: "${filepath}" doesn't exists`, WebViewTraceCategory, Trace.messageType.info);
-                    }
-                    return super.shouldInterceptRequest(view, request as android.webkit.WebResourceRequest);
-                }
-
-                const tnsFile = File.fromPath(filepath);
-
-                const javaFile = new java.io.File(tnsFile.path);
-                const stream = new java.io.FileInputStream(javaFile);
-                const ext = tnsFile.extension.substring(1).toLowerCase();
-                const mimeType = extToMimeType.get(ext) || 'application/octet-stream';
-                const encoding = extToBinaryEncoding.has(ext) || mimeType === 'application/octet-stream' ? 'binary' : 'UTF-8';
-
-                if (Trace.isEnabled()) {
-                    Trace.write(`WebViewClientClass.shouldInterceptRequest("${url}") - file: "${filepath}" mimeType:${mimeType} encoding:${encoding}`, WebViewTraceCategory, Trace.messageType.info);
-                }
-                const response = new android.webkit.WebResourceResponse(mimeType, encoding, stream);
-                if (sdkVersion() < 21 || !response.getResponseHeaders) {
-                    return response;
-                }
-
-                let responseHeaders = response.getResponseHeaders();
-                if (!responseHeaders) {
-                    responseHeaders = new java.util.HashMap<string, string>();
-                }
-
-                responseHeaders.put('Access-Control-Allow-Origin', '*');
-                response.setResponseHeaders(responseHeaders);
-
-                return response;
-            } catch (e) {
-                return null;
-            }
         }
 
         public onPageStarted(view: android.webkit.WebView, url: string, favicon: android.graphics.Bitmap) {
@@ -697,6 +606,11 @@ export class AWebView extends WebViewExtBase {
             nativeView.setWebViewClient(this.nativeWebClient);
             // nativeView.client = client;
         }
+        const localResourceClient = this.localResourceClient;
+        if (localResourceClient) {
+            localResourceClient.setInterceptScheme(this.interceptScheme);
+            this.localResourceMap.forEach((filepath, resourceName) => localResourceClient.registerLocalResource(resourceName, filepath));
+        }
         this.nativeChromeClient = this.createWebChromeClient
             ? this.createWebChromeClient(this, WebChromeViewExtClient)
             : new WebChromeViewExtClient(this);
@@ -849,6 +763,7 @@ export class AWebView extends WebViewExtBase {
         }
 
         this.localResourceMap.set(resourceName, filepath);
+        this.localResourceClient?.registerLocalResource(resourceName, filepath);
     }
 
     public unregisterLocalResource(resourceName: string) {
@@ -858,6 +773,16 @@ export class AWebView extends WebViewExtBase {
         resourceName = this.fixLocalResourceName(resourceName);
 
         this.localResourceMap.delete(resourceName);
+        this.localResourceClient?.unregisterLocalResource(resourceName);
+    }
+
+    /**
+     * x-local requests are served from Java: the Java client keeps a copy of localResourceMap.
+     * Null if createWebViewClient returned a client that doesn't extend WebViewExtClient.
+     */
+    private get localResourceClient() {
+        const client = this.nativeWebClient;
+        return client instanceof com.nativescript.webviewinterface.WebViewClient ? client : null;
     }
 
     public getRegisteredLocalResource(resourceName: string) {
