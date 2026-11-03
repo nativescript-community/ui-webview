@@ -15,6 +15,7 @@ The code is originally based on [nativescript-webview-ext](https://github.com/m-
 * Adds functions to inject `css`- and `javascript`-files.
     * Into the current page.
     * Auto-injected on page load.
+* `<input type="file">` on Android opens the system document picker (on iOS WKWebView handles it itself).
 
 * Supports:
     * Android 19+

@@ -1,4 +1,4 @@
-import { Device, File, Trace, knownFolders } from '@nativescript/core';
+import { Application, Device, File, Trace, knownFolders } from '@nativescript/core';
 import lazy from '@nativescript/core/utils/lazy';
 import { isEnabledProperty } from '@nativescript/core/ui/core/view';
 import {
@@ -42,6 +42,47 @@ const extToMimeType = new Map<string, string>([
 ]);
 
 const extToBinaryEncoding = new Set<string>(['gif', 'jpeg', 'jpg', 'otf', 'png', 'ttf']);
+
+// MIME types for the picker from the accept attribute. An extension without a known type
+// (e.g. ".gpx") can't be filtered on, so any file is allowed then.
+function acceptToMimeTypes(accept: androidNative.Array<string>): string[] {
+    const mimeTypes: string[] = [];
+    for (let i = 0; accept && i < accept.length; i++) {
+        for (let type of ('' + accept[i]).split(',')) {
+            type = type.trim().toLowerCase();
+            if (type.startsWith('.')) {
+                type = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(type.substring(1));
+                if (!type) {
+                    return [];
+                }
+            }
+            if (type === '*/*') {
+                return [];
+            }
+            if (type && mimeTypes.indexOf(type) === -1) {
+                mimeTypes.push(type);
+            }
+        }
+    }
+    return mimeTypes;
+}
+
+function pickedUris(data: android.content.Intent): androidNative.Array<android.net.Uri> {
+    const uris: android.net.Uri[] = [];
+    const clip = data?.getClipData();
+    for (let i = 0; clip && i < clip.getItemCount(); i++) {
+        uris.push(clip.getItemAt(i).getUri());
+    }
+    if (uris.length === 0 && data?.getData()) {
+        uris.push(data.getData());
+    }
+    if (uris.length === 0) {
+        return null;
+    }
+    const array = Array.create(android.net.Uri, uris.length);
+    uris.forEach((uri, i) => (array[i] = uri));
+    return array;
+}
 
 //#region android_native_classes
 const cacheModeMap = {
@@ -555,25 +596,7 @@ function initializeWebViewClient(): void {
             if (!owner) {
                 return false;
             }
-            if (owner.hasListeners('fileChooser')) {
-                owner.notify({
-                    eventName: 'fileChooser',
-                    callback: (files: string[]) => {
-                        if (!files || files.length === 0) {
-                            filePathCallback.onReceiveValue(null);
-                        } else {
-                            const res = Array.create(android.net.Uri, files.length);
-                            files.forEach((filePath, index) => {
-                                const file = File.fromPath(filePath);
-                                res[index] = android.net.Uri.parse(`file://${file.path}`);
-                            });
-                        }
-                    },
-                    fileChooserParams
-                });
-                return true;
-            }
-            return false;
+            return owner._onShowFileChooser(filePathCallback, fileChooserParams);
         }
         // onPermissionRequestCanceled (permissionRequest: android.webkit.PermissionRequest) {
         //     console.log("onPermissionRequestCanceled", permissionRequest);
@@ -643,6 +666,11 @@ export class AWebView extends WebViewExtBase {
 
     private _popupClient: com.nativescript.webviewinterface.PopupWebChromeClient;
 
+    private _fileChooser: {
+        callback: android.webkit.ValueCallback<androidNative.Array<android.net.Uri>>;
+        launcher: androidx.activity.result.ActivityResultLauncher<android.content.Intent>;
+    };
+
     public createNativeView() {
         // The first WebView created resets the activity night mode to the system one: put it back.
         const keepNightMode = this.keepNightMode !== false;
@@ -708,6 +736,59 @@ export class AWebView extends WebViewExtBase {
     }
 
     /**
+     * <input type="file">: opens the system document picker and passes the picked content:// URIs to the page.
+     */
+    public _onShowFileChooser(callback: android.webkit.ValueCallback<androidNative.Array<android.net.Uri>>, params: android.webkit.WebChromeClient.FileChooserParams): boolean {
+        // TODO: allow the app to provide its own picker (e.g. ui-document-picker from the TS side)
+        // instead of the system one.
+        const activity = Application.android.foregroundActivity || Application.android.startActivity;
+        if (!activity) {
+            return false;
+        }
+        const Intent = android.content.Intent;
+        const intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        const mimeTypes = acceptToMimeTypes(params.getAcceptTypes());
+        intent.setType(mimeTypes.length === 1 ? mimeTypes[0] : '*/*');
+        if (mimeTypes.length > 1) {
+            const array = Array.create(java.lang.String, mimeTypes.length);
+            mimeTypes.forEach((type, i) => (array[i] = type));
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, array);
+        }
+        if (params.getMode() === android.webkit.WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
+
+        this._finishFileChooser(null);
+        const launcher = activity.getActivityResultRegistry().register(
+            `ui-webview-file-chooser-${this._domId}`,
+            new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
+            new androidx.activity.result.ActivityResultCallback<androidx.activity.result.ActivityResult>({
+                onActivityResult: (result) => this._finishFileChooser(result.getResultCode() === android.app.Activity.RESULT_OK ? pickedUris(result.getData()) : null)
+            })
+        );
+        this._fileChooser = { callback, launcher };
+        try {
+            launcher.launch(intent);
+        } catch (error) {
+            this._finishFileChooser(null);
+            this.notify({ eventName: 'error', error });
+        }
+        return true;
+    }
+
+    // The page waits for exactly one answer: null means cancelled
+    private _finishFileChooser(uris: androidNative.Array<android.net.Uri>) {
+        const chooser = this._fileChooser;
+        if (!chooser) {
+            return;
+        }
+        this._fileChooser = null;
+        chooser.launcher.unregister();
+        chooser.callback.onReceiveValue(uris);
+    }
+
+    /**
      * Popups need the PopupWebChromeClient wrapper and multiple windows support.
      * Without them target="_blank" and window.open() load in this webview, same as on iOS.
      */
@@ -733,6 +814,7 @@ export class AWebView extends WebViewExtBase {
     }
 
     public disposeNativeView() {
+        this._finishFileChooser(null);
         this._popupClient = null;
         const nativeView = this.nativeViewProtected;
         if (nativeView) {
